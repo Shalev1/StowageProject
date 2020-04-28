@@ -82,6 +82,8 @@ void FileHandler::writeCell(const string &cell, bool nextLine) {
     }
 }
 
+
+
 void FileHandler::writeInstruction(const string& type, const string& contID, int floor, int x, int y,
                                    int moveFloor, int moveX, int moveY) {
     char sep = ',';
