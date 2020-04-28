@@ -6,7 +6,7 @@
 
 int main(int argc, char *argv[])
 {
-	if (argc != 2)
+	if (argc != 2 && arc != -1)
 	{
 	    cout << "ERROR: expected exactly one command line parameter" << endl;
 		return EXIT_FAILURE;
