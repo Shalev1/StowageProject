@@ -1,0 +1,4 @@
+Route:
+    clear current port before moving to the next one
+
+Print "In ship plan file" before "WARNING: A spot that exceeds the X/Y ship limits was detected"

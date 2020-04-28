@@ -1,0 +1,8 @@
+# each line represent one instruction (type = L/U/M/R for load/unload/move/reject)
+# 5 parameters for L/U/R, 8 for M
+type,containerID,floorNum,X,Y
+type,containerID,floorNumFrom,XFrom,YFrom,floorNumTo,XTo,YTo # for move instruction
+.
+.
+.
+type,containerID,floorNum,X,Y

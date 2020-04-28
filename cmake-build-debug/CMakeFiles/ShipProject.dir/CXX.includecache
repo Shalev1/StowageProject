@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+C:/Users/tomer/CLionProjects/ShipProject/Container.cpp
+Container.h
+C:/Users/tomer/CLionProjects/ShipProject/Container.h
+locale
+-
+
+C:/Users/tomer/CLionProjects/ShipProject/Container.h
+iostream
+-
+cstring
+-
+string
+-
+set
+-
+

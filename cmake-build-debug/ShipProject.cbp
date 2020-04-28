@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="ShipProject"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ShipProject">
+				<Option output="C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/ShipProject.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="C:/Program Files/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++"/>
+					<Add directory="C:/Program Files/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/x86_64-w64-mingw32"/>
+					<Add directory="C:/Program Files/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/backward"/>
+					<Add directory="C:/Program Files/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include"/>
+					<Add directory="C:/Program Files/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include-fixed"/>
+					<Add directory="C:/Program Files/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/Makefile&quot;  VERBOSE=1 ShipProject"/>
+					<CompileFile command="C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="ShipProject/fast">
+				<Option output="C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/ShipProject.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="C:/Program Files/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++"/>
+					<Add directory="C:/Program Files/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/x86_64-w64-mingw32"/>
+					<Add directory="C:/Program Files/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/backward"/>
+					<Add directory="C:/Program Files/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include"/>
+					<Add directory="C:/Program Files/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include-fixed"/>
+					<Add directory="C:/Program Files/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/Makefile&quot;  VERBOSE=1 ShipProject/fast"/>
+					<CompileFile command="C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/PROGRA~1/MINGW-~1/X86_64~1.0-P/mingw64/bin/mingw32-make.exe -f &quot;C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/Algorithm.cpp">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/Algorithm.h">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/AlgorithmReverse.cpp">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/AlgorithmReverse.h">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/Container.cpp">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/Container.h">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/Floor.cpp">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/Floor.h">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/Port.cpp">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/Port.h">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/Route.cpp">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/Route.h">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/ShipPlan.cpp">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/ShipPlan.h">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/SimTest.cpp">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/SimTest.h">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/Simulator.cpp">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/Simulator.h">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/Spot.cpp">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/Spot.h">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/Utils.cpp">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/Utils.h">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/WeightBalanceCalculator.cpp">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/WeightBalanceCalculator.h">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/main.cpp">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/myMain.cpp">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
