@@ -14,6 +14,7 @@ void Route::initRouteFromFile(const string& path) {
         } else {
             if(Port::validateName(name)) {
                 ports.emplace_back(name);
+                portVisits[name] = 0;
             } else {
                 cout << "WARNING: Illegal name for port: " << name << " port ignored" << endl;
             }
@@ -84,20 +85,28 @@ bool Route::moveToNextPort() {
         return false;
     currentPortNum++;
     cout << "-----------------Entering Port: " << getCurrentPort().getName()  << " --------------------" << endl;
+    portVisits[getCurrentPort().getName()]++;
+    // Search for the containers file for the current port and current visit number
     for (auto it = portsContainersPaths.begin(); it != portsContainersPaths.end(); ++it) {
         string portCode = (*it).substr(0, indexOfFirst_InPath);
-        if(portCode == ports[currentPortNum].getName()){
-            if(currentPortNum == (int)ports.size() - 1){ // last port
-                cout << "WARNING: Last port shouldn't has a waiting containers file, file ignored" << endl;
-            } else {
-                ports[currentPortNum].initWaitingContainers(dir + std::filesystem::path::preferred_separator + (*it));
+        if(portCode == ports[currentPortNum].getName()) {
+            string portNumS = (*it).substr(indexOfFirst_InPath + 1, (*it).find('.') - (indexOfFirst_InPath + 1));
+            int portNum = stoi(portNumS);
+            if (portNum == portVisits[getCurrentPort().getName()]) {
+                if (currentPortNum == (int) ports.size() - 1) { // last port
+                    cout << "WARNING: Last port shouldn't has a waiting containers file, file ignored" << endl;
+                } else {
+                    ports[currentPortNum].initWaitingContainers(
+                            dir + std::filesystem::path::preferred_separator + (*it));
+                }
+                portsContainersPaths.erase(it);
+                return true;
             }
-            portsContainersPaths.erase(it);
-            return true;
         }
     }
     if(currentPortNum != (int)ports.size() - 1){ // this isn't the last port
-        cout << "WARNING: No waiting containers in Port " << ports[currentPortNum].getName() << endl;
+        cout << "WARNING: No waiting containers in Port " << getCurrentPort().getName() <<
+            " for visit number: " << portVisits[getCurrentPort().getName()]<< endl;
     }
     return true;
 }

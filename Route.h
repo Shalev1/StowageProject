@@ -20,6 +20,7 @@ private:
     vector<Port> ports; // The destination in the current route
     string dir; // The directory of the files
     vector<string> portsContainersPaths; // Contain relative paths to the containers files, that have not used yet
+    map<string, int> portVisits; // How many times ports were visited
 
     /**
      * Call in the constructor, init the route from the given path file

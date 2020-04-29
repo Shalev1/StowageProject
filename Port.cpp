@@ -38,6 +38,8 @@ void Port::addContainer(int weight, const string &destPort, const string &id) {
 
 void Port::initWaitingContainers(const string &path) {
     FileHandler fh(path);
+    if(fh.isFailed())
+        cout << "ERROR: Failed to open " << path << " considered as no containers waiting" << endl;
     vector<string> tokens;
     while (fh.getNextLineAsTokens(tokens)) {
         if (tokens.size() != 3) {
