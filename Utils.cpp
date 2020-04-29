@@ -1,8 +1,7 @@
 #include "Utils.h"
 
 int string2int(const string& s) {
-    const char *c_arr = s.c_str();
-    return (atoi(c_arr));
+    return (std::stoi(s));
 }
 
 bool isNumber(const string & s){

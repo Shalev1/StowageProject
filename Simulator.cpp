@@ -1,9 +1,13 @@
 #include "Simulator.h"
 
-Simulator::Simulator(const string &root) : rootDir(root), end_travel(false) {
-    vector<string> row;
-    statistics.push_back(row);
+Simulator::Simulator(const string &root) : rootDir(root), err_in_travel(false), err_detected(false) {
+    vector<string> first_res_row;
+    vector<string> first_err_row;
+
+    statistics.push_back(first_res_row);
     statistics[0].push_back("RESULTS");
+    errors.push_back(first_err_row);
+    errors[0].push_back("General");
 }
 
 bool travelName(const string &name) {
@@ -21,8 +25,8 @@ bool validateTravelFolder(std::filesystem::directory_entry entry) {
 
 void Simulator::runSimulation() {
     int num_of_algo = 1;
-    FileHandler err_file(this->rootDir + std::filesystem::path::preferred_separator + "simulation.errors.csv", true);
-    if(err_file.isFailed()){
+    //FileHandler err_file(this->rootDir + std::filesystem::path::preferred_separator + "simulation.errors.csv", true);
+    if (err_file.isFailed()) { // need to make general function to validate root directory
         cout << "ERROR: Can't find root directory path." << endl;
         return;
     }
@@ -31,13 +35,15 @@ void Simulator::runSimulation() {
         bool successful_build = true;
         string plan_path, travel_path;
         WeightBalanceCalculator calc;
-        int num_of_operations;
+        int num_of_operations, num_of_errors = 0;
         Algorithm *algo;
 
-        err_file.writeCell("Algorithm ." + to_string(num_of_algo));
         vector<string> new_res_row;
         statistics.push_back(new_res_row);
         statistics[num_of_algo].push_back("Algorithm ." + to_string(num_of_algo));
+        vector<string> new_err_row;
+        errors.push_back(new_err_row);
+        errors[num_of_algo].push_back("Algorithm ." + to_string(num_of_algo));
 
         cout << "\nExecuting Algorithm no. " << num_of_algo << ":" << endl;
         for (const auto &travel_dir : std::filesystem::directory_iterator(
@@ -45,12 +51,11 @@ void Simulator::runSimulation() {
             num_of_operations = 0;
             if (!validateTravelFolder(travel_dir))
                 continue;
-            if (num_of_algo == 1) statistics[0].push_back(travel_dir.path().filename()); // creating a travel column
             ShipPlan *ship = nullptr;
             Route *travel = nullptr;
             bool routeFound = false;
             bool planFound = false;
-            this->end_travel = false;
+            this->err_in_travel = false;
             //Iterate over the directory
             for (const auto &entry : std::filesystem::directory_iterator(travel_dir.path())) {
                 if (entry.path().filename() == "Plan.csv") { // A ship plan file was found
@@ -66,21 +71,25 @@ void Simulator::runSimulation() {
                 }
             }
             if (!planFound) {
+                if (num_of_algo == 1) errors[0].push_back(""); // TODO: Insert the string into the cell
+                err_detected = true;
                 cout << "WARNING: Directory: " << travel_dir.path() << " is illegal, no Plan file" << endl;
-                statistics[num_of_algo].push_back(to_string(num_of_operations));
                 delete travel;
                 continue;
             }
             if (!routeFound) {
+                if (num_of_algo == 1) errors[0].push_back(""); // TODO: Insert the string into the cell
+                err_detected = true;
                 cout << "WARNING: Directory: " << travel_dir.path() << " is illegal, no Route file" << endl;
-                statistics[num_of_algo].push_back(to_string(num_of_operations));
                 delete ship;
                 continue;
             }
-            if (!successful_build) {
-                statistics[num_of_algo].push_back(to_string(num_of_operations));
+            if (!successful_build) { // TODO: catch soft general errors of line that were ignored in the files, idea: make successful_build a pair
+                if (num_of_algo == 1) errors[0].push_back(""); // TODO: Insert the string into the cell
+                err_detected = true;
                 continue; //One of the files of the travel is invalid, continue to the next travel.
             }
+            if (num_of_algo == 1) statistics[0].push_back(travel_dir.path().filename()); // creating a travel column
             travel->initPortsContainersFiles(travel_dir.path(), travel_files);
             //SIMULATION
             switch (num_of_algo) {
@@ -92,7 +101,7 @@ void Simulator::runSimulation() {
                     break;
             }
             string instruction_file;
-            while (!this->end_travel && travel->moveToNextPort()) { // For each port in travel
+            while (travel->moveToNextPort()) { // For each port in travel
                 instruction_file = travel_dir.path().string();
                 instruction_file = instruction_file + std::filesystem::path::preferred_separator + "instructions.csv";
                 algo->getInstructionsForCargo(travel->getCurrentPort().getWaitingContainers(), instruction_file);
@@ -100,7 +109,7 @@ void Simulator::runSimulation() {
                 this->checkMissedContainers(ship, travel->getCurrentPort().getName());
                 travel->clearCurrentPort();
             }
-            Container::clearIDs();
+            Container::clearIDs(); // TODO: For each port in travel, we need to delete all the containers that were left at the port
             delete ship;
             ship = nullptr;
             delete travel;
@@ -108,12 +117,25 @@ void Simulator::runSimulation() {
             delete algo;
             algo = nullptr;
             travel_files.clear();
-            FileHandler::deleteFile(instruction_file);
-            statistics[num_of_algo].push_back(to_string(num_of_operations));
+            FileHandler::deleteFile(instruction_file); // TODO: Save all crane_instructions files per port
+            // Check if there was an error by the algorithm. if there was, number of operation is '-1'.
+            if (this->err_in_travel) {
+                err_detected = true;
+                num_of_errors++;
+                statistics[num_of_algo].push_back("-1");
+            } else {
+                statistics[num_of_algo].push_back(to_string(num_of_operations));
+            }
         }
+        if (num_of_algo == 1) statistics[0].push_back("Num Errors"); // creating a travel column
+        statistics[num_of_algo].push_back(to_string(num_of_errors));
         err_file.writeCell("", true);
         num_of_algo++;
     }
+    if (!err_detected) // No errors found, err_file should not be created
+        FileHandler::deleteFile("simulation.errors.csv");
+    else
+        fillAlgoErrors(err_file, err_file);
 }
 
 bool Simulator::validateInstruction(const vector<string> &instructions) { // Check if the text line is legal
@@ -262,7 +284,8 @@ bool Simulator::validateMoveOp(FileHandler &err_file, ShipPlan &ship, const Weig
     return true;
 }
 
-bool Simulator::validateRejectOp(FileHandler &err_file, ShipPlan &ship, Route *travel, const WeightBalanceCalculator &calc,
+bool
+Simulator::validateRejectOp(FileHandler &err_file, ShipPlan &ship, Route *travel, const WeightBalanceCalculator &calc,
                             int floor_num, int x, int y, const string &cont_id, bool &has_potential_to_be_loaded) {
     Container *cont;
     if (!Container::validateID(cont_id, false)) {
@@ -313,7 +336,7 @@ bool checkSortedContainers(vector<Container *> conts, Route *travel, const strin
     farthest_port_num = getFarthestDestOfContainerIndex(
             conts); // get the maximal index of a container that was load to the ship.
     if (distance(conts.begin(), find(conts.begin(), conts.end(), Port::getContainerByIDFrom(conts, cont_id))) <
-            farthest_port_num) { // The left side of the statement is just to find cont_id's index in conts
+        farthest_port_num) { // The left side of the statement is just to find cont_id's index in conts
         return false;
     }
     return true;
@@ -388,7 +411,7 @@ void Simulator::implementInstructions(FileHandler &err_file, ShipPlan &ship, Rou
         switch (command) {
             case L: {
                 if (!validateLoadOp(err_file, ship, calc, floor_num, x, y, cont_to_load)) {
-                    this->end_travel = true;
+                    this->err_in_travel = true;
                     return;
                     // break; //Will be used in ex.2
                 }
@@ -400,7 +423,7 @@ void Simulator::implementInstructions(FileHandler &err_file, ShipPlan &ship, Rou
             }
             case U: {
                 if (!validateUnloadOp(err_file, ship, calc, floor_num, x, y, instruction[1])) {
-                    this->end_travel = true;
+                    this->err_in_travel = true;
                     return;
                     // break; //Will be used in ex.2
                 }
@@ -415,7 +438,7 @@ void Simulator::implementInstructions(FileHandler &err_file, ShipPlan &ship, Rou
             case M: {
                 if (!validateMoveOp(err_file, ship, calc, floor_num, x, y, string2int(instruction[5]),
                                     string2int(instruction[6]), string2int(instruction[7]), instruction[1])) {
-                    this->end_travel = true;
+                    this->err_in_travel = true;
                     return;
                     // break; //Will be used in ex.2
                 }
@@ -427,8 +450,9 @@ void Simulator::implementInstructions(FileHandler &err_file, ShipPlan &ship, Rou
             }
             case R: {
                 bool has_potential_to_be_loaded = false;
-                if (!validateRejectOp(err_file, ship, travel, calc, floor_num, x, y, instruction[1], has_potential_to_be_loaded)) {
-                    this->end_travel = true;
+                if (!validateRejectOp(err_file, ship, travel, calc, floor_num, x, y, instruction[1],
+                                      has_potential_to_be_loaded)) {
+                    this->err_in_travel = true;
                     return;
                     // break; //Will be used in ex.2
                 }
@@ -460,20 +484,21 @@ void Simulator::checkMissedContainers(ShipPlan *ship, const string &port_name) {
 void Simulator::addSumColumn() {
     int sum;
     int num_of_algos = (int) statistics.size();
-    int num_of_travels = (int) statistics[0].size();
-    statistics[0].push_back("Sum");
+    int num_of_travels = (int) statistics[0].size() - 1; // -1 so we ignore the Errors column.
+    statistics[0].insert(statistics[0].end() - 1, "Sum");
     for (int i = 1; i < num_of_algos; ++i) {
         sum = 0;
         for (int j = 1; j < num_of_travels; ++j) {
+            if (statistics[i][j] == "-1") continue; // Ignore travels with errors
             sum += string2int(statistics[i][j]);
         }
-        statistics[i].push_back(to_string(sum));
+        statistics[i].insert(statistics[i].end() - 1, to_string(sum));
     }
 }
 
 void Simulator::createResultsFile() {
     FileHandler res_file(this->rootDir + std::filesystem::path::preferred_separator + "simulation.results.csv", true);
-    if(res_file.isFailed()){
+    if (res_file.isFailed()) {
         return;
     }
     addSumColumn();
@@ -486,3 +511,5 @@ void Simulator::createResultsFile() {
         res_file.writeCell("", true);
     }
 }
+
+void printIntoFile()

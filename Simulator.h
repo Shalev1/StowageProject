@@ -20,8 +20,10 @@ using std::to_string;
 class Simulator {
 private:
     string rootDir;
-    bool end_travel;
+    bool err_in_travel;
+    bool err_detected;
     vector<vector<string>> statistics;
+    vector<vector<string>> errors;
 
 public:
     //---Constructors and Destructors---//
