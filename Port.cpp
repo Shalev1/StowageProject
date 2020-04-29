@@ -13,11 +13,9 @@ Port::Port(const string &name) {
 }
 
 bool Port::validateName(const string &name) {
-    if (name.length() != PORT_NAME_LEN || name.at(SPACE_LOC_IN_NAME) != ' ')
+    if (name.length() != PORT_NAME_LEN)
         return false;
     for (int i = 0; i < PORT_NAME_LEN; i++) {
-        if (i == SPACE_LOC_IN_NAME)
-            continue;
         if (!isalpha(name.at(i)))
             return false;
     }

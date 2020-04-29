@@ -83,7 +83,8 @@ ostream &operator<<(ostream &out, const Floor &f)
                 if (f.floor_map[i][j]->getContainer() == nullptr)
                     out << "___________1_________";
                 else
-                    out << "___" << f.floor_map[i][j]->getContainer()->getID() << "__";
+                    out << "___" << f.floor_map[i][j]->getContainer()->getID() <<"->"
+                        << f.floor_map[i][j]->getContainer()->getDestPort() << "__";
             }
         }
         out << "\n";

@@ -39,6 +39,13 @@ bool portPathsCompare(const string& s1, const string& s2) {
 }
 
 void Route::initPortsContainersFiles(const string& dir, vector<string>& paths){
+    map<string, int> portAppearances; // Map to count how many times each port will be visited
+    for(const Port& p : ports){
+        if(portAppearances.count(p.getName()))
+            portAppearances[p.getName()]++;
+        else
+            portAppearances[p.getName()] = 1;
+    }
     for (auto it = paths.begin(); it != paths.end();) {
         string portCode = (*it).substr(0, indexOfFirst_InPath);
         if(!Port::validateName(portCode) || (*it)[indexOfFirst_InPath] != '_'){
@@ -51,6 +58,19 @@ void Route::initPortsContainersFiles(const string& dir, vector<string>& paths){
             paths.erase(it);
             continue;
         } else {
+            if(!portAppearances.count(portCode)){ // Port isn't in the route
+                cout << "WARNING: File " << *it <<" ignored, port " << portCode << " is not in the route " << endl;
+                paths.erase(it);
+                continue;
+            }
+            string portNumS = restString.substr(0, restString.find('.'));
+            int portNum = stoi(portNumS);
+            if(portNum > portAppearances[portCode]){
+                cout << "WARNING: File " << *it <<" ignored, port " << portCode << " won't be visited "
+                    << portNumS << " times" << endl;
+                paths.erase(it);
+                continue;
+            }
             it++;
         }
     }
@@ -63,6 +83,7 @@ bool Route::moveToNextPort() {
     if(!hasNextPort())
         return false;
     currentPortNum++;
+    cout << "-----------------Entering Port: " << getCurrentPort().getName()  << " --------------------" << endl;
     for (auto it = portsContainersPaths.begin(); it != portsContainersPaths.end(); ++it) {
         string portCode = (*it).substr(0, indexOfFirst_InPath);
         if(portCode == ports[currentPortNum].getName()){

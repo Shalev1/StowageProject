@@ -9,8 +9,7 @@
 #include "algorithm"
 
 //---Defines---//
-#define PORT_NAME_LEN 6
-#define SPACE_LOC_IN_NAME 2
+#define PORT_NAME_LEN 5
 #define INVALID "Invalid"
 
 //---Main class---//
