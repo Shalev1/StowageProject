@@ -1,26 +1,14 @@
-#ifndef STOWAGEPROJECT_WEIGHTBALANCECALCULATOR_H
-#define STOWAGEPROJECT_WEIGHTBALANCECALCULATOR_H
-
-#include "ShipPlan.h"
-#include "Container.h"
-
+#pragma once
 
 class WeightBalanceCalculator {
-
 public:
-    WeightBalanceCalculator();
 
-    /**
-     * Check if the given container has legal weight.
-     */
-    bool weightCheck(const ShipPlan &ship, const Container &cont) const;
+    enum BalanceStatus {
+        APPROVED, X_IMBALANCED, Y_IMBALANCED, X_Y_IMBALANCED
+    };
 
-    /**
-     * Check if the given container at the given spot makes the ship unbalanced.
-     */
-    bool balanceTest(const ShipPlan &ship, const Container &cont, const Spot &spot) const;
+    //int readShipPlan(const std::string& full_path_and_file_name);
 
+    BalanceStatus tryOperation(char loadUnload, int kg, int X, int Y);
 };
 
-
-#endif //STOWAGEPROJECT_WEIGHTBALANCECALCULATOR_H

@@ -138,7 +138,7 @@ bool Simulator::validateInstruction(const vector<string> &instructions) { // Che
 }
 
 bool
-Simulator::validateLoadOp(FileHandler &err_file, ShipPlan &ship, const WeightBalanceCalculator &calc, int floor_num,
+Simulator::validateLoadOp(FileHandler &err_file, ShipPlan &ship, WeightBalanceCalculator &calc, int floor_num,
                           int x, int y, const Container *cont) {
     Spot *pos, *pos_below;
     // Spot validation
@@ -161,12 +161,8 @@ Simulator::validateLoadOp(FileHandler &err_file, ShipPlan &ship, const WeightBal
         err_file.writeCell("Load an unavailable container.");
         return false;
     }
-    if (!calc.weightCheck(ship, *cont)) {
-        err_file.writeCell("Load a container that's too heavy.");
-        return false;
-    }
-    // Structural validation
-    if (!calc.balanceTest(ship, *cont, *pos)) {
+    // Balance validation
+    if (calc.tryOperation('L', cont->getWeight(), x, y) != WeightBalanceCalculator::APPROVED) {
         err_file.writeCell("Load a container that un-balances the ship.");
         return false;
     }
@@ -182,7 +178,7 @@ Simulator::validateLoadOp(FileHandler &err_file, ShipPlan &ship, const WeightBal
 }
 
 bool
-Simulator::validateUnloadOp(FileHandler &err_file, ShipPlan &ship, const WeightBalanceCalculator &calc, int floor_num,
+Simulator::validateUnloadOp(FileHandler &err_file, ShipPlan &ship, WeightBalanceCalculator &calc, int floor_num,
                             int x, int y, const string &cont_id) {
     Spot *pos, *pos_above;
     // Spot validation
@@ -201,8 +197,8 @@ Simulator::validateUnloadOp(FileHandler &err_file, ShipPlan &ship, const WeightB
         err_file.writeCell("Unload a container that isn't in the given spot.");
         return false;
     }
-    // Structural validation
-    if (!calc.balanceTest(ship, *cont, *pos)) {
+    // Balance validation
+    if (calc.tryOperation('U', cont->getWeight(), x, y) != WeightBalanceCalculator::APPROVED) {
         err_file.writeCell("Unload a container from from the ship unbalance it.");
         return false;
     } else if (floor_num != ship.getNumOfDecks() - 1) {
@@ -215,7 +211,7 @@ Simulator::validateUnloadOp(FileHandler &err_file, ShipPlan &ship, const WeightB
     return true;
 }
 
-bool Simulator::validateMoveOp(FileHandler &err_file, ShipPlan &ship, const WeightBalanceCalculator &calc,
+bool Simulator::validateMoveOp(FileHandler &err_file, ShipPlan &ship, WeightBalanceCalculator &calc,
                                int source_floor_num, int source_x, int source_y, int dest_floor_num, int dest_x,
                                int dest_y, const string &cont_id) {
     Spot *source_pos, *dest_pos, *pos_above, *pos_below;
@@ -238,8 +234,9 @@ bool Simulator::validateMoveOp(FileHandler &err_file, ShipPlan &ship, const Weig
         err_file.writeCell("Move a container that isn't in the given spot.");
         return false;
     }
-    // Structural validation
-    if (!calc.balanceTest(ship, *cont, *dest_pos)) {
+    // Balance validation
+    if (calc.tryOperation('U', cont->getWeight(), source_x, source_y) != WeightBalanceCalculator::APPROVED
+         || calc.tryOperation('L', cont->getWeight(), dest_x, dest_y) != WeightBalanceCalculator::APPROVED) {
         err_file.writeCell("Move a container cause the ship to unbalance.");
         return false;
     } else {
@@ -262,7 +259,7 @@ bool Simulator::validateMoveOp(FileHandler &err_file, ShipPlan &ship, const Weig
     return true;
 }
 
-bool Simulator::validateRejectOp(FileHandler &err_file, ShipPlan &ship, Route *travel, const WeightBalanceCalculator &calc,
+bool Simulator::validateRejectOp(FileHandler &err_file, ShipPlan &ship, Route *travel, WeightBalanceCalculator &calc,
                             int floor_num, int x, int y, const string &cont_id, bool &has_potential_to_be_loaded) {
     Container *cont;
     if (!Container::validateID(cont_id, false)) {
@@ -277,8 +274,9 @@ bool Simulator::validateRejectOp(FileHandler &err_file, ShipPlan &ship, Route *t
     if (cont->getSpotInFloor() != nullptr) { // The container was loaded though reported rejected.
         err_file.writeCell("Reject a container that was already loaded.");
         return false;
-    } else if (calc.weightCheck(ship, *cont) && travel->isInRoute(cont->getDestPort()) &&
-               travel->getCurrentPort().getName() != cont->getDestPort()) {
+        //TODO: Shalev validate that the change is ok
+    } else if (calc.tryOperation('L', cont->getWeight(), x, y) == WeightBalanceCalculator::APPROVED &&
+                travel->isInRoute(cont->getDestPort()) && travel->getCurrentPort().getName() != cont->getDestPort()) {
         if (ship.getNumOfFreeSpots() > 0) {
             err_file.writeCell("Reject a container although it can be loaded correctly.");
             return false;
@@ -356,7 +354,7 @@ void deleteRemainingContainers(map<string, Container *> &unloaded_containers,
 }
 
 void Simulator::implementInstructions(FileHandler &err_file, ShipPlan &ship, Route *travel,
-                                      const WeightBalanceCalculator &calc, const string &instruction_file,
+                                      WeightBalanceCalculator &calc, const string &instruction_file,
                                       int &num_of_operations) {
     FileHandler file(instruction_file);
     vector<string> instruction;

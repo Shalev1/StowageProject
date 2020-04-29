@@ -34,14 +34,9 @@ void Algorithm::getInstructionsForCargo(vector<Container *> &loadContainers, con
             delete *it;
             continue;
         }
-        // TODO ex2: consider moving this function base on the implementation
-        if (weightCal->weightCheck(ship, **it)) {
-            findLoadingSpot(*it, instructionsFile);
-            if ((*it)->getSpotInFloor() == nullptr)
-                delete *it;
-        } else {
-            //TODO ex2: Throws an exception
-        }
+        findLoadingSpot(*it, instructionsFile);
+        if ((*it)->getSpotInFloor() == nullptr)
+            delete *it;
     }
 }
 
@@ -96,9 +91,10 @@ void Algorithm::findLoadingSpot(Container *cont, FileHandler &instructionsFile) 
         instructionsFile.writeInstruction("R", cont->getID(), -1, -1, -1);
         return;
     }
-    vector<Spot *> failedSpots;
-    while (!weightCal->balanceTest(ship, *cont,
-                                   *empty_spot)) { // validate that ship is still in balance. If not, find another spot.
+    vector<Spot *> failedSpots; // All spots that returned form getEmptySpot but put the container will make the ship unbalance
+    // validate that ship will be balance. If not, find another spot.
+    while (weightCal->tryOperation('L', cont->getWeight(), empty_spot->getPlaceX(),
+            empty_spot->getPlaceY()) != WeightBalanceCalculator::APPROVED) {
         empty_spot->setAvailable(false);
         failedSpots.push_back(empty_spot);
         empty_spot = getEmptySpot(floorNum);
@@ -130,9 +126,9 @@ void Algorithm::markRemoveContainers(Container &cont, Spot &spot, vector<Contain
             curr_floor_num--;
             continue;
         }
-        if (!weightCal->balanceTest(ship, cont,
-                                    *curr_spot)) { // Check if removing this container will turn the ship out of balance.
-            // TODO ex2: Handle error
+        if (weightCal->tryOperation('U', cont.getWeight(), curr_spot->getPlaceX(),
+                                    curr_spot->getPlaceY()) != WeightBalanceCalculator::APPROVED) { // Check if removing this container will turn the ship out of balance.
+            // TODO ex3: Handle error
         }
         reload_containers.push_back(curr_spot->getContainer());
         // Add unload instruction, will be reloaded later TODO: change to move instruction in ex2
@@ -141,9 +137,9 @@ void Algorithm::markRemoveContainers(Container &cont, Spot &spot, vector<Contain
         ship.removeContainer(curr_spot);
         curr_floor_num--;
     }
-    if (!weightCal->balanceTest(ship, cont,
-                                *curr_spot)) { // Check if removing this container will turn the ship out of balance.
-        // TODO ex2: Handle error
+    if (weightCal->tryOperation('U', cont.getWeight(), spot.getPlaceX(),
+                                spot.getPlaceY()) != WeightBalanceCalculator::APPROVED) { // Check if removing this container will turn the ship out of balance.
+        // TODO ex3: Handle error
     }
     // We have reached the container that has the same port ID destination. write unload instruction
     instructionsFile.writeInstruction("U", spot.getContainer()->getID(), curr_floor_num, spot.getPlaceX(),

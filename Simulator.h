@@ -40,7 +40,7 @@ public:
      * Performs the instructions at the given instructions file while validating the algorithm decisions.
      */
     void
-    implementInstructions(FileHandler &err_file, ShipPlan &ship, Route *travel, const WeightBalanceCalculator &calc,
+    implementInstructions(FileHandler &err_file, ShipPlan &ship, Route *travel, WeightBalanceCalculator &calc,
                           const string &instruction_file, int &num_of_operations);
 
     /**
@@ -52,27 +52,27 @@ public:
      * Validates a load instruction.
      */
     bool
-    validateLoadOp(FileHandler &err_file, ShipPlan &ship, const WeightBalanceCalculator &calc, int floor_num, int x,
+    validateLoadOp(FileHandler &err_file, ShipPlan &ship, WeightBalanceCalculator &calc, int floor_num, int x,
                    int y, const Container *cont);
 
     /**
      * Validates a unload instruction.
      */
     bool
-    validateUnloadOp(FileHandler &err_file, ShipPlan &ship, const WeightBalanceCalculator &calc, int floor_num, int x,
+    validateUnloadOp(FileHandler &err_file, ShipPlan &ship, WeightBalanceCalculator &calc, int floor_num, int x,
                      int y, const string &cont_id);
 
     /**
      * Validates a move instruction.
      */
     bool
-    validateMoveOp(FileHandler &err_file, ShipPlan &ship, const WeightBalanceCalculator &calc, int source_floor_num,
+    validateMoveOp(FileHandler &err_file, ShipPlan &ship, WeightBalanceCalculator &calc, int source_floor_num,
                    int source_x, int source_y, int dest_floor_num, int dest_x, int dest_y, const string &cont_id);
 
     /**
      * Validates a reject instruction.
      */
-    bool validateRejectOp(FileHandler &err_file, ShipPlan &ship, Route *travel, const WeightBalanceCalculator &calc,
+    bool validateRejectOp(FileHandler &err_file, ShipPlan &ship, Route *travel, WeightBalanceCalculator &calc,
                                 int floor_num, int x, int y, const string &cont_id, bool &has_potential_to_be_loaded);
 
     /**
