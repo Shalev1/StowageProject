@@ -13,7 +13,7 @@ void Route::initRouteFromFile(const string& path) {
             cout << "WARNING: Port " << name << " Appeared twice in a row, second time ignored" << endl;
         } else {
             if(Port::validateName(name)) {
-                this->ports.push_back(new Port(name));
+                ports.emplace_back(name);
             } else {
                 cout << "WARNING: Illegal name for port: " << name << " port ignored" << endl;
             }
@@ -26,14 +26,14 @@ void Route::initRouteFromFile(const string& path) {
  * Compare two port's path for the sort in initPortsContainer
  * First compare the port code and sort alphabetically, second compare the number part, sort from small to big
  */
-bool portPathsCompare(string s1, string s2) {
+bool portPathsCompare(const string& s1, const string& s2) {
     string portCode1 = s1.substr(0,indexOfFirst_InPath);
     string portCode2 = s2.substr(0,indexOfFirst_InPath);
     if(portCode1 != portCode2){
         return portCode1 < portCode2;
     } else {
-        string num1 = s1.substr(indexOfFirst_InPath + 1, s1.find(".") - (indexOfFirst_InPath + 1));
-        string num2 = s2.substr(indexOfFirst_InPath + 1, s2.find(".") - (indexOfFirst_InPath + 1));
+        string num1 = s1.substr(indexOfFirst_InPath + 1, s1.find('.') - (indexOfFirst_InPath + 1));
+        string num2 = s2.substr(indexOfFirst_InPath + 1, s2.find('.') - (indexOfFirst_InPath + 1));
         return stoi(num1) < stoi(num2);
     }
 }
@@ -65,27 +65,27 @@ bool Route::moveToNextPort() {
     currentPortNum++;
     for (auto it = portsContainersPaths.begin(); it != portsContainersPaths.end(); ++it) {
         string portCode = (*it).substr(0, indexOfFirst_InPath);
-        if(portCode == ports[currentPortNum]->getName()){
+        if(portCode == ports[currentPortNum].getName()){
             if(currentPortNum == (int)ports.size() - 1){ // last port
                 cout << "WARNING: Last port shouldn't has a waiting containers file, file ignored" << endl;
             } else {
-                ports[currentPortNum]->initWaitingContainers(dir + std::filesystem::path::preferred_separator + (*it));
+                ports[currentPortNum].initWaitingContainers(dir + std::filesystem::path::preferred_separator + (*it));
             }
             portsContainersPaths.erase(it);
             return true;
         }
     }
     if(currentPortNum != (int)ports.size() - 1){ // this isn't the last port
-        cout << "WARNING: No waiting containers in Port " << ports[currentPortNum]->getName() << endl;
+        cout << "WARNING: No waiting containers in Port " << ports[currentPortNum].getName() << endl;
     }
     return true;
 }
 
-const string Route::getCloserDestination(const string &d1, const string &d2) {
+string Route::getCloserDestination(const string &d1, const string &d2) {
     for (auto it = ports.begin() + currentPortNum; it != ports.end(); ++it) {
-        if((*it)->getName() == d1)
+        if((*it).getName() == d1)
             return d1;
-        if((*it)->getName() == d2)
+        if((*it).getName() == d2)
             return d2;
     }
     return "Not Found";
@@ -93,7 +93,7 @@ const string Route::getCloserDestination(const string &d1, const string &d2) {
 
 bool Route::isInRoute(const string &portName) const {
     for(auto it = ports.begin() + currentPortNum; it != ports.end(); ++it)
-        if(portName == (*it)->getName())
+        if(portName == (*it).getName())
             return true;
     return false;
 }
@@ -116,18 +116,10 @@ void Route::clearCurrentPort() {
     }
 }
 
-Route::~Route() {
-    for(int i = 0; i < (int)ports.size(); i++){
-        delete ports[i];
-        ports[i] = nullptr;
-    }
-}
-
-
 ostream& operator<<(ostream& os, const Route& r){
     os << "The route include the following ports: " << endl;
-    for(Port* const& p : r.ports){
-        os << *p;
+    for(const Port& p : r.ports){
+        os << p;
     }
     return os;
 }

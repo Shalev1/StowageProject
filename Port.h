@@ -17,17 +17,13 @@
 class Port {
 private:
     string name;                           // 2 letters country code, space, 3 letters port code
-    vector<Container *> waitingContainers; // Containers waiting in this port to be loaded to the ship
+    vector<Container*> waitingContainers; // Containers waiting in this port to be loaded to the ship
 
 public:
     //---Constructors and Destructors---//
     explicit Port(const string &name);
 
-    Port(const Port &other) = delete;
-
-    Port &operator=(const Port &other) = delete;
-
-    const string &getName() {
+    const string &getName() const{
         return name;
     }
 
@@ -53,12 +49,12 @@ public:
     /**
      * Return the container with id equals to @param id or nullptr if there is not one like that
      */
-    Container* getWaitingContainerByID(const string &id);
+    Container *getWaitingContainerByID(const string &id);
 
     /**
     * Return the container with id equals to @param id or nullptr if there is not one like that
     */
-    static Container *getContainerByIDFrom(const vector<Container*>& containers, const string &id);
+    static Container *getContainerByIDFrom(const vector<Container *> &containers, const string &id);
 
     string nameToUppercase(const string &name);
 
