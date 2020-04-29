@@ -1,14 +1,14 @@
 #include "Utils.h"
 
-int string2int(const string& s) {
+int string2int(const string &s) {
     return (std::stoi(s));
 }
 
-bool isNumber(const string & s){
-   if(s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false;
-   char * p;
-   strtol(s.c_str(), &p, 10); // will update p to the first character that is not numeric
-   return (*p == 0);
+bool isNumber(const string &s) {
+    if (s.empty() || ((!isdigit(s[0])) && (s[0] != '-') && (s[0] != '+'))) return false;
+    char *p;
+    strtol(s.c_str(), &p, 10); // will update p to the first character that is not numeric
+    return (*p == 0);
 }
 
 string trimWhitespaces(const string &str, const string &whitespace = " \t\v\f\r") {
@@ -40,21 +40,84 @@ bool isPositiveNumber(const string &s) {
     return (!s.empty()) && (it == s.end());
 }
 
-FileHandler::FileHandler(const string& path, bool truncFlag): fs(), path(path){
-    if(truncFlag){
+void convertFileIntoVector(FileHandler &file, vector<vector<string>> &data) {
+    vector<string> line;
+    while (file.getNextLineAsTokens(line)) {
+        data.push_back(line);
+    }
+}
+
+void fillWhiteSpaces(int word_len, int max_len) {
+    for (int i = 0; i < max_len - word_len; ++i) {
+        cout << " ";
+    }
+}
+
+void printSeperators(int max_word_len, int max_num_of_words) {
+    cout << "__";
+    for (int i = 0; i < (max_word_len * max_num_of_words) + (max_num_of_words * 2); ++i) {
+        cout << "_";
+    }
+    cout << endl;
+}
+
+void getLineStat(vector<vector<string>> &data, int &max_line_len, int &max_num_of_words, int &max_word_len) {
+    int char_counter;
+    int len;
+    for (unsigned int i = 0; i < data.size(); ++i) { // for each line
+        char_counter = 0;
+        for (unsigned int j = 0; j < data[i].size(); ++j) { // for each word in line
+            len = (int)data[i][j].length();
+            char_counter += len;
+            if (max_word_len < len) // Finds the longest word
+                max_word_len = len;
+        }
+        if(max_num_of_words < (int)data[i].size()) // Finds the highest word number in lines
+            max_num_of_words = (int)data[i].size();
+        if(max_line_len < char_counter) // Finds the longest line
+            max_line_len = char_counter;
+    }
+}
+
+bool printCSVFile(const string &file_path) {
+    FileHandler file(file_path); // TODO: need to make sure file is opened correctly
+    vector<vector<string>> data;
+    convertFileIntoVector(file, data);
+    int max_line_len = 0, max_num_of_words = 0, max_word_len = 0;
+    getLineStat(data, max_line_len, max_num_of_words, max_word_len);
+    printSeperators(max_word_len, max_num_of_words);
+    for (unsigned int i = 0; i < data.size(); ++i) { // for each line
+        cout << "||";
+        for (int j = 0; j < max_num_of_words; ++j) {
+            if (j < (int)data[i].size()) {
+                cout << data[i][j];
+                fillWhiteSpaces((int) data[i][j].length(), max_word_len);
+            } else { // There are no more words in line, print whitespaces
+                fillWhiteSpaces(0, max_word_len);
+            }
+            cout << "||";
+        }
+        cout << endl;
+        printSeperators(max_word_len, max_num_of_words);
+    }
+    return true;
+}
+
+//---FileHandler Functions---//
+FileHandler::FileHandler(const string &path, bool truncFlag) : fs(), path(path) {
+    if (truncFlag) {
         fs.open(path, std::ios::out | std::ios::trunc);
-	}
-    else
+    } else
         fs.open(path);
-    if(!fs.is_open()){
+    if (!fs.is_open()) {
         fail = true;
     }
 }
 
 bool FileHandler::getNextLine(string &line) {
-    while(getline(this->fs,line)){
+    while (getline(this->fs, line)) {
         line = trimWhitespaces(line);
-        if(line[0] == '#')
+        if (line[0] == '#')
             continue;
         return true;
     }
@@ -81,13 +144,11 @@ void FileHandler::writeCell(const string &cell, bool nextLine) {
     }
 }
 
-
-
-void FileHandler::writeInstruction(const string& type, const string& contID, int floor, int x, int y,
+void FileHandler::writeInstruction(const string &type, const string &contID, int floor, int x, int y,
                                    int moveFloor, int moveX, int moveY) {
     char sep = ',';
     fs << type << sep << contID << sep << floor << sep << x << sep << y;
-    if(type == "M")
+    if (type == "M")
         fs << sep << moveFloor << sep << moveX << sep << moveY;
     fs << '\n';
 }

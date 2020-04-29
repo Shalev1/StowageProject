@@ -13,6 +13,7 @@ int main(int argc, char *argv[])
 	}
 	Simulator sim(argv[1]);
 	sim.runSimulation();
-	sim.createResultsFile();
+
+	sim.printSimulationDetails();
 	return EXIT_SUCCESS;
 }

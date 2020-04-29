@@ -131,6 +131,7 @@ void Simulator::runSimulation() {
     }
     if (err_detected) // Errors found, err_file should be created
         fillSimErrors();
+    createResultsFile();
 }
 
 // TODO: Check if this counts as an algorithm error
@@ -521,4 +522,9 @@ void Simulator::fillSimErrors() {
         }
         err_file.writeCell("", true);
     }
+}
+
+void Simulator::printSimulationDetails(){ // TODO: need to handle when no output directory is given
+    printCSVFile(this->rootDir + std::filesystem::path::preferred_separator + "simulation.errors.csv");
+    printCSVFile(this->rootDir + std::filesystem::path::preferred_separator + "simulation.results.csv");
 }

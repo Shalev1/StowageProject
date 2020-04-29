@@ -31,6 +31,8 @@ bool isNumber(const string & s);
  */
 int string2int(const string& s);
 
+bool printCSVFile(const string &file_path);
+
 // Class to deal with files
 class FileHandler {
 private:
@@ -38,10 +40,13 @@ private:
     string path;
     bool fail = false; // True if the file wasn't open
 public:
+    //---Constructors and Destructors---//
     FileHandler(const string &path, bool truncFlag = false); // truncFlag true means to erase the opening file in path
     FileHandler(const FileHandler &other) = delete;
     FileHandler &operator=(const FileHandler &other) = delete;
     ~FileHandler();
+
+    //---Class Functions---//
 
     bool isFailed(){
         return fail;
@@ -70,7 +75,7 @@ public:
 
     static void deleteFile(const string &path);
 
-    // TODO: Function that receives csv file and prints it beautifully on the screen
+
 };
 
 #endif //STOWAGEPROJECT_UTILS_H

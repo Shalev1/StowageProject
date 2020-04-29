@@ -103,6 +103,11 @@ public:
      * Creating an errors file containing the errors description that occured during the simulation.
      */
     void fillSimErrors();
+
+    /**
+     * Prints the simulation details.
+     */
+    void printSimulationDetails();
 };
 
 #endif //STOWAGEPROJECT_SIMULATOR_H
