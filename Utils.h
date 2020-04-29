@@ -69,6 +69,8 @@ public:
             int moveFloor = -1, int moveX = -1, int moveY = -1);
 
     static void deleteFile(const string &path);
+
+    // TODO: Function that receives csv file and prints it beautifully on the screen
 };
 
 #endif //STOWAGEPROJECT_UTILS_H
