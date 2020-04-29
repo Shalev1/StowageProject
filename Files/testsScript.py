@@ -42,9 +42,13 @@ def makeTest(name, num_travels, num_ports, num_containers):
             route.write(ports[i] + '\n')
         route.close()
         portsFiles = []
+        ports_num_visits = {}
         for i in range(num_ports - 1):
-            t = open(os.path.join(path, ports[i]) + '_' + str(i) + '.cargo_data.csv', 'w')
-            portsFiles.append(os.path.join(path, ports[i]) + '_' + str(i) + '.cargo_data.csv')
+            ports_num_visits[ports[i]] = 1
+        for i in range(num_ports - 1):
+            t = open(os.path.join(path, ports[i]) + '_' + str(ports_num_visits[ports[i]]) + '.cargo_data.csv', 'w')
+            portsFiles.append(os.path.join(path, ports[i]) + '_' + str(ports_num_visits[ports[i]]) + '.cargo_data.csv')
+            ports_num_visits[ports[i]] += 1
             t.close()
         for i in range(num_containers):
             name = make()
@@ -55,4 +59,4 @@ def makeTest(name, num_travels, num_ports, num_containers):
             t.close()
 
 
-makeTest('sim', 25, 6, 15)
+makeTest('tests', 20, 6, 15)
