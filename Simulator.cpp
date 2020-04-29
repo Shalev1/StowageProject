@@ -298,7 +298,7 @@ void removeUnloadedContainer(map<string, Container *> &unloaded_containers, Cont
 }
 
 int getFarthestDestOfContainerIndex(vector<Container *> conts) {
-    int max_ind;
+    int max_ind = -1;
     for (int i = 0; i < (int) conts.size(); ++i) {
         if (conts[i]->getSpotInFloor() != nullptr) {                // find a container that was loaded on the ship
             max_ind = i; // i is always being raised
@@ -308,12 +308,12 @@ int getFarthestDestOfContainerIndex(vector<Container *> conts) {
 }
 
 bool checkSortedContainers(vector<Container *> conts, Route *travel, const string &cont_id) {
-    int max_index;
+    int farthest_port_num;
     travel->sortContainersByDestination(conts);
-    max_index = getFarthestDestOfContainerIndex(
+    farthest_port_num = getFarthestDestOfContainerIndex(
             conts); // get the maximal index of a container that was load to the ship.
     if (distance(conts.begin(), find(conts.begin(), conts.end(), Port::getContainerByIDFrom(conts, cont_id))) <
-        max_index) { // The left side of the statement is just to find cont_id's index in conts
+            farthest_port_num) { // The left side of the statement is just to find cont_id's index in conts
         return false;
     }
     return true;
