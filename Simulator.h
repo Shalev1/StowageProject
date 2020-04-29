@@ -42,8 +42,8 @@ public:
      * Performs the instructions at the given instructions file while validating the algorithm decisions.
      */
     void
-    implementInstructions(FileHandler &err_file, ShipPlan &ship, Route *travel, const WeightBalanceCalculator &calc,
-                          const string &instruction_file, int &num_of_operations);
+    implementInstructions(ShipPlan &ship, Route *travel, const WeightBalanceCalculator &calc,
+                          const string &instruction_file, int &num_of_operations, int num_of_algo);
 
     /**
      * Validates the instruction format.
@@ -54,27 +54,27 @@ public:
      * Validates a load instruction.
      */
     bool
-    validateLoadOp(FileHandler &err_file, ShipPlan &ship, const WeightBalanceCalculator &calc, int floor_num, int x,
+    validateLoadOp(int num_of_algo, ShipPlan &ship, const WeightBalanceCalculator &calc, int floor_num, int x,
                    int y, const Container *cont);
 
     /**
      * Validates a unload instruction.
      */
     bool
-    validateUnloadOp(FileHandler &err_file, ShipPlan &ship, const WeightBalanceCalculator &calc, int floor_num, int x,
+    validateUnloadOp(int num_of_algo, ShipPlan &ship, const WeightBalanceCalculator &calc, int floor_num, int x,
                      int y, const string &cont_id);
 
     /**
      * Validates a move instruction.
      */
     bool
-    validateMoveOp(FileHandler &err_file, ShipPlan &ship, const WeightBalanceCalculator &calc, int source_floor_num,
+    validateMoveOp(int num_of_algo, ShipPlan &ship, const WeightBalanceCalculator &calc, int source_floor_num,
                    int source_x, int source_y, int dest_floor_num, int dest_x, int dest_y, const string &cont_id);
 
     /**
      * Validates a reject instruction.
      */
-    bool validateRejectOp(FileHandler &err_file, ShipPlan &ship, Route *travel, const WeightBalanceCalculator &calc,
+    bool validateRejectOp(int num_of_algo, ShipPlan &ship, Route *travel, const WeightBalanceCalculator &calc,
                                 int floor_num, int x, int y, const string &cont_id, bool &has_potential_to_be_loaded);
 
     /**
@@ -82,7 +82,7 @@ public:
      */
     void
     checkRemainingContainers(map<string, Container *> unloaded_containers, map<string, Container *> rejected_containers,
-                             Port &curr_port, Route *travel, FileHandler &err_file, int num_free_spots);
+                             Port &curr_port, Route *travel, int num_of_algo, int num_free_spots);
 
     /**
      * Checks that there was no containers left on the ship destinated for the given port.
@@ -98,6 +98,11 @@ public:
      * Calculating the sum of the operations and write it to the result file.
      */
     void addSumColumn();
+
+    /**
+     * Creating an errors file containing the errors description that occured during the simulation.
+     */
+    void fillSimErrors();
 };
 
 #endif //STOWAGEPROJECT_SIMULATOR_H

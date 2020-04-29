@@ -25,8 +25,7 @@ bool validateTravelFolder(std::filesystem::directory_entry entry) {
 
 void Simulator::runSimulation() {
     int num_of_algo = 1;
-    //FileHandler err_file(this->rootDir + std::filesystem::path::preferred_separator + "simulation.errors.csv", true);
-    if (err_file.isFailed()) { // need to make general function to validate root directory
+    if (false) { // TODO: need to make general function to validate root directory
         cout << "ERROR: Can't find root directory path." << endl;
         return;
     }
@@ -37,7 +36,6 @@ void Simulator::runSimulation() {
         WeightBalanceCalculator calc;
         int num_of_operations, num_of_errors = 0;
         Algorithm *algo;
-
         vector<string> new_res_row;
         statistics.push_back(new_res_row);
         statistics[num_of_algo].push_back("Algorithm ." + to_string(num_of_algo));
@@ -105,7 +103,7 @@ void Simulator::runSimulation() {
                 instruction_file = travel_dir.path().string();
                 instruction_file = instruction_file + std::filesystem::path::preferred_separator + "instructions.csv";
                 algo->getInstructionsForCargo(travel->getCurrentPort().getWaitingContainers(), instruction_file);
-                this->implementInstructions(err_file, *ship, travel, calc, instruction_file, num_of_operations);
+                this->implementInstructions(*ship, travel, calc, instruction_file, num_of_operations, num_of_algo);
                 this->checkMissedContainers(ship, travel->getCurrentPort().getName());
                 travel->clearCurrentPort();
             }
@@ -127,17 +125,15 @@ void Simulator::runSimulation() {
                 statistics[num_of_algo].push_back(to_string(num_of_operations));
             }
         }
-        if (num_of_algo == 1) statistics[0].push_back("Num Errors"); // creating a travel column
+        if (num_of_algo == 1) statistics[0].push_back("Num Errors"); // creating a Num Errors column
         statistics[num_of_algo].push_back(to_string(num_of_errors));
-        err_file.writeCell("", true);
         num_of_algo++;
     }
-    if (!err_detected) // No errors found, err_file should not be created
-        FileHandler::deleteFile("simulation.errors.csv");
-    else
-        fillAlgoErrors(err_file, err_file);
+    if (err_detected) // Errors found, err_file should be created
+        fillSimErrors();
 }
 
+// TODO: Check if this counts as an algorithm error
 bool Simulator::validateInstruction(const vector<string> &instructions) { // Check if the text line is legal
     if (instructions.size() == 5) { // May be 'L' 'U' or 'R' instruction
         if (instructions[0] != "L" && instructions[0] != "U" && instructions[0] != "R")
@@ -160,43 +156,43 @@ bool Simulator::validateInstruction(const vector<string> &instructions) { // Che
 }
 
 bool
-Simulator::validateLoadOp(FileHandler &err_file, ShipPlan &ship, const WeightBalanceCalculator &calc, int floor_num,
+Simulator::validateLoadOp(int num_of_algo, ShipPlan &ship, const WeightBalanceCalculator &calc, int floor_num,
                           int x, int y, const Container *cont) {
     Spot *pos, *pos_below;
     // Spot validation
     if (!ship.spotInRange(x, y) || floor_num < 0 || floor_num >= ship.getNumOfDecks()) {
-        err_file.writeCell("Load a container in Out-Of-Range position.");
+        errors[num_of_algo].push_back("Load a container in Out-Of-Range position.");
         return false;
     }
     if (ship.isFull()) {
-        err_file.writeCell("Load a container in a full ship.");
+        errors[num_of_algo].push_back("Load a container in a full ship.");
         return false; // Ship is full!
     }
     pos = ship.getSpotAt(floor_num, x, y);
     if (!pos->getAvailable() || pos->getContainer() != nullptr) {
-        err_file.writeCell("Load a container in an unavailable spot.");
+        errors[num_of_algo].push_back("Load a container in an unavailable spot.");
         return false;
     }
     //Container validation
     if (cont == nullptr || cont->getSpotInFloor() !=
                            nullptr) { // check if the container was on the port's list of containers to load, or in the reload list
-        err_file.writeCell("Load an unavailable container.");
+        errors[num_of_algo].push_back("Load an unavailable container.");
         return false;
     }
     if (!calc.weightCheck(ship, *cont)) {
-        err_file.writeCell("Load a container that's too heavy.");
+        errors[num_of_algo].push_back("Load a container that's too heavy.");
         return false;
     }
     // Structural validation
     if (!calc.balanceTest(ship, *cont, *pos)) {
-        err_file.writeCell("Load a container that un-balances the ship.");
+        errors[num_of_algo].push_back("Load a container that un-balances the ship.");
         return false;
     }
     if (floor_num != 0) {
         pos_below = ship.getSpotAt(floor_num - 1, x, y);
         if (pos_below->getAvailable() &&
             pos_below->getContainer() == nullptr) { // check if there is no container at the floor below
-            err_file.writeCell("Load a container in a spot that's above an empty spot.");
+            errors[num_of_algo].push_back("Load a container in a spot that's above an empty spot.");
             return false;
         }
     }
@@ -204,78 +200,78 @@ Simulator::validateLoadOp(FileHandler &err_file, ShipPlan &ship, const WeightBal
 }
 
 bool
-Simulator::validateUnloadOp(FileHandler &err_file, ShipPlan &ship, const WeightBalanceCalculator &calc, int floor_num,
+Simulator::validateUnloadOp(int num_of_algo, ShipPlan &ship, const WeightBalanceCalculator &calc, int floor_num,
                             int x, int y, const string &cont_id) {
     Spot *pos, *pos_above;
     // Spot validation
     if (!ship.spotInRange(x, y) || floor_num < 0 || floor_num >= ship.getNumOfDecks()) {
-        err_file.writeCell("Unload a container from Out-Of-Range position.");
+        errors[num_of_algo].push_back("Unload a container from Out-Of-Range position.");
         return false;
     }
     pos = ship.getSpotAt(floor_num, x, y);
     if (!pos->getAvailable() || (pos->getAvailable() && pos->getContainer() == nullptr)) {
-        err_file.writeCell("Unload a container from an unavailable or empty spot.");
+        errors[num_of_algo].push_back("Unload a container from an unavailable or empty spot.");
         return false;
     }
     Container *cont = pos->getContainer();
     //Container validation
     if (cont_id != cont->getID()) {
-        err_file.writeCell("Unload a container that isn't in the given spot.");
+        errors[num_of_algo].push_back("Unload a container that isn't in the given spot.");
         return false;
     }
     // Structural validation
     if (!calc.balanceTest(ship, *cont, *pos)) {
-        err_file.writeCell("Unload a container from from the ship unbalance it.");
+        errors[num_of_algo].push_back("Unload a container from from the ship unbalance it.");
         return false;
     } else if (floor_num != ship.getNumOfDecks() - 1) {
         pos_above = ship.getSpotAt(floor_num + 1, x, y);
         if (pos_above->getContainer() != nullptr) { // check if there is a container at the floor above
-            err_file.writeCell("Unload a container while there's a container above it.");
+            errors[num_of_algo].push_back("Unload a container while there's a container above it.");
             return false;
         }
     }
     return true;
 }
 
-bool Simulator::validateMoveOp(FileHandler &err_file, ShipPlan &ship, const WeightBalanceCalculator &calc,
+bool Simulator::validateMoveOp(int num_of_algo, ShipPlan &ship, const WeightBalanceCalculator &calc,
                                int source_floor_num, int source_x, int source_y, int dest_floor_num, int dest_x,
                                int dest_y, const string &cont_id) {
     Spot *source_pos, *dest_pos, *pos_above, *pos_below;
     // Spots validation
     if (!ship.spotInRange(source_x, source_y) || source_floor_num < 0 || source_floor_num >= ship.getNumOfDecks() ||
         !ship.spotInRange(dest_x, dest_y) || dest_floor_num < 0 || dest_floor_num >= ship.getNumOfDecks()) {
-        err_file.writeCell("Move a container using Out-Of-Range position.");
+        errors[num_of_algo].push_back("Move a container using Out-Of-Range position.");
         return false;
     }
     source_pos = ship.getSpotAt(source_floor_num, source_x, source_y);
     dest_pos = ship.getSpotAt(dest_floor_num, dest_x, dest_y);
     if (source_pos->getAvailable() || source_pos->getContainer() == nullptr ||
         dest_pos->getAvailable() || dest_pos->getContainer() != nullptr) {
-        err_file.writeCell("Move a container using unavailable spot.");
+        errors[num_of_algo].push_back("Move a container using unavailable spot.");
         return false;
     }
     Container *cont = source_pos->getContainer();
     //Container validation
     if (cont_id != cont->getID()) {
-        err_file.writeCell("Move a container that isn't in the given spot.");
+        errors[num_of_algo].push_back("Move a container that isn't in the given spot.");
         return false;
     }
     // Structural validation
     if (!calc.balanceTest(ship, *cont, *dest_pos)) {
-        err_file.writeCell("Move a container cause the ship to unbalance.");
+        errors[num_of_algo].push_back("Move a container cause the ship to unbalance.");
         return false;
     } else {
         if (source_floor_num != ship.getNumOfDecks() - 1) {
             pos_above = ship.getSpotAt(source_floor_num + 1, source_x, source_y);
             if (pos_above->getContainer() != nullptr) { // check if there is a container at the floor above
-                err_file.writeCell("Move a container while there's a container above it.");
+                errors[num_of_algo].push_back("Move a container while there's a container above it.");
                 return false;
             }
             if (dest_floor_num != 0) {
                 pos_below = ship.getSpotAt(dest_floor_num - 1, dest_x, dest_y);
                 if (pos_below->getAvailable() &&
                     pos_below->getContainer() == nullptr) { // check if there is no container at the floor below
-                    err_file.writeCell("Move a container to a spot that's above an empty spot.");
+                    errors[num_of_algo].push_back("Move a container to a spot that's above an empty spot.");
                     return false;
                 }
             }
@@ -285,7 +281,7 @@ bool Simulator::validateMoveOp(FileHandler &err_file, ShipPlan &ship, const Weig
 }
 
 bool
-Simulator::validateRejectOp(FileHandler &err_file, ShipPlan &ship, Route *travel, const WeightBalanceCalculator &calc,
+Simulator::validateRejectOp(int num_of_algo, ShipPlan &ship, Route *travel, const WeightBalanceCalculator &calc,
                             int floor_num, int x, int y, const string &cont_id, bool &has_potential_to_be_loaded) {
     Container *cont;
     if (!Container::validateID(cont_id, false)) {
@@ -294,16 +290,16 @@ Simulator::validateRejectOp(FileHandler &err_file, ShipPlan &ship, Route *travel
     cont = travel->getCurrentPort().getWaitingContainerByID(cont_id);
     //Container validation
     if (cont == nullptr) {
-        err_file.writeCell("Reject a container that wasn't provided by the port.");
+        errors[num_of_algo].push_back("Reject a container that wasn't provided by the port.");
         return false; // Given id_cont is not in the waiting list
     }
     if (cont->getSpotInFloor() != nullptr) { // The container was loaded though reported rejected.
-        err_file.writeCell("Reject a container that was already loaded.");
+        errors[num_of_algo].push_back("Reject a container that was already loaded.");
         return false;
     } else if (calc.weightCheck(ship, *cont) && travel->isInRoute(cont->getDestPort()) &&
                travel->getCurrentPort().getName() != cont->getDestPort()) {
         if (ship.getNumOfFreeSpots() > 0) {
-            err_file.writeCell("Reject a container although it can be loaded correctly.");
+            errors[num_of_algo].push_back("Reject a container although it can be loaded correctly.");
             return false;
         }
         has_potential_to_be_loaded = true;
@@ -344,23 +340,24 @@ bool checkSortedContainers(vector<Container *> conts, Route *travel, const strin
 
 void Simulator::checkRemainingContainers(map<string, Container *> unloaded_containers,
                                          map<string, Container *> rejected_containers, Port &curr_port, Route *travel,
-                                         FileHandler &err_file, int num_free_spots) {
+                                         int num_of_algo, int num_free_spots) {
     for (const auto &entry : unloaded_containers) {
         if (curr_port.getWaitingContainerByID(entry.first) != nullptr) {
             // In case the container was from the port
             if (rejected_containers.find(entry.first) !=
                 rejected_containers.end()) { // check if the container was also rejected
                 if (num_free_spots != 0) {
-                    err_file.writeCell("Rejected a container although it can be loaded correctly.");
+                    errors[num_of_algo].push_back("Rejected a container although it can be loaded correctly.");
                 } else if (!checkSortedContainers(curr_port.getWaitingContainers(), travel,
                                                   entry.first)) { // check if the container was rejected mistakenly
-                    err_file.writeCell(
+                    errors[num_of_algo].push_back(
                             "Rejected a container while another container was loaded and it's destination port is further.");
                 }
             } // <<< it is not possible to reach the else statement of that if
         } else { // In case the container was from the ship
             if (entry.second->getDestPort() != curr_port.getName()) { // The wrong container got unloaded!
-                err_file.writeCell("A container was left in a port that's different from container's destination.");
+                errors[num_of_algo].push_back(
+                        "A container was left in a port that's different from container's destination.");
             }
         }
     }
@@ -378,9 +375,9 @@ void deleteRemainingContainers(map<string, Container *> &unloaded_containers,
     unloaded_containers.clear();
 }
 
-void Simulator::implementInstructions(FileHandler &err_file, ShipPlan &ship, Route *travel,
+void Simulator::implementInstructions(ShipPlan &ship, Route *travel,
                                       const WeightBalanceCalculator &calc, const string &instruction_file,
-                                      int &num_of_operations) {
+                                      int &num_of_operations, int num_of_algo) {
     FileHandler file(instruction_file);
     vector<string> instruction;
     Container *cont_to_load;
@@ -410,7 +407,7 @@ void Simulator::implementInstructions(FileHandler &err_file, ShipPlan &ship, Rou
         y = string2int(instruction[4]);
         switch (command) {
             case L: {
-                if (!validateLoadOp(err_file, ship, calc, floor_num, x, y, cont_to_load)) {
+                if (!validateLoadOp(num_of_algo, ship, calc, floor_num, x, y, cont_to_load)) {
                     this->err_in_travel = true;
                     return;
                     // break; //Will be used in ex.2
@@ -422,7 +419,7 @@ void Simulator::implementInstructions(FileHandler &err_file, ShipPlan &ship, Rou
                 break;
             }
             case U: {
-                if (!validateUnloadOp(err_file, ship, calc, floor_num, x, y, instruction[1])) {
+                if (!validateUnloadOp(num_of_algo, ship, calc, floor_num, x, y, instruction[1])) {
                     this->err_in_travel = true;
                     return;
                     // break; //Will be used in ex.2
@@ -436,7 +433,7 @@ void Simulator::implementInstructions(FileHandler &err_file, ShipPlan &ship, Rou
                 break;
             }
             case M: {
-                if (!validateMoveOp(err_file, ship, calc, floor_num, x, y, string2int(instruction[5]),
+                if (!validateMoveOp(num_of_algo, ship, calc, floor_num, x, y, string2int(instruction[5]),
                                     string2int(instruction[6]), string2int(instruction[7]), instruction[1])) {
                     this->err_in_travel = true;
                     return;
@@ -450,7 +447,7 @@ void Simulator::implementInstructions(FileHandler &err_file, ShipPlan &ship, Rou
             }
             case R: {
                 bool has_potential_to_be_loaded = false;
-                if (!validateRejectOp(err_file, ship, travel, calc, floor_num, x, y, instruction[1],
+                if (!validateRejectOp(num_of_algo, ship, travel, calc, floor_num, x, y, instruction[1],
                                       has_potential_to_be_loaded)) {
                     this->err_in_travel = true;
                     return;
@@ -468,7 +465,7 @@ void Simulator::implementInstructions(FileHandler &err_file, ShipPlan &ship, Rou
             }
         }
     }
-    checkRemainingContainers(unloaded_containers, rejected_containers, *current_port, travel, err_file,
+    checkRemainingContainers(unloaded_containers, rejected_containers, *current_port, travel, num_of_algo,
                              ship.getNumOfFreeSpots());
     // Delete the remaining containers at unloaded+rejected.
     deleteRemainingContainers(unloaded_containers, rejected_containers);
@@ -476,7 +473,7 @@ void Simulator::implementInstructions(FileHandler &err_file, ShipPlan &ship, Rou
 
 void Simulator::checkMissedContainers(ShipPlan *ship, const string &port_name) {
     vector<Container *> conts = ship->getContainersForDest(port_name);
-    if ((int) conts.size() > 0) {
+    if ((int) conts.size() > 0) { // TODO: Should this be an algorithm error?
         cout << "WARNING: There are some containers that were not unloaded at their destination port." << endl;
     }
 }
@@ -512,4 +509,19 @@ void Simulator::createResultsFile() {
     }
 }
 
-void printIntoFile()
+void Simulator::fillSimErrors() {
+    FileHandler err_file(this->rootDir + std::filesystem::path::preferred_separator + "simulation.errors.csv", true);
+    if (err_file.isFailed()) {
+        return;
+    }
+    for (int i = 0; i < (int) errors.size(); ++i) {
+        if ((int) errors[i].size() == 1) {
+            // No errors found for this algorithm, skip to the next one
+            continue;
+        }
+        for (int j = 0; j < (int) errors[i].size(); ++j) {
+            err_file.writeCell(errors[i][j]);
+        }
+        err_file.writeCell("", true);
+    }
+}
