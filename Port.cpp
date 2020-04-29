@@ -85,12 +85,12 @@ void Port::initWaitingContainers(const string &path)
     }
 }
 
-Container *Port::getWaitingContainerByID(const string &id) const
+Container *Port::getWaitingContainerByID(const string &id)
 {
     return Port::getContainerByIDFrom(waitingContainers, id);
 }
 
-Container *Port::getContainerByIDFrom(vector<Container *> containers, const string &id)
+Container *Port::getContainerByIDFrom(const vector<Container*>& containers, const string &id)
 {
     for (auto cont : containers)
     {
