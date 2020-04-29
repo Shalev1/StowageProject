@@ -14,7 +14,7 @@
 class Route {
 private:
     int currentPortNum; // current port number in ports, initialize to -1 until start moving
-    vector<Port *> ports; // The destination in the current route
+    vector<Port> ports; // The destination in the current route
     string dir; // The directory of the files
     vector<string> portsContainersPaths; // Contain relative paths to the containers files, that have not used yet
 
@@ -25,8 +25,6 @@ private:
 
 public:
     explicit Route(const string &path);
-
-    ~Route();
 
     /**
      * Sort the given paths for containers files base on the asked sorting formula
@@ -48,13 +46,13 @@ public:
     bool moveToNextPort();
 
     Port &getCurrentPort() {
-        return *(ports[currentPortNum]);
+        return ports[currentPortNum];
     }
 
     /**
      * Get the closer destination in the route between the two given ones
      */
-    const string getCloserDestination(const string &d1, const string &d2);
+    string getCloserDestination(const string &d1, const string &d2);
 
     /**
      * Check if port is in the route (searching from the current port)
