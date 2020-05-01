@@ -103,6 +103,10 @@ bool printCSVFile(const string &file_path) {
     return true;
 }
 
+bool dirExists(const string &p){
+    return std::filesystem::is_directory(std::filesystem::path(p));
+}
+
 //---FileHandler Functions---//
 FileHandler::FileHandler(const string &path, bool truncFlag) : fs(), path(path) {
     if (truncFlag) {
@@ -140,7 +144,7 @@ void FileHandler::writeCell(const string &cell, bool nextLine) {
     if (!nextLine) {
         fs << cell << ",";
     } else {
-        fs << "\n";
+        fs << cell << "\n";
     }
 }
 

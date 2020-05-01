@@ -4,12 +4,15 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <filesystem>
+
 
 using std::cout;
 using std::string;
 using std::fstream;
 using std::vector;
 using std::endl;
+
 
 /**
  * Return the given string as tokens in @param tokens using @param delimiter as the delimiter
@@ -32,6 +35,8 @@ bool isNumber(const string & s);
 int string2int(const string& s);
 
 bool printCSVFile(const string &file_path);
+
+bool dirExists(const string &p);
 
 // Class to deal with files
 class FileHandler {

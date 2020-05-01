@@ -3,7 +3,6 @@
 
 #include <string>
 #include <iostream>
-#include <filesystem>
 #include <map>
 #include "ShipPlan.h"
 #include "Route.h"
@@ -19,11 +18,13 @@ using std::to_string;
 //---Main class---//
 class Simulator {
 private:
-    string rootDir;
+    string output_dir_path;
     bool err_in_travel;
     bool err_detected;
     vector<vector<string>> statistics;
     vector<vector<string>> errors;
+    string curr_travel_name;
+    string curr_port_name;
 
 public:
     //---Constructors and Destructors---//
@@ -36,7 +37,7 @@ public:
     /**
      * Main function that runs the simulation.
      */
-    void runSimulation();
+    void runSimulation(string algorithm_path, string output_path);
 
     /**
      * Performs the instructions at the given instructions file while validating the algorithm decisions.
@@ -87,7 +88,7 @@ public:
     /**
      * Checks that there was no containers left on the ship destinated for the given port.
      */
-    void checkMissedContainers(ShipPlan *ship, const string &port_name);
+    void checkMissedContainers(ShipPlan *ship, const string &port_name, int num_of_algo);
 
     /**
      * Creating a results file containing the number of operations performed in each travel for eavh algorithm.
