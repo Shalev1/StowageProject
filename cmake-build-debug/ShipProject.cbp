@@ -80,6 +80,9 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/AbstractAlgorithm.h">
+			<Option target="ShipProject"/>
+		</Unit>
 		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/Algorithm.cpp">
 			<Option target="ShipProject"/>
 		</Unit>
