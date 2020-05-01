@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/ShipProject.dir/Algorithm.cpp.obj"
   "CMakeFiles/ShipProject.dir/AlgorithmReverse.cpp.obj"
+  "CMakeFiles/ShipProject.dir/BaseAlgorithm.cpp.obj"
   "CMakeFiles/ShipProject.dir/Container.cpp.obj"
   "CMakeFiles/ShipProject.dir/Floor.cpp.obj"
   "CMakeFiles/ShipProject.dir/Port.cpp.obj"

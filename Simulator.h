@@ -7,7 +7,7 @@
 #include <map>
 #include "ShipPlan.h"
 #include "Route.h"
-#include "Algorithm.h"
+#include "BaseAlgorithm.h"
 #include "AlgorithmReverse.h"
 #include "Utils.h"
 
@@ -90,7 +90,7 @@ public:
     void checkMissedContainers(ShipPlan *ship, const string &port_name);
 
     /**
-     * Creating a results file containing the number of operations performed in each travel for eavh algorithm.
+     * Creating a results file containing the number of operations performed in each travel for each algorithm.
      */
     void createResultsFile();
 

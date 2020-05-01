@@ -35,7 +35,7 @@ void Simulator::runSimulation() {
         string plan_path, travel_path;
         WeightBalanceCalculator calc;
         int num_of_operations, num_of_errors = 0;
-        Algorithm *algo;
+        BaseAlgorithm *algo;
         vector<string> new_res_row;
         statistics.push_back(new_res_row);
         statistics[num_of_algo].push_back("Algorithm ." + to_string(num_of_algo));
@@ -92,7 +92,7 @@ void Simulator::runSimulation() {
             //SIMULATION
             switch (num_of_algo) {
                 case 1:
-                    algo = new Algorithm(*ship, travel, &calc);
+                    algo = new BaseAlgorithm(*ship, travel, &calc);
                     break;
                 case 2:
                     algo = new AlgorithmReverse(*ship, travel, &calc);
@@ -388,7 +388,7 @@ void Simulator::implementInstructions(ShipPlan &ship, Route *travel,
             cout << "WARNING: Skipping an invalid instruction, continue to the next one." << endl;
             continue;
         }
-        iType command = Algorithm::dic.at(instruction[0]);
+        iType command = BaseAlgorithm::dic.at(instruction[0]);
         if (command != R) {
             if (!Container::validateID(instruction[1], false)) {
                 cout << "WARNING: Skipping an invalid instruction, continue to the next one." << endl;

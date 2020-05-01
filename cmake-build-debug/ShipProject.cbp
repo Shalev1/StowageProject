@@ -83,16 +83,16 @@
 		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/AbstractAlgorithm.h">
 			<Option target="ShipProject"/>
 		</Unit>
-		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/Algorithm.cpp">
-			<Option target="ShipProject"/>
-		</Unit>
-		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/Algorithm.h">
-			<Option target="ShipProject"/>
-		</Unit>
 		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/AlgorithmReverse.cpp">
 			<Option target="ShipProject"/>
 		</Unit>
 		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/AlgorithmReverse.h">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/BaseAlgorithm.cpp">
+			<Option target="ShipProject"/>
+		</Unit>
+		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/BaseAlgorithm.h">
 			<Option target="ShipProject"/>
 		</Unit>
 		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/Container.cpp">

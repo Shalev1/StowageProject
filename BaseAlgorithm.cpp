@@ -1,8 +1,8 @@
-#include "Algorithm.h"
+#include "BaseAlgorithm.h"
 
-void Algorithm::getInstructionsForCargo(vector<Container *> &loadContainers, const string &instructionsFilePath) {
+void BaseAlgorithm::getInstructionsForCargo(vector<Container *> &loadContainers, const string &instructionsFilePath) {
     vector<Container *> algoContainers;
-    // Copy the given Containers, algorithm use its own copy
+    // Copy the given Containers, Algorithm use its own copy
     for (int i = 0; i < (int) loadContainers.size(); i++) {
         Container *c = new Container(*loadContainers[i]);
         algoContainers.push_back(c);
@@ -40,7 +40,7 @@ void Algorithm::getInstructionsForCargo(vector<Container *> &loadContainers, con
     }
 }
 
-void Algorithm::getUnloadInstructions(const string &portName, vector<Container *> &reloadContainers,
+void BaseAlgorithm::getUnloadInstructions(const string &portName, vector<Container *> &reloadContainers,
                                       FileHandler &instructionsFile) {
     Container *container_to_unload;
     // Iterate ship from top to the bottom
@@ -60,13 +60,13 @@ void Algorithm::getUnloadInstructions(const string &portName, vector<Container *
     }
 }
 
-void Algorithm::getReloadInstructions(vector<Container *> &reload_containers, FileHandler &instructionsFile) {
+void BaseAlgorithm::getReloadInstructions(vector<Container *> &reload_containers, FileHandler &instructionsFile) {
     for (size_t i = 0; i < reload_containers.size(); ++i) {
         findLoadingSpot(reload_containers[i], instructionsFile);
     }
 }
 
-Spot *Algorithm::getEmptySpot(int &returnFloorNum) {
+Spot *BaseAlgorithm::getEmptySpot(int &returnFloorNum) {
     for (int floor_num = 0; floor_num < ship.getNumOfDecks(); ++floor_num) {
         //Iterate over the current floor's floor map
         for (int x = 0; x < ship.getShipRows(); ++x) {
@@ -83,7 +83,7 @@ Spot *Algorithm::getEmptySpot(int &returnFloorNum) {
     return nullptr;
 }
 
-void Algorithm::findLoadingSpot(Container *cont, FileHandler &instructionsFile) {
+void BaseAlgorithm::findLoadingSpot(Container *cont, FileHandler &instructionsFile) {
     int floorNum;
     Spot *empty_spot = getEmptySpot(floorNum);
     if (empty_spot == nullptr) {
@@ -114,7 +114,7 @@ void Algorithm::findLoadingSpot(Container *cont, FileHandler &instructionsFile) 
     ship.insertContainer(empty_spot, *cont);
 }
 
-void Algorithm::markRemoveContainers(Container &cont, Spot &spot, vector<Container *> &reload_containers,
+void BaseAlgorithm::markRemoveContainers(Container &cont, Spot &spot, vector<Container *> &reload_containers,
                                      FileHandler &instructionsFile) {
     int curr_floor_num = ship.getNumOfDecks() - 1;
     string curr_dest = cont.getDestPort();

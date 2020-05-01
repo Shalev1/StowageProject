@@ -199,18 +199,18 @@ CMakeFiles/ShipProject.dir/Simulator.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/ShipProject.dir/Simulator.cpp.s"
 	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\tomer\CLionProjects\ShipProject\Simulator.cpp -o CMakeFiles\ShipProject.dir\Simulator.cpp.s
 
-CMakeFiles/ShipProject.dir/Algorithm.cpp.obj: CMakeFiles/ShipProject.dir/flags.make
-CMakeFiles/ShipProject.dir/Algorithm.cpp.obj: ../Algorithm.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/ShipProject.dir/Algorithm.cpp.obj"
-	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\ShipProject.dir\Algorithm.cpp.obj -c C:\Users\tomer\CLionProjects\ShipProject\Algorithm.cpp
+CMakeFiles/ShipProject.dir/BaseAlgorithm.cpp.obj: CMakeFiles/ShipProject.dir/flags.make
+CMakeFiles/ShipProject.dir/BaseAlgorithm.cpp.obj: ../BaseAlgorithm.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/ShipProject.dir/BaseAlgorithm.cpp.obj"
+	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\ShipProject.dir\BaseAlgorithm.cpp.obj -c C:\Users\tomer\CLionProjects\ShipProject\BaseAlgorithm.cpp
 
-CMakeFiles/ShipProject.dir/Algorithm.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/ShipProject.dir/Algorithm.cpp.i"
-	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\tomer\CLionProjects\ShipProject\Algorithm.cpp > CMakeFiles\ShipProject.dir\Algorithm.cpp.i
+CMakeFiles/ShipProject.dir/BaseAlgorithm.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/ShipProject.dir/BaseAlgorithm.cpp.i"
+	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\tomer\CLionProjects\ShipProject\BaseAlgorithm.cpp > CMakeFiles\ShipProject.dir\BaseAlgorithm.cpp.i
 
-CMakeFiles/ShipProject.dir/Algorithm.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/ShipProject.dir/Algorithm.cpp.s"
-	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\tomer\CLionProjects\ShipProject\Algorithm.cpp -o CMakeFiles\ShipProject.dir\Algorithm.cpp.s
+CMakeFiles/ShipProject.dir/BaseAlgorithm.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/ShipProject.dir/BaseAlgorithm.cpp.s"
+	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\tomer\CLionProjects\ShipProject\BaseAlgorithm.cpp -o CMakeFiles\ShipProject.dir\BaseAlgorithm.cpp.s
 
 CMakeFiles/ShipProject.dir/WeightBalanceCalculator.cpp.obj: CMakeFiles/ShipProject.dir/flags.make
 CMakeFiles/ShipProject.dir/WeightBalanceCalculator.cpp.obj: ../WeightBalanceCalculator.cpp
@@ -251,7 +251,7 @@ ShipProject_OBJECTS = \
 "CMakeFiles/ShipProject.dir/Floor.cpp.obj" \
 "CMakeFiles/ShipProject.dir/SimTest.cpp.obj" \
 "CMakeFiles/ShipProject.dir/Simulator.cpp.obj" \
-"CMakeFiles/ShipProject.dir/Algorithm.cpp.obj" \
+"CMakeFiles/ShipProject.dir/BaseAlgorithm.cpp.obj" \
 "CMakeFiles/ShipProject.dir/WeightBalanceCalculator.cpp.obj" \
 "CMakeFiles/ShipProject.dir/AlgorithmReverse.cpp.obj"
 
@@ -269,7 +269,7 @@ ShipProject.exe: CMakeFiles/ShipProject.dir/Spot.cpp.obj
 ShipProject.exe: CMakeFiles/ShipProject.dir/Floor.cpp.obj
 ShipProject.exe: CMakeFiles/ShipProject.dir/SimTest.cpp.obj
 ShipProject.exe: CMakeFiles/ShipProject.dir/Simulator.cpp.obj
-ShipProject.exe: CMakeFiles/ShipProject.dir/Algorithm.cpp.obj
+ShipProject.exe: CMakeFiles/ShipProject.dir/BaseAlgorithm.cpp.obj
 ShipProject.exe: CMakeFiles/ShipProject.dir/WeightBalanceCalculator.cpp.obj
 ShipProject.exe: CMakeFiles/ShipProject.dir/AlgorithmReverse.cpp.obj
 ShipProject.exe: CMakeFiles/ShipProject.dir/build.make

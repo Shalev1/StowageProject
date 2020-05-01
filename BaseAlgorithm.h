@@ -1,9 +1,10 @@
-#ifndef SHIPPROJECT_ALGORITHM_H
-#define SHIPPROJECT_ALGORITHM_H
+#ifndef SHIPPROJECT_BASEALGORITHM_H
+#define SHIPPROJECT_BASEALGORITHM_H
 
 #include "Route.h"
 #include "ShipPlan.h"
 #include "WeightBalanceCalculator.h"
+#include "AbstractAlgorithm.h"
 #include <map>
 
 using std::map;
@@ -12,9 +13,9 @@ enum iType {
     L, U, M, R
 };
 
-// Base class of an algorithm, all the base function for the algorithm is virtual to
-// allow override them with other implementation of different algorithms
-class Algorithm {
+// Base class of an algorithm, all the base function for the algorithm have trivial implementations
+// and virtual to allow override them with other implementation of different algorithms
+class BaseAlgorithm {
 protected:
     ShipPlan ship;
     Route *route;
@@ -57,8 +58,8 @@ public:
                                             {"R", R}};
 
     //---Constructors and Destructors---//
-    Algorithm(const ShipPlan &plan, Route *travel, WeightBalanceCalculator *cal) : ship(plan), route(travel),
-                                                                                   weightCal(cal) {}
+    BaseAlgorithm(const ShipPlan &plan, Route *travel, WeightBalanceCalculator *cal) : ship(plan), route(travel),
+                                                                                       weightCal(cal) {}
 
     /**
      *  Fill the instructions vector with the instructions that need to do in this port.
@@ -66,7 +67,7 @@ public:
      */
     virtual void getInstructionsForCargo(vector<Container *> &loadContainers, const string &instructionsFile);
 
-    virtual ~Algorithm() = default;
+    virtual ~BaseAlgorithm() = default;
 };
 
-#endif //SHIPPROJECT_ALGORITHM_H
+#endif //SHIPPROJECT_BASEALGORITHM_H
