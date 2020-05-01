@@ -47,59 +47,23 @@ void convertFileIntoVector(FileHandler &file, vector<vector<string>> &data) {
     }
 }
 
-void fillWhiteSpaces(int word_len, int max_len) {
-    for (int i = 0; i < max_len - word_len; ++i) {
-        cout << " ";
+bool printCSVFile(const string &file_path) {
+    FileHandler file(file_path);
+    vector<vector<string>> data;
+    if(file.isFailed()){ // File didn't load succesfully
+        return false;
     }
-}
-
-void printSeperators(int max_word_len, int max_num_of_words) {
-    cout << "__";
-    for (int i = 0; i < (max_word_len * max_num_of_words) + (max_num_of_words * 2); ++i) {
-        cout << "_";
+    convertFileIntoVector(file, data);
+    for (unsigned int i = 0; i < data.size(); ++i) { // for each line
+        for (unsigned int j = 0; j < data[i].size(); ++j) {
+            if (j == data[i].size() - 1) {
+                cout << data[i][j] << '\n';
+            } else{
+                cout << data[i][j] << ',';
+            }
+        }
     }
     cout << endl;
-}
-
-void getLineStat(vector<vector<string>> &data, int &max_line_len, int &max_num_of_words, int &max_word_len) {
-    int char_counter;
-    int len;
-    for (unsigned int i = 0; i < data.size(); ++i) { // for each line
-        char_counter = 0;
-        for (unsigned int j = 0; j < data[i].size(); ++j) { // for each word in line
-            len = (int)data[i][j].length();
-            char_counter += len;
-            if (max_word_len < len) // Finds the longest word
-                max_word_len = len;
-        }
-        if(max_num_of_words < (int)data[i].size()) // Finds the highest word number in lines
-            max_num_of_words = (int)data[i].size();
-        if(max_line_len < char_counter) // Finds the longest line
-            max_line_len = char_counter;
-    }
-}
-
-bool printCSVFile(const string &file_path) {
-    FileHandler file(file_path); // TODO: need to make sure file is opened correctly
-    vector<vector<string>> data;
-    convertFileIntoVector(file, data);
-    int max_line_len = 0, max_num_of_words = 0, max_word_len = 0;
-    getLineStat(data, max_line_len, max_num_of_words, max_word_len);
-    printSeperators(max_word_len, max_num_of_words);
-    for (unsigned int i = 0; i < data.size(); ++i) { // for each line
-        cout << "||";
-        for (int j = 0; j < max_num_of_words; ++j) {
-            if (j < (int)data[i].size()) {
-                cout << data[i][j];
-                fillWhiteSpaces((int) data[i][j].length(), max_word_len);
-            } else { // There are no more words in line, print whitespaces
-                fillWhiteSpaces(0, max_word_len);
-            }
-            cout << "||";
-        }
-        cout << endl;
-        printSeperators(max_word_len, max_num_of_words);
-    }
     return true;
 }
 

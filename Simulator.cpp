@@ -23,6 +23,7 @@ bool validateTravelFolder(std::filesystem::directory_entry entry) {
     return false;
 }
 
+//Updating algorithm and output path to be the curret folder if they are missing
 bool updateInput(string &algorithm_path, string &output_path) {
     if (!algorithm_path.empty() && !dirExists(algorithm_path)) {
         cout << "FATAL ERROR: Algorithm path that was given is invalid." << endl;
@@ -429,8 +430,7 @@ void Simulator::implementInstructions(ShipPlan &ship, Route *travel,
             case L: {
                 if (!validateLoadOp(num_of_algo, ship, calc, floor_num, x, y, cont_to_load)) {
                     this->err_in_travel = true;
-                    return;
-                    // break; //Will be used in ex.2
+                    break;
                 }
                 // Load container on the ship
                 ship.insertContainer(floor_num, x, y, *cont_to_load);
@@ -441,8 +441,7 @@ void Simulator::implementInstructions(ShipPlan &ship, Route *travel,
             case U: {
                 if (!validateUnloadOp(num_of_algo, ship, calc, floor_num, x, y, instruction[1])) {
                     this->err_in_travel = true;
-                    return;
-                    // break; //Will be used in ex.2
+                    break;
                 }
                 // Unload container from the ship
                 Container *temp_cont = ship.getContainerAt(floor_num, x,
@@ -456,8 +455,7 @@ void Simulator::implementInstructions(ShipPlan &ship, Route *travel,
                 if (!validateMoveOp(num_of_algo, ship, calc, floor_num, x, y, string2int(instruction[5]),
                                     string2int(instruction[6]), string2int(instruction[7]), instruction[1])) {
                     this->err_in_travel = true;
-                    return;
-                    // break; //Will be used in ex.2
+                    break;
                 }
                 // Move container on the ship
                 ship.moveContainer(floor_num, x, y, string2int(instruction[5]), string2int(instruction[6]),
@@ -470,8 +468,7 @@ void Simulator::implementInstructions(ShipPlan &ship, Route *travel,
                 if (!validateRejectOp(num_of_algo, ship, travel, calc, floor_num, x, y, instruction[1],
                                       has_potential_to_be_loaded)) {
                     this->err_in_travel = true;
-                    return;
-                    // break; //Will be used in ex.2
+                    break;
                 }
                 Container *r_cont = current_port->getWaitingContainerByID(instruction[1]);
                 rejected_containers.insert({instruction[1], r_cont});

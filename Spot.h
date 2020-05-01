@@ -17,8 +17,6 @@ private:
 public:
     //---Constructors and Destructors---//
     Spot(int x, int y, bool available, int floor_num); //C'tor
-    Spot(const Spot &s);                               //Copy C'tor
-    Spot &operator=(const Spot &other);
 
     //---Setters and Getters---//
     pair<int, int> getPlace() const {
