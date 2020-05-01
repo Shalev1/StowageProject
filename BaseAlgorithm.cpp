@@ -1,5 +1,13 @@
 #include "BaseAlgorithm.h"
 
+int BaseAlgorithm::readShipPlan(const std::string &full_path_and_file_name) {
+
+}
+
+int BaseAlgorithm::readShipRoute(const std::string &full_path_and_file_name) {
+    route.initRouteFromFile(full_path_and_file_name);
+}
+
 void BaseAlgorithm::getInstructionsForCargo(vector<Container *> &loadContainers, const string &instructionsFilePath) {
     vector<Container *> algoContainers;
     // Copy the given Containers, Algorithm use its own copy
@@ -11,23 +19,23 @@ void BaseAlgorithm::getInstructionsForCargo(vector<Container *> &loadContainers,
     FileHandler instructionsFile(instructionsFilePath, true);
 
     // Get Unload instructions for containers with destination equals to this port
-    getUnloadInstructions(route->getCurrentPort().getName(), reloadContainers, instructionsFile);
+    getUnloadInstructions(route.getCurrentPort().getName(), reloadContainers, instructionsFile);
 
     // Get reload instructions for the reload containers
     getReloadInstructions(reloadContainers, instructionsFile);
 
     // Sort incoming containers by their destination
-    route->sortContainersByDestination(algoContainers);
+    route.sortContainersByDestination(algoContainers);
 
     for (auto it = algoContainers.begin(); it != algoContainers.end(); ++it) {
-        if ((*it)->getDestPort() == route->getCurrentPort().getName()) {
+        if ((*it)->getDestPort() == route.getCurrentPort().getName()) {
             instructionsFile.writeInstruction("R", (*it)->getID(), -1, -1, -1); // TODO: ex2 return error code
             cout << "WARNING: Container: " << (*it)->getID()
                  << " will not be loaded, its destination is the current port." << endl;
             delete *it;
             continue;
         }
-        if (!route->isInRoute((*it)->getDestPort())) {
+        if (!route.isInRoute((*it)->getDestPort())) {
             instructionsFile.writeInstruction("R", (*it)->getID(), -1, -1, -1); // TODO: ex2 return error code
             cout << "WARNING: Container: " << (*it)->getID()
                  << " will not be loaded, its destination is not a part of the remaining route." << endl;

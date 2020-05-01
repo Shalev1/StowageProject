@@ -9,24 +9,19 @@
 
 using std::map;
 
-enum iType {
-    L, U, M, R
-};
-
-// Base class of an algorithm, all the base function for the algorithm have trivial implementations
+// Base class of an algorithm, all the base functions for the algorithm have trivial implementations
 // and virtual to allow override them with other implementation of different algorithms
-class BaseAlgorithm {
+class BaseAlgorithm : AbstractAlgorithm{
 protected:
     ShipPlan ship;
-    Route *route;
-    WeightBalanceCalculator *weightCal;
+    Route route;
+    WeightBalanceCalculator weightCal;
 
     /**
      * Unload all the containers that their destination is portName
      * Also unload the containers above them and insert them to reload_containers vector
      */
-    virtual void
-    getUnloadInstructions(const string &portName, vector<Container *> &reloadContainers, FileHandler &instructionsFile);
+    virtual void getUnloadInstructions(const string &portName, vector<Container *> &reloadContainers, FileHandler &instructionsFile);
 
     /**
      * Reload all the containers that was unload to allow access to lower containers
@@ -52,20 +47,27 @@ protected:
                                       FileHandler &instructionsFile);
 
 public:
-    inline static map<string, iType> dic = {{"L", L},
-                                            {"U", U},
-                                            {"M", M},
-                                            {"R", R}};
-
-    //---Constructors and Destructors---//
-    BaseAlgorithm(const ShipPlan &plan, Route *travel, WeightBalanceCalculator *cal) : ship(plan), route(travel),
-                                                                                       weightCal(cal) {}
 
     /**
      *  Fill the instructions vector with the instructions that need to do in this port.
      *  Get the containers to be loaded in this port
      */
     virtual void getInstructionsForCargo(vector<Container *> &loadContainers, const string &instructionsFile);
+
+    /**
+     * Read the ship plan from the given file
+     */
+    virtual int readShipPlan(const std::string &full_path_and_file_name) override;
+
+    /**
+     * Read the ship route from the given file
+     */
+    virtual int readShipRoute(const std::string &full_path_and_file_name) override;
+
+    /**
+     * Set the weight balance calculator from the given one
+     */
+    virtual int setWeightBalanceCalculator(WeightBalanceCalculator &calculator) override;
 
     virtual ~BaseAlgorithm() = default;
 };
