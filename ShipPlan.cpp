@@ -23,7 +23,7 @@ bool validateShipPlanLine(const vector<string> &line) {
 
 void ShipPlan::updateSpot(int x, int y, int unavailable_floors) {
     for (int floor_num = 0; floor_num < unavailable_floors; ++floor_num) {
-        this->decks[floor_num].getFloorMap()[x][y]->setAvailable(false);
+        this->decks[floor_num].getFloorMap()[x][y].setAvailable(false);
         this->free_spots_num--;
     }
 }
@@ -73,7 +73,7 @@ ShipPlan::ShipPlan(const string &file_path, bool &valid_ctor) {
                  << endl;
             continue;
         } else { //unavailable_floors > 0
-            if (!(this->decks[0].getFloorMap()[x][y]->getAvailable())) {
+            if (!(this->decks[0].getFloorMap()[x][y].getAvailable())) {
                 //spot was already initialized, skip this one
                 continue;
             }
@@ -88,10 +88,10 @@ ShipPlan::~ShipPlan() {
         //Iterate over the current floor's floor map
         for (int x = 0; x < rows; ++x) {
             for (int y = 0; y < cols; ++y) {
-                Spot *curr_spot = this->getSpotAt(floor_num, x, y);
-                if (curr_spot->getContainer() != nullptr) {
-                    delete curr_spot->getContainer(); // deletes container forever
-                    curr_spot->getContainer();
+                Spot curr_spot = this->getSpotAt(floor_num, x, y);
+                if (curr_spot.getContainer() != nullptr) {
+                    delete curr_spot.getContainer(); // deletes container forever
+                    curr_spot.getContainer();
                 }
             }
         }
@@ -128,8 +128,8 @@ void ShipPlan::insertContainer(Spot *pos, Container &cont) {
 }
 
 void ShipPlan::insertContainer(int floor_num, int x, int y, Container &cont) {
-    cont.setPlace(getSpotAt(floor_num, x, y));
-    this->getSpotAt(floor_num, x, y)->setContainer(&cont);
+    cont.setPlace(&getSpotAt(floor_num, x, y));
+    this->getSpotAt(floor_num, x, y).setContainer(&cont);
     this->free_spots_num--;
 }
 
@@ -140,17 +140,17 @@ void ShipPlan::removeContainer(Spot *pos) {
 }
 
 void ShipPlan::removeContainer(int floor_num, int x, int y) {
-    this->getSpotAt(floor_num, x, y)->getContainer()->setPlace(nullptr);
-    this->getSpotAt(floor_num, x, y)->setContainer(nullptr); // clearing spot with null.
+    this->getSpotAt(floor_num, x, y).getContainer()->setPlace(nullptr);
+    this->getSpotAt(floor_num, x, y).setContainer(nullptr); // clearing spot with null.
     this->free_spots_num++;
 }
 
 void
 ShipPlan::moveContainer(int source_floor_num, int source_x, int source_y, int dest_floor_num, int dest_x, int dest_y) {
-    Container *cont = this->getSpotAt(source_floor_num, source_x, source_y)->getContainer();
-    this->getSpotAt(source_floor_num, source_x, source_y)->setContainer(nullptr); // clearing old spot.
-    cont->setPlace(this->getSpotAt(dest_floor_num, dest_x, dest_y));              // setting container's new spot
-    this->getSpotAt(dest_floor_num, dest_x, dest_y)->setContainer(cont);          // setting spot's new container
+    Container *cont = this->getSpotAt(source_floor_num, source_x, source_y).getContainer();
+    this->getSpotAt(source_floor_num, source_x, source_y).setContainer(nullptr); // clearing old spot.
+    cont->setPlace(&(this->getSpotAt(dest_floor_num, dest_x, dest_y)));              // setting container's new spot
+    this->getSpotAt(dest_floor_num, dest_x, dest_y).setContainer(cont);          // setting spot's new container
 }
 
 vector<Container *> ShipPlan::getContainersForDest(const string &port_name) {

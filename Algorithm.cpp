@@ -71,7 +71,7 @@ Spot *Algorithm::getEmptySpot(int &returnFloorNum) {
         //Iterate over the current floor's floor map
         for (int x = 0; x < ship.getShipRows(); ++x) {
             for (int y = 0; y < ship.getShipCols(); ++y) {
-                Spot *curSpot = ship.getSpotAt(floor_num, x, y);
+                Spot *curSpot = &(ship.getSpotAt(floor_num, x, y));
                 // Check if the spot is clear base
                 if (curSpot->getAvailable() && curSpot->getContainer() == nullptr) {
                     returnFloorNum = floor_num;
@@ -121,7 +121,7 @@ void Algorithm::markRemoveContainers(Container &cont, Spot &spot, vector<Contain
     Spot *curr_spot;
     // Iterate downwards until the specific spot.
     while (curr_floor_num > cont.getSpotInFloor()->getFloorNum()) {
-        curr_spot = ship.getSpotAt(curr_floor_num, spot.getPlaceX(), spot.getPlaceY());
+        curr_spot = &(ship.getSpotAt(curr_floor_num, spot.getPlaceX(), spot.getPlaceY()));
         if (curr_spot->getContainer() == nullptr) {
             curr_floor_num--;
             continue;

@@ -19,13 +19,13 @@ Floor::Floor(const Floor &f)
 void Floor::initializeFloor()
 {
     // Initialize all spots
-    this->floor_map = new Spot **[this->rows];
+    vector<Spot> line;
     for (int i = 0; i < rows; ++i)
     {
-        this->floor_map[i] = new Spot *[this->cols];
+        this->floor_map.push_back(line);
         for (int j = 0; j < cols; ++j)
         {
-            this->floor_map[i][j] = new Spot(i, j, true, this->floor_num);
+            this->floor_map[i].emplace_back(i, j, true, this->floor_num);
         }
     }
 }
@@ -33,32 +33,20 @@ void Floor::initializeFloor()
 void Floor::initializeFloor(const set<pair<int, int>> &unavailable_spots)
 {
     // Initialize all spots
-    this->floor_map = new Spot **[this->rows];
+    vector<Spot> line;
     for (int i = 0; i < rows; ++i)
     {
-        this->floor_map[i] = new Spot *[this->cols];
+        this->floor_map.push_back(line);
         for (int j = 0; j < cols; ++j)
         {
-            this->floor_map[i][j] = new Spot(i, j, true, this->floor_num);
+            this->floor_map[i].emplace_back(i, j, true, this->floor_num);
         }
     }
     // Mark specific spots as unavailable
-    for (auto spot : unavailable_spots)
+    for (auto &spot : unavailable_spots)
     {
-        this->floor_map[spot.first][spot.second]->setAvailable(false);
+        this->floor_map[spot.first][spot.second].setAvailable(false);
     }
-}
-
-Floor::~Floor()
-{
-    for (int i = 0; i < rows; ++i)
-    {
-        for(int j = 0; j < cols; j++){
-            delete this->floor_map[i][j];
-        }
-        delete[] this->floor_map[i];
-    }
-    delete this->floor_map;
 }
 
 /* Prints the floor map:
@@ -73,18 +61,18 @@ ostream &operator<<(ostream &out, const Floor &f)
     {
         for (int j = 0; j < f.cols; j++)
         {
-            if (!f.floor_map[i][j]->getAvailable())
+            if (!f.floor_map[i][j].getAvailable())
             { // If Spot is unavailable
                 out << "___________0_________";
             }
             else
             {
                 //else, Spot is available
-                if (f.floor_map[i][j]->getContainer() == nullptr)
+                if (f.floor_map[i][j].getContainer() == nullptr)
                     out << "___________1_________";
                 else
-                    out << "___" << f.floor_map[i][j]->getContainer()->getID() <<"->"
-                        << f.floor_map[i][j]->getContainer()->getDestPort() << "__";
+                    out << "___" << f.floor_map[i][j].getContainer()->getID() <<"->"
+                        << f.floor_map[i][j].getContainer()->getDestPort() << "__";
             }
         }
         out << "\n";
@@ -99,7 +87,7 @@ set<pair<int, int>> Floor::getUnavailableSpots() const
     {
         for (int j = 0; j < cols; ++j)
         {
-            if (!this->floor_map[i][j]->getAvailable()) //found an unavailable spot
+            if (!this->floor_map[i][j].getAvailable()) //found an unavailable spot
                 unavail_spots.emplace(i, j);
         }
     }

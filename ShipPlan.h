@@ -105,7 +105,7 @@ public:
         return decks[floor_num].getContainerAt(x, y);
     }
 
-    Spot *getSpotAt(int floor_num, int x, int y) {
+    Spot &getSpotAt(int floor_num, int x, int y) {
         return decks[floor_num].getSpotAt(x, y);
     }
 };

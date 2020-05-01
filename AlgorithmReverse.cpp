@@ -5,7 +5,7 @@ Spot *AlgorithmReverse::getEmptySpot(int &returnFloorNum) {
         //Iterate over the current floor's floor map
         for (int x = ship.getShipRows() - 1; x >= 0; --x) {
             for (int y = ship.getShipCols() - 1; y >= 0; --y) {
-                Spot *curSpot = ship.getSpotAt(floor_num, x, y);
+                Spot *curSpot = &(ship.getSpotAt(floor_num, x, y));
                 // Check if the spot is clear base
                 if (curSpot->getAvailable() && curSpot->getContainer() == nullptr) {
                     returnFloorNum = floor_num;

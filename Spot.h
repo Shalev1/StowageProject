@@ -31,11 +31,11 @@ public:
         return this->place.second;
     }
 
-    Container *getContainer() {
+    Container *getContainer() const{
         return this->cont;
     }
 
-    bool getAvailable() {
+    bool getAvailable() const{
         return this->available;
     }
 

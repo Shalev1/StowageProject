@@ -194,7 +194,7 @@ Simulator::validateLoadOp(int num_of_algo, ShipPlan &ship, WeightBalanceCalculat
         errors[num_of_algo].push_back("Travel: " + this->curr_travel_name + ", Port: "+this->curr_port_name+", Load a container in a full ship.");
         return false; // Ship is full!
     }
-    pos = ship.getSpotAt(floor_num, x, y);
+    pos = &(ship.getSpotAt(floor_num, x, y));
     if (!pos->getAvailable() || pos->getContainer() != nullptr) {
         errors[num_of_algo].push_back("Travel: " + this->curr_travel_name + ", Port: "+this->curr_port_name+", Load a container in an unavailable spot.");
         return false;
@@ -211,7 +211,7 @@ Simulator::validateLoadOp(int num_of_algo, ShipPlan &ship, WeightBalanceCalculat
         return false;
     }
     if (floor_num != 0) {
-        pos_below = ship.getSpotAt(floor_num - 1, x, y);
+        pos_below = &(ship.getSpotAt(floor_num - 1, x, y));
         if (pos_below->getAvailable() &&
             pos_below->getContainer() == nullptr) { // check if there is no container at the floor below
             errors[num_of_algo].push_back("Travel: " + this->curr_travel_name + ", Port: "+this->curr_port_name+", Load a container in a spot that's above an empty spot.");
@@ -230,7 +230,7 @@ Simulator::validateUnloadOp(int num_of_algo, ShipPlan &ship, WeightBalanceCalcul
         errors[num_of_algo].push_back("Travel: " + this->curr_travel_name + ", Port: "+this->curr_port_name+", Unload a container with ID: "+cont_id+", from Out-Of-Range position.");
         return false;
     }
-    pos = ship.getSpotAt(floor_num, x, y);
+    pos = &(ship.getSpotAt(floor_num, x, y));
     if (!pos->getAvailable() || (pos->getAvailable() && pos->getContainer() == nullptr)) {
         errors[num_of_algo].push_back("Travel: " + this->curr_travel_name + ", Port: "+this->curr_port_name+", Unload a container with ID: "+cont_id+", from an unavailable or empty spot.");
         return false;
@@ -246,7 +246,7 @@ Simulator::validateUnloadOp(int num_of_algo, ShipPlan &ship, WeightBalanceCalcul
         errors[num_of_algo].push_back("Travel: " + this->curr_travel_name + ", Port: "+this->curr_port_name+", Unload a container with ID: "+cont_id+", from from the ship unbalance it.");
         return false;
     } else if (floor_num != ship.getNumOfDecks() - 1) {
-        pos_above = ship.getSpotAt(floor_num + 1, x, y);
+        pos_above = &(ship.getSpotAt(floor_num + 1, x, y));
         if (pos_above->getContainer() != nullptr) { // check if there is a container at the floor above
             errors[num_of_algo].push_back("Travel: " + this->curr_travel_name + ", Port: "+this->curr_port_name+", Unload a container with ID: "+cont_id+", while there's a container above it.");
             return false;
@@ -265,8 +265,8 @@ bool Simulator::validateMoveOp(int num_of_algo, ShipPlan &ship, WeightBalanceCal
         errors[num_of_algo].push_back("Travel: " + this->curr_travel_name + ", Port: "+this->curr_port_name+", Move a container with ID: "+cont_id+", using Out-Of-Range position.");
         return false;
     }
-    source_pos = ship.getSpotAt(source_floor_num, source_x, source_y);
-    dest_pos = ship.getSpotAt(dest_floor_num, dest_x, dest_y);
+    source_pos = &(ship.getSpotAt(source_floor_num, source_x, source_y));
+    dest_pos = &(ship.getSpotAt(dest_floor_num, dest_x, dest_y));
     if (source_pos->getAvailable() || source_pos->getContainer() == nullptr ||
         dest_pos->getAvailable() || dest_pos->getContainer() != nullptr) {
         errors[num_of_algo].push_back("Travel: " + this->curr_travel_name + ", Port: "+this->curr_port_name+", Move a container with ID: "+cont_id+", using unavailable spot.");
@@ -285,13 +285,13 @@ bool Simulator::validateMoveOp(int num_of_algo, ShipPlan &ship, WeightBalanceCal
         return false;
     } else {
         if (source_floor_num != ship.getNumOfDecks() - 1) {
-            pos_above = ship.getSpotAt(source_floor_num + 1, source_x, source_y);
+            pos_above = &(ship.getSpotAt(source_floor_num + 1, source_x, source_y));
             if (pos_above->getContainer() != nullptr) { // check if there is a container at the floor above
                 errors[num_of_algo].push_back("Travel: " + this->curr_travel_name + ", Port: "+this->curr_port_name+", Move a container with ID: "+cont_id+", while there's a container above it.");
                 return false;
             }
             if (dest_floor_num != 0) {
-                pos_below = ship.getSpotAt(dest_floor_num - 1, dest_x, dest_y);
+                pos_below = &(ship.getSpotAt(dest_floor_num - 1, dest_x, dest_y));
                 if (pos_below->getAvailable() &&
                     pos_below->getContainer() == nullptr) { // check if there is no container at the floor below
                     errors[num_of_algo].push_back("Travel: " + this->curr_travel_name + ", Port: "+this->curr_port_name+", Move a container with ID: "+cont_id+", to a spot that's above an empty spot.");

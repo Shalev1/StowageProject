@@ -6,6 +6,7 @@
 
 
 using std::pair;
+using std::vector;
 
 //---Main class---//
 class Floor {
@@ -13,15 +14,12 @@ private:
     int floor_num;
     int rows;
     int cols;
-    Spot ***floor_map;
+    vector<vector<Spot>> floor_map;
 
 public:
     //---Constructors and Destructors---//
     Floor(int floor_num, int row, int col); // C'tor
-    Floor(const Floor &f);                  //Copy C'tor
-    Floor &operator=(const Floor &f) = delete;
-
-    ~Floor();
+    Floor(const Floor &f);
 
     //---Setters and Getters---//
     int getFloorNum() const {
@@ -36,7 +34,7 @@ public:
         return this->cols;
     }
 
-    Spot ***&getFloorMap() {
+    vector<vector<Spot>> &getFloorMap() {
         return this->floor_map;
     }
 
@@ -64,10 +62,10 @@ public:
     void initializeFloor(const set<pair<int, int>> &unavailable_spots);
 
     Container *getContainerAt(int x, int y) {
-        return floor_map[x][y]->getContainer();
+        return floor_map[x][y].getContainer();
     }
 
-    Spot *getSpotAt(int x, int y) {
+    Spot &getSpotAt(int x, int y) {
         return floor_map[x][y];
     }
 
