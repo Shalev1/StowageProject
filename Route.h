@@ -12,6 +12,7 @@
 #define indexOfFirst_InPath (5)
 
 using std::map;
+using std::to_string;
 
 //---Main class---//
 class Route {
@@ -27,19 +28,19 @@ private:
 public:
     // Constructors
     Route() = default;
-    explicit Route(const string &path);
+    explicit Route(const string &path, vector<string>& errVector, bool& fatalError);
 
 
     /**
      * Init the route from the given path file
      */
-    void initRouteFromFile(const string &path);
+    void initRouteFromFile(const string &path, vector<string>& errVector, bool& fatalError);
 
     /**
      * Sort the given paths for containers files base on the asked sorting formula
      * dir is the base directory and paths are relative path in this directory
      */
-    void initPortsContainersFiles(const string &dir, vector<string> &paths);
+    void initPortsContainersFiles(const string &dir, vector<string> &paths, vector<string>& errVector);
 
     /**
      * Return if there is at least one more port in the route
@@ -52,7 +53,7 @@ public:
      * Return the true if there is at least one more port in the route
      * Also load the waiting containers in this port
      */
-    bool moveToNextPort();
+    bool moveToNextPort(vector<string>& errVector);
 
     /**
      * Return the true if there is at least one more port in the route

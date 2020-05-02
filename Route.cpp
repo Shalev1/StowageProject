@@ -1,25 +1,29 @@
 #include "Route.h"
 
-Route::Route(const string &path) : currentPortNum(-1) {
-    initRouteFromFile(path);
+Route::Route(const string &path, vector<string>& errVector, bool& fatalError) : currentPortNum(-1) {
+    initRouteFromFile(path, errVector, fatalError);
 }
 
-void Route::initRouteFromFile(const string& path) {
+void Route::initRouteFromFile(const string& path, vector<string>& errVector, bool& fatalError) {
     FileHandler fh(path);
     string name;
     string prevName;
     while(fh.getNextLine(name)){
         if(name == prevName){
-            cout << "WARNING: Port " << name << " Appeared twice in a row, second time ignored" << endl;
+            errVector.emplace_back("Port " + name + " Appeared twice in a row - second time ignored");
         } else {
             if(Port::validateName(name)) {
                 ports.emplace_back(name);
                 portVisits[name] = 0;
             } else {
-                cout << "WARNING: Illegal name for port: " << name << " port ignored" << endl;
+                errVector.emplace_back("Illegal name for port: " + name + " port ignored");
             }
         }
         prevName = name;
+    }
+    if((int)ports.size() == 0){
+        errVector.emplace_back("Illegal Route file given - no valid port in route");
+        fatalError = true;
     }
     empty_file = string("Files") + std::filesystem::path::preferred_separator + string("empty_file.csv");
 }
@@ -40,7 +44,7 @@ bool portPathsCompare(const string& s1, const string& s2) {
     }
 }
 
-void Route::initPortsContainersFiles(const string& dir, vector<string>& paths){
+void Route::initPortsContainersFiles(const string& dir, vector<string>& paths, vector<string>& errVector){
     map<string, int> portAppearances; // Map to count how many times each port will be visited
     for(const Port& p : ports){
         if(portAppearances.count(p.getName()))
@@ -61,15 +65,14 @@ void Route::initPortsContainersFiles(const string& dir, vector<string>& paths){
             continue;
         } else {
             if(!portAppearances.count(portCode)){ // Port isn't in the route
-                cout << "WARNING: File " << *it <<" ignored, port " << portCode << " is not in the route " << endl;
+                errVector.emplace_back("File: " + *it + " ignored - port " + portCode + " is not in the route");
                 paths.erase(it);
                 continue;
             }
             string portNumS = restString.substr(0, restString.find('.'));
             int portNum = stoi(portNumS);
             if(portNum > portAppearances[portCode]){
-                cout << "WARNING: File " << *it <<" ignored, port " << portCode << " won't be visited "
-                    << portNumS << " times" << endl;
+                errVector.emplace_back("File: " + *it + " ignored - port " + portCode + " won't be visited " + portNumS + " times");
                 paths.erase(it);
                 continue;
             }
@@ -89,7 +92,7 @@ bool Route::moveToNextPortWithoutContInit() {
     return true;
 }
 
-bool Route::moveToNextPort() {
+bool Route::moveToNextPort(vector<string>& errVector) {
     if(!hasNextPort())
         return false;
     currentPortNum++;
@@ -102,7 +105,7 @@ bool Route::moveToNextPort() {
             int portNum = stoi(portNumS);
             if (portNum == portVisits[getCurrentPort().getName()]) {
                 if (currentPortNum == (int) ports.size() - 1) { // last port
-                    cout << "WARNING: Last port shouldn't has a waiting containers file, file ignored" << endl;
+                    errVector.emplace_back("Last port shouldn't has waiting containers");
                     currentPortPath = empty_file;
                 } else {
                     currentPortPath = dir + std::filesystem::path::preferred_separator + (*it);
@@ -114,8 +117,8 @@ bool Route::moveToNextPort() {
         }
     }
     if(currentPortNum != (int)ports.size() - 1){ // this isn't the last port
-        cout << "WARNING: No waiting containers in Port " << getCurrentPort().getName() <<
-            " for visit number: " << portVisits[getCurrentPort().getName()]<< endl;
+        errVector.emplace_back("No waiting containers in Port " + getCurrentPort().getName() +
+            " for visit number: " + to_string(portVisits[getCurrentPort().getName()]));
     }
     currentPortPath = empty_file;
     return true;

@@ -36,14 +36,14 @@ void Port::addContainer(int weight, const string &destPort, const string &id) {
     waitingContainers.push_back(new Container(weight, destPort, id));
 }
 
-void Port::initWaitingContainers(const string &path) {
+void Port::initWaitingContainers(const string &path, vector<string>& errVector) {
     FileHandler fh(path);
     if(fh.isFailed())
-        cout << "ERROR: Failed to open " << path << " considered as no containers waiting" << endl;
+        errVector.emplace_back("Failed to open " + path + " considered as no containers waiting");
     vector<string> tokens;
     while (fh.getNextLineAsTokens(tokens)) {
         if (tokens.size() != 3) {
-            cout << "WARNING: line with wrong number of parameters in containers file, line ignored" << endl;
+            errVector.emplace_back("Line with wrong number of parameters in containers file - line ignored");
             continue;
         }
         string id = tokens[0];
@@ -51,12 +51,12 @@ void Port::initWaitingContainers(const string &path) {
         if (isPositiveNumber(tokens[1])) {
             weight = stoi(tokens[1]);
         } else {
-            cout << "WARNING: illegal weight given for container: " << tokens[1] << " Container ignored" << endl;
+            errVector.emplace_back("Illegal weight given for container: " + tokens[1] + " Container ignored");
             continue;
         }
         string dest = tokens[2];
         if (!Port::validateName(dest)) {
-            cout << "WARNING: illegal destination given for container: " << dest << " Container ignored" << endl;
+            errVector.emplace_back("Illegal destination given for container: " + dest + " Container ignored");
             continue;
         }
 
