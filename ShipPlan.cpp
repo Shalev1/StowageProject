@@ -32,7 +32,6 @@ void ShipPlan::initShipPlanFromFile(const string &file_path, vector<string> &err
     vector<string> line;
     int x, y, unavailable_floors;
     string err;
-    //bool found_normal_line = false; // TODO:Handle the case in which all the lines are illegal, especially the first line
     if(file.isFailed()){
         errs_msg.emplace_back("Invalid ship plan file was given.");
         success = false; // should skip to the next travel

@@ -73,8 +73,11 @@ bool dirExists(const string &p){
 
 string createInstructionDir(const string &output_path, const string &algorithm_name, const string &travel_name){
     string dir_name = output_path + std::filesystem::path::preferred_separator + algorithm_name + "_" + travel_name + "_crane_instructions";
+    if(dirExists(dir_name)){ // Check if directory already exists.
+        return dir_name;
+    }
     if(!std::filesystem::create_directory(dir_name)){
-        return "";
+        return ""; // Directory did not open correctly.
     }
     return dir_name;
 }
