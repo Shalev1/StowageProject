@@ -21,6 +21,7 @@ void Route::initRouteFromFile(const string& path) {
         }
         prevName = name;
     }
+    empty_file = string("Files") + std::filesystem::path::preferred_separator + string("empty_file.csv");
 }
 
 /**
@@ -103,7 +104,7 @@ bool Route::moveToNextPort() {
             if (portNum == portVisits[getCurrentPort().getName()]) {
                 if (currentPortNum == (int) ports.size() - 1) { // last port
                     cout << "WARNING: Last port shouldn't has a waiting containers file, file ignored" << endl;
-                    currentPortPath = NO_FILE;
+                    currentPortPath = empty_file;
                 } else {
                     currentPortPath = dir + std::filesystem::path::preferred_separator + (*it);
                     ports[currentPortNum].initWaitingContainers(currentPortPath);
@@ -117,7 +118,7 @@ bool Route::moveToNextPort() {
         cout << "WARNING: No waiting containers in Port " << getCurrentPort().getName() <<
             " for visit number: " << portVisits[getCurrentPort().getName()]<< endl;
     }
-    currentPortPath = NO_FILE;
+    currentPortPath = empty_file;
     return true;
 }
 

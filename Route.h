@@ -10,7 +10,6 @@
 #include "Utils.h"
 
 #define indexOfFirst_InPath (5)
-#define NO_FILE "NO FILE"
 
 using std::map;
 
@@ -23,9 +22,9 @@ private:
     vector<string> portsContainersPaths; // Contain relative paths to the containers files, that have not used yet
     string currentPortPath;
     map<string, int> portVisits; // How many times ports were visited
+    string empty_file; // Path to an empty file for ports without containers
 
 public:
-
     // Constructors
     Route() = default;
     explicit Route(const string &path);
