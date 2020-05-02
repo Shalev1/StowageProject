@@ -42,8 +42,9 @@ public:
 
     /**
      * Read the file locate in @param path to initialize the waiting containers vector
+     * @param errVector filled with errors that occurs
      */
-    void initWaitingContainers(const string &path);
+    void initWaitingContainers(const string &path, vector<string>& errVector);
 
     /**
      * Return the container with id equals to @param id or nullptr if there is not one like that

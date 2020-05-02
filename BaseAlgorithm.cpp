@@ -8,7 +8,9 @@ int BaseAlgorithm::readShipPlan(const std::string &full_path_and_file_name) {
 }
 
 int BaseAlgorithm::readShipRoute(const std::string &full_path_and_file_name) {
-    route.initRouteFromFile(full_path_and_file_name);
+    vector<string> errors;
+    bool fatalError = false;
+    route.initRouteFromFile(full_path_and_file_name, errors, fatalError);
     return 0;
 }
 
@@ -19,7 +21,9 @@ int BaseAlgorithm::setWeightBalanceCalculator(WeightBalanceCalculator &calculato
 
 int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_and_file_name, const std::string &output_full_path_and_file_name) {
     route.moveToNextPortWithoutContInit();
-    route.getCurrentPort().initWaitingContainers(input_full_path_and_file_name);
+
+    vector<string> errors;
+    route.getCurrentPort().initWaitingContainers(input_full_path_and_file_name, errors);
     vector<Container*>& waitingContainers = route.getCurrentPort().getWaitingContainers();
 
     vector<Container *> reloadContainers;
