@@ -11,13 +11,11 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "C:/Users/tomer/CLionProjects/ShipProject/Port.cpp" "C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/CMakeFiles/ShipProject.dir/Port.cpp.obj"
   "C:/Users/tomer/CLionProjects/ShipProject/Route.cpp" "C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/CMakeFiles/ShipProject.dir/Route.cpp.obj"
   "C:/Users/tomer/CLionProjects/ShipProject/ShipPlan.cpp" "C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/CMakeFiles/ShipProject.dir/ShipPlan.cpp.obj"
-  "C:/Users/tomer/CLionProjects/ShipProject/SimTest.cpp" "C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/CMakeFiles/ShipProject.dir/SimTest.cpp.obj"
   "C:/Users/tomer/CLionProjects/ShipProject/Simulator.cpp" "C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/CMakeFiles/ShipProject.dir/Simulator.cpp.obj"
   "C:/Users/tomer/CLionProjects/ShipProject/Spot.cpp" "C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/CMakeFiles/ShipProject.dir/Spot.cpp.obj"
   "C:/Users/tomer/CLionProjects/ShipProject/Utils.cpp" "C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/CMakeFiles/ShipProject.dir/Utils.cpp.obj"
   "C:/Users/tomer/CLionProjects/ShipProject/WeightBalanceCalculator.cpp" "C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/CMakeFiles/ShipProject.dir/WeightBalanceCalculator.cpp.obj"
   "C:/Users/tomer/CLionProjects/ShipProject/main.cpp" "C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/CMakeFiles/ShipProject.dir/main.cpp.obj"
-  "C:/Users/tomer/CLionProjects/ShipProject/myMain.cpp" "C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/CMakeFiles/ShipProject.dir/myMain.cpp.obj"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

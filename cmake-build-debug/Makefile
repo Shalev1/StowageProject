@@ -311,33 +311,6 @@ ShipPlan.cpp.s:
 	$(MAKE) -f CMakeFiles\ShipProject.dir\build.make CMakeFiles/ShipProject.dir/ShipPlan.cpp.s
 .PHONY : ShipPlan.cpp.s
 
-SimTest.obj: SimTest.cpp.obj
-
-.PHONY : SimTest.obj
-
-# target to build an object file
-SimTest.cpp.obj:
-	$(MAKE) -f CMakeFiles\ShipProject.dir\build.make CMakeFiles/ShipProject.dir/SimTest.cpp.obj
-.PHONY : SimTest.cpp.obj
-
-SimTest.i: SimTest.cpp.i
-
-.PHONY : SimTest.i
-
-# target to preprocess a source file
-SimTest.cpp.i:
-	$(MAKE) -f CMakeFiles\ShipProject.dir\build.make CMakeFiles/ShipProject.dir/SimTest.cpp.i
-.PHONY : SimTest.cpp.i
-
-SimTest.s: SimTest.cpp.s
-
-.PHONY : SimTest.s
-
-# target to generate assembly for a file
-SimTest.cpp.s:
-	$(MAKE) -f CMakeFiles\ShipProject.dir\build.make CMakeFiles/ShipProject.dir/SimTest.cpp.s
-.PHONY : SimTest.cpp.s
-
 Simulator.obj: Simulator.cpp.obj
 
 .PHONY : Simulator.obj
@@ -473,33 +446,6 @@ main.cpp.s:
 	$(MAKE) -f CMakeFiles\ShipProject.dir\build.make CMakeFiles/ShipProject.dir/main.cpp.s
 .PHONY : main.cpp.s
 
-myMain.obj: myMain.cpp.obj
-
-.PHONY : myMain.obj
-
-# target to build an object file
-myMain.cpp.obj:
-	$(MAKE) -f CMakeFiles\ShipProject.dir\build.make CMakeFiles/ShipProject.dir/myMain.cpp.obj
-.PHONY : myMain.cpp.obj
-
-myMain.i: myMain.cpp.i
-
-.PHONY : myMain.i
-
-# target to preprocess a source file
-myMain.cpp.i:
-	$(MAKE) -f CMakeFiles\ShipProject.dir\build.make CMakeFiles/ShipProject.dir/myMain.cpp.i
-.PHONY : myMain.cpp.i
-
-myMain.s: myMain.cpp.s
-
-.PHONY : myMain.s
-
-# target to generate assembly for a file
-myMain.cpp.s:
-	$(MAKE) -f CMakeFiles\ShipProject.dir\build.make CMakeFiles/ShipProject.dir/myMain.cpp.s
-.PHONY : myMain.cpp.s
-
 # Help Target
 help:
 	@echo The following are some of the valid targets for this Makefile:
@@ -530,9 +476,6 @@ help:
 	@echo ... ShipPlan.obj
 	@echo ... ShipPlan.i
 	@echo ... ShipPlan.s
-	@echo ... SimTest.obj
-	@echo ... SimTest.i
-	@echo ... SimTest.s
 	@echo ... Simulator.obj
 	@echo ... Simulator.i
 	@echo ... Simulator.s
@@ -548,9 +491,6 @@ help:
 	@echo ... main.obj
 	@echo ... main.i
 	@echo ... main.s
-	@echo ... myMain.obj
-	@echo ... myMain.i
-	@echo ... myMain.s
 .PHONY : help
 
 

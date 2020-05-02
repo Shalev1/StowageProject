@@ -125,12 +125,6 @@
 		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/ShipPlan.h">
 			<Option target="ShipProject"/>
 		</Unit>
-		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/SimTest.cpp">
-			<Option target="ShipProject"/>
-		</Unit>
-		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/SimTest.h">
-			<Option target="ShipProject"/>
-		</Unit>
 		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/Simulator.cpp">
 			<Option target="ShipProject"/>
 		</Unit>
@@ -156,9 +150,6 @@
 			<Option target="ShipProject"/>
 		</Unit>
 		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/main.cpp">
-			<Option target="ShipProject"/>
-		</Unit>
-		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/myMain.cpp">
 			<Option target="ShipProject"/>
 		</Unit>
 		<Unit filename="C:/Users/tomer/CLionProjects/ShipProject/CMakeLists.txt">

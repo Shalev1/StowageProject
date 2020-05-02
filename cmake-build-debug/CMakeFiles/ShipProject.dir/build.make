@@ -69,22 +69,9 @@ CMakeFiles/ShipProject.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/ShipProject.dir/main.cpp.s"
 	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\tomer\CLionProjects\ShipProject\main.cpp -o CMakeFiles\ShipProject.dir\main.cpp.s
 
-CMakeFiles/ShipProject.dir/myMain.cpp.obj: CMakeFiles/ShipProject.dir/flags.make
-CMakeFiles/ShipProject.dir/myMain.cpp.obj: ../myMain.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/ShipProject.dir/myMain.cpp.obj"
-	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\ShipProject.dir\myMain.cpp.obj -c C:\Users\tomer\CLionProjects\ShipProject\myMain.cpp
-
-CMakeFiles/ShipProject.dir/myMain.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/ShipProject.dir/myMain.cpp.i"
-	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\tomer\CLionProjects\ShipProject\myMain.cpp > CMakeFiles\ShipProject.dir\myMain.cpp.i
-
-CMakeFiles/ShipProject.dir/myMain.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/ShipProject.dir/myMain.cpp.s"
-	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\tomer\CLionProjects\ShipProject\myMain.cpp -o CMakeFiles\ShipProject.dir\myMain.cpp.s
-
 CMakeFiles/ShipProject.dir/Route.cpp.obj: CMakeFiles/ShipProject.dir/flags.make
 CMakeFiles/ShipProject.dir/Route.cpp.obj: ../Route.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/ShipProject.dir/Route.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/ShipProject.dir/Route.cpp.obj"
 	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\ShipProject.dir\Route.cpp.obj -c C:\Users\tomer\CLionProjects\ShipProject\Route.cpp
 
 CMakeFiles/ShipProject.dir/Route.cpp.i: cmake_force
@@ -97,7 +84,7 @@ CMakeFiles/ShipProject.dir/Route.cpp.s: cmake_force
 
 CMakeFiles/ShipProject.dir/Port.cpp.obj: CMakeFiles/ShipProject.dir/flags.make
 CMakeFiles/ShipProject.dir/Port.cpp.obj: ../Port.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/ShipProject.dir/Port.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/ShipProject.dir/Port.cpp.obj"
 	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\ShipProject.dir\Port.cpp.obj -c C:\Users\tomer\CLionProjects\ShipProject\Port.cpp
 
 CMakeFiles/ShipProject.dir/Port.cpp.i: cmake_force
@@ -110,7 +97,7 @@ CMakeFiles/ShipProject.dir/Port.cpp.s: cmake_force
 
 CMakeFiles/ShipProject.dir/Container.cpp.obj: CMakeFiles/ShipProject.dir/flags.make
 CMakeFiles/ShipProject.dir/Container.cpp.obj: ../Container.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/ShipProject.dir/Container.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/ShipProject.dir/Container.cpp.obj"
 	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\ShipProject.dir\Container.cpp.obj -c C:\Users\tomer\CLionProjects\ShipProject\Container.cpp
 
 CMakeFiles/ShipProject.dir/Container.cpp.i: cmake_force
@@ -123,7 +110,7 @@ CMakeFiles/ShipProject.dir/Container.cpp.s: cmake_force
 
 CMakeFiles/ShipProject.dir/Utils.cpp.obj: CMakeFiles/ShipProject.dir/flags.make
 CMakeFiles/ShipProject.dir/Utils.cpp.obj: ../Utils.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/ShipProject.dir/Utils.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/ShipProject.dir/Utils.cpp.obj"
 	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\ShipProject.dir\Utils.cpp.obj -c C:\Users\tomer\CLionProjects\ShipProject\Utils.cpp
 
 CMakeFiles/ShipProject.dir/Utils.cpp.i: cmake_force
@@ -136,7 +123,7 @@ CMakeFiles/ShipProject.dir/Utils.cpp.s: cmake_force
 
 CMakeFiles/ShipProject.dir/ShipPlan.cpp.obj: CMakeFiles/ShipProject.dir/flags.make
 CMakeFiles/ShipProject.dir/ShipPlan.cpp.obj: ../ShipPlan.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/ShipProject.dir/ShipPlan.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/ShipProject.dir/ShipPlan.cpp.obj"
 	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\ShipProject.dir\ShipPlan.cpp.obj -c C:\Users\tomer\CLionProjects\ShipProject\ShipPlan.cpp
 
 CMakeFiles/ShipProject.dir/ShipPlan.cpp.i: cmake_force
@@ -149,7 +136,7 @@ CMakeFiles/ShipProject.dir/ShipPlan.cpp.s: cmake_force
 
 CMakeFiles/ShipProject.dir/Spot.cpp.obj: CMakeFiles/ShipProject.dir/flags.make
 CMakeFiles/ShipProject.dir/Spot.cpp.obj: ../Spot.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/ShipProject.dir/Spot.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/ShipProject.dir/Spot.cpp.obj"
 	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\ShipProject.dir\Spot.cpp.obj -c C:\Users\tomer\CLionProjects\ShipProject\Spot.cpp
 
 CMakeFiles/ShipProject.dir/Spot.cpp.i: cmake_force
@@ -162,7 +149,7 @@ CMakeFiles/ShipProject.dir/Spot.cpp.s: cmake_force
 
 CMakeFiles/ShipProject.dir/Floor.cpp.obj: CMakeFiles/ShipProject.dir/flags.make
 CMakeFiles/ShipProject.dir/Floor.cpp.obj: ../Floor.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/ShipProject.dir/Floor.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/ShipProject.dir/Floor.cpp.obj"
 	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\ShipProject.dir\Floor.cpp.obj -c C:\Users\tomer\CLionProjects\ShipProject\Floor.cpp
 
 CMakeFiles/ShipProject.dir/Floor.cpp.i: cmake_force
@@ -173,22 +160,9 @@ CMakeFiles/ShipProject.dir/Floor.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/ShipProject.dir/Floor.cpp.s"
 	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\tomer\CLionProjects\ShipProject\Floor.cpp -o CMakeFiles\ShipProject.dir\Floor.cpp.s
 
-CMakeFiles/ShipProject.dir/SimTest.cpp.obj: CMakeFiles/ShipProject.dir/flags.make
-CMakeFiles/ShipProject.dir/SimTest.cpp.obj: ../SimTest.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/ShipProject.dir/SimTest.cpp.obj"
-	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\ShipProject.dir\SimTest.cpp.obj -c C:\Users\tomer\CLionProjects\ShipProject\SimTest.cpp
-
-CMakeFiles/ShipProject.dir/SimTest.cpp.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/ShipProject.dir/SimTest.cpp.i"
-	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E C:\Users\tomer\CLionProjects\ShipProject\SimTest.cpp > CMakeFiles\ShipProject.dir\SimTest.cpp.i
-
-CMakeFiles/ShipProject.dir/SimTest.cpp.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/ShipProject.dir/SimTest.cpp.s"
-	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S C:\Users\tomer\CLionProjects\ShipProject\SimTest.cpp -o CMakeFiles\ShipProject.dir\SimTest.cpp.s
-
 CMakeFiles/ShipProject.dir/Simulator.cpp.obj: CMakeFiles/ShipProject.dir/flags.make
 CMakeFiles/ShipProject.dir/Simulator.cpp.obj: ../Simulator.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/ShipProject.dir/Simulator.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/ShipProject.dir/Simulator.cpp.obj"
 	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\ShipProject.dir\Simulator.cpp.obj -c C:\Users\tomer\CLionProjects\ShipProject\Simulator.cpp
 
 CMakeFiles/ShipProject.dir/Simulator.cpp.i: cmake_force
@@ -201,7 +175,7 @@ CMakeFiles/ShipProject.dir/Simulator.cpp.s: cmake_force
 
 CMakeFiles/ShipProject.dir/BaseAlgorithm.cpp.obj: CMakeFiles/ShipProject.dir/flags.make
 CMakeFiles/ShipProject.dir/BaseAlgorithm.cpp.obj: ../BaseAlgorithm.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/ShipProject.dir/BaseAlgorithm.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/ShipProject.dir/BaseAlgorithm.cpp.obj"
 	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\ShipProject.dir\BaseAlgorithm.cpp.obj -c C:\Users\tomer\CLionProjects\ShipProject\BaseAlgorithm.cpp
 
 CMakeFiles/ShipProject.dir/BaseAlgorithm.cpp.i: cmake_force
@@ -214,7 +188,7 @@ CMakeFiles/ShipProject.dir/BaseAlgorithm.cpp.s: cmake_force
 
 CMakeFiles/ShipProject.dir/WeightBalanceCalculator.cpp.obj: CMakeFiles/ShipProject.dir/flags.make
 CMakeFiles/ShipProject.dir/WeightBalanceCalculator.cpp.obj: ../WeightBalanceCalculator.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/ShipProject.dir/WeightBalanceCalculator.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/ShipProject.dir/WeightBalanceCalculator.cpp.obj"
 	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\ShipProject.dir\WeightBalanceCalculator.cpp.obj -c C:\Users\tomer\CLionProjects\ShipProject\WeightBalanceCalculator.cpp
 
 CMakeFiles/ShipProject.dir/WeightBalanceCalculator.cpp.i: cmake_force
@@ -227,7 +201,7 @@ CMakeFiles/ShipProject.dir/WeightBalanceCalculator.cpp.s: cmake_force
 
 CMakeFiles/ShipProject.dir/AlgorithmReverse.cpp.obj: CMakeFiles/ShipProject.dir/flags.make
 CMakeFiles/ShipProject.dir/AlgorithmReverse.cpp.obj: ../AlgorithmReverse.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building CXX object CMakeFiles/ShipProject.dir/AlgorithmReverse.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/ShipProject.dir/AlgorithmReverse.cpp.obj"
 	C:\PROGRA~1\MINGW-~1\X86_64~1.0-P\mingw64\bin\G__~1.EXE  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles\ShipProject.dir\AlgorithmReverse.cpp.obj -c C:\Users\tomer\CLionProjects\ShipProject\AlgorithmReverse.cpp
 
 CMakeFiles/ShipProject.dir/AlgorithmReverse.cpp.i: cmake_force
@@ -241,7 +215,6 @@ CMakeFiles/ShipProject.dir/AlgorithmReverse.cpp.s: cmake_force
 # Object files for target ShipProject
 ShipProject_OBJECTS = \
 "CMakeFiles/ShipProject.dir/main.cpp.obj" \
-"CMakeFiles/ShipProject.dir/myMain.cpp.obj" \
 "CMakeFiles/ShipProject.dir/Route.cpp.obj" \
 "CMakeFiles/ShipProject.dir/Port.cpp.obj" \
 "CMakeFiles/ShipProject.dir/Container.cpp.obj" \
@@ -249,7 +222,6 @@ ShipProject_OBJECTS = \
 "CMakeFiles/ShipProject.dir/ShipPlan.cpp.obj" \
 "CMakeFiles/ShipProject.dir/Spot.cpp.obj" \
 "CMakeFiles/ShipProject.dir/Floor.cpp.obj" \
-"CMakeFiles/ShipProject.dir/SimTest.cpp.obj" \
 "CMakeFiles/ShipProject.dir/Simulator.cpp.obj" \
 "CMakeFiles/ShipProject.dir/BaseAlgorithm.cpp.obj" \
 "CMakeFiles/ShipProject.dir/WeightBalanceCalculator.cpp.obj" \
@@ -259,7 +231,6 @@ ShipProject_OBJECTS = \
 ShipProject_EXTERNAL_OBJECTS =
 
 ShipProject.exe: CMakeFiles/ShipProject.dir/main.cpp.obj
-ShipProject.exe: CMakeFiles/ShipProject.dir/myMain.cpp.obj
 ShipProject.exe: CMakeFiles/ShipProject.dir/Route.cpp.obj
 ShipProject.exe: CMakeFiles/ShipProject.dir/Port.cpp.obj
 ShipProject.exe: CMakeFiles/ShipProject.dir/Container.cpp.obj
@@ -267,7 +238,6 @@ ShipProject.exe: CMakeFiles/ShipProject.dir/Utils.cpp.obj
 ShipProject.exe: CMakeFiles/ShipProject.dir/ShipPlan.cpp.obj
 ShipProject.exe: CMakeFiles/ShipProject.dir/Spot.cpp.obj
 ShipProject.exe: CMakeFiles/ShipProject.dir/Floor.cpp.obj
-ShipProject.exe: CMakeFiles/ShipProject.dir/SimTest.cpp.obj
 ShipProject.exe: CMakeFiles/ShipProject.dir/Simulator.cpp.obj
 ShipProject.exe: CMakeFiles/ShipProject.dir/BaseAlgorithm.cpp.obj
 ShipProject.exe: CMakeFiles/ShipProject.dir/WeightBalanceCalculator.cpp.obj
@@ -276,7 +246,7 @@ ShipProject.exe: CMakeFiles/ShipProject.dir/build.make
 ShipProject.exe: CMakeFiles/ShipProject.dir/linklibs.rsp
 ShipProject.exe: CMakeFiles/ShipProject.dir/objects1.rsp
 ShipProject.exe: CMakeFiles/ShipProject.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Linking CXX executable ShipProject.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=C:\Users\tomer\CLionProjects\ShipProject\cmake-build-debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Linking CXX executable ShipProject.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\ShipProject.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
