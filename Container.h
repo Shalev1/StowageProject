@@ -29,8 +29,6 @@ public:
     //---Constructors and Destructors---//
     Container(int weight, string dest_port, const string id);
 
-    Container &operator=(const Container &c) = delete;
-
     //---Setters and Getters---//
     int getWeight() const {
         return this->weight;

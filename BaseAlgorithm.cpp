@@ -24,9 +24,9 @@ int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_an
 
     vector<string> errors;
     route.getCurrentPort().initWaitingContainers(input_full_path_and_file_name, errors);
-    vector<Container*>& waitingContainers = route.getCurrentPort().getWaitingContainers();
+    vector<Container>& waitingContainers = route.getCurrentPort().getWaitingContainers();
 
-    vector<Container *> reloadContainers;
+    vector<Container*> reloadContainers;
     FileHandler instructionsFile(output_full_path_and_file_name, true);
 
     // Get Unload instructions for containers with destination equals to this port
@@ -38,20 +38,20 @@ int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_an
     // Sort incoming containers by their destination
     route.sortContainersByDestination(waitingContainers);
 
-    for (auto it = waitingContainers.begin(); it != waitingContainers.end(); ++it) {
-        if ((*it)->getDestPort() == route.getCurrentPort().getName()) {
-            instructionsFile.writeInstruction("R", (*it)->getID(), -1, -1, -1); // TODO: ex2 return error code
-            cout << "WARNING: Container: " << (*it)->getID()
+    for (auto & cont : waitingContainers) {
+        if (cont.getDestPort() == route.getCurrentPort().getName()) {
+            instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1); // TODO: ex2 return error code
+            cout << "WARNING: Container: " << cont.getID()
                  << " will not be loaded, its destination is the current port." << endl;
             continue;
         }
-        if (!route.isInRoute((*it)->getDestPort())) {
-            instructionsFile.writeInstruction("R", (*it)->getID(), -1, -1, -1); // TODO: ex2 return error code
-            cout << "WARNING: Container: " << (*it)->getID()
+        if (!route.isInRoute(cont.getDestPort())) {
+            instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1); // TODO: ex2 return error code
+            cout << "WARNING: Container: " << cont.getID()
                  << " will not be loaded, its destination is not a part of the remaining route." << endl;
             continue;
         }
-        findLoadingSpot(*it, instructionsFile);
+        findLoadingSpot(&cont, instructionsFile);
     }
     return 0;
 }

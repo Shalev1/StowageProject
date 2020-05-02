@@ -33,7 +33,7 @@ string Port::nameToUppercase(const string &name) {
 }
 
 void Port::addContainer(int weight, const string &destPort, const string &id) {
-    waitingContainers.push_back(new Container(weight, destPort, id));
+    waitingContainers.emplace_back(weight, destPort, id);
 }
 
 void Port::initWaitingContainers(const string &path, vector<string>& errVector) {
@@ -66,14 +66,14 @@ void Port::initWaitingContainers(const string &path, vector<string>& errVector) 
     }
 }
 
-Container *Port::getWaitingContainerByID(const string &id) {
+Container* Port::getWaitingContainerByID(const string &id) {
     return Port::getContainerByIDFrom(waitingContainers, id);
 }
 
-Container *Port::getContainerByIDFrom(const vector<Container *> &containers, const string &id) {
-    for (auto cont : containers) {
-        if (cont->getID() == id) {
-            return cont; // found the container
+Container* Port::getContainerByIDFrom(vector<Container>& containers, const string &id) {
+    for(int i = 0; i < (int)containers.size(); i++){
+        if (containers[i].getID() == id) {
+            return &containers[i]; // found the container
         }
     }
     return nullptr; // didn't find the container
@@ -81,10 +81,8 @@ Container *Port::getContainerByIDFrom(const vector<Container *> &containers, con
 
 ostream &operator<<(ostream &os, const Port &p) {
     os << "Port's name: " << p.name << endl;
-    for (Container *const &c : p.waitingContainers) {
-        if (c == nullptr)
-            continue;
-        os << "---" << *c;
+    for (auto& c : p.waitingContainers) {
+        os << "---" << c;
     }
     return os;
 }

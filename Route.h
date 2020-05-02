@@ -86,13 +86,7 @@ public:
     /**
      * Sort the given containers vector by their destination, from the closest one to the farthest one
      */
-    void sortContainersByDestination(vector<Container *> &containers);
-
-
-    /**
-     * Delete all containers that stay in the port
-     */
-    void clearCurrentPort();
+    void sortContainersByDestination(vector<Container>& containers);
 
     friend ostream &operator<<(ostream &os, const Route &r);
 };
