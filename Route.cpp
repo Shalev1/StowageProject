@@ -143,7 +143,7 @@ bool Route::isInRoute(const string &portName) const {
 }
 
 void Route::sortContainersByDestination(vector<Container>& containers){
-    sort(containers.begin(), containers.end(),[this](Container c1, Container c2){
+    sort(containers.begin(), containers.end(),[this](Container& c1, Container& c2){
         string dest1 = c1.getDestPort();
         string dest2 = c2.getDestPort();
         string closeDest = this->getCloserDestination(dest1, dest2);
