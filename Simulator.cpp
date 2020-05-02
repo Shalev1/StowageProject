@@ -78,8 +78,8 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
             if (!validateTravelFolder(travel_dir))
                 continue;
             vector<string> errs_in_ctor;
-            ShipPlan *ship = nullptr;
-            Route *travel = nullptr;
+            std::unique_ptr<ShipPlan> ship;
+            std::unique_ptr<Route> travel;
             bool successful_build = true, routeFound = false, planFound = false;
             this->err_in_travel = false;
             this->curr_travel_name = travel_dir.path().filename();
@@ -87,11 +87,11 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
             for (const auto &entry : std::filesystem::directory_iterator(travel_dir.path())) {
                 if (entry.path().filename() == "Plan.csv") { // A ship plan file was found
                     plan_path = entry.path();
-                    ship = new ShipPlan(plan_path, errs_in_ctor, successful_build);
+                    ship = std::make_unique<ShipPlan>(plan_path, errs_in_ctor, successful_build);
                     planFound = true;
                 } else if (entry.path().filename() == "Route.csv") { // A route file was found
                     route_path = entry.path();
-                    travel = new Route(route_path, errs_in_ctor, successful_build);
+                    travel = std::make_unique<Route>(route_path, errs_in_ctor, successful_build);
                     routeFound = true;
                 } else { // The rest of the files, may include some containers details.
                     travel_files.push_back(entry.path().filename());
@@ -100,13 +100,11 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
             if (!planFound) {
                 if (num_of_algo == 1) errors[0].push_back("@ Travel: " + this->curr_travel_name + " has no Plan file.");
                 err_detected = true;
-                delete travel;
                 continue;
             }
             if (!routeFound) {
                 if (num_of_algo == 1) errors[0].push_back("@ Travel: " + this->curr_travel_name + " has no Route file.");
                 err_detected = true;
-                delete ship;
                 continue;
             }
             // Adding errors that were detected during Ship and Route builders
@@ -145,14 +143,10 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
                 curr_port_name = travel->getCurrentPort().getName();
                 instruction_file = instruction_file_path + std::filesystem::path::preferred_separator + curr_port_name + "_" + to_string(travel->getNumOfVisitsInPort(curr_port_name)) + ".crane_instructions.csv";
                 algo->getInstructionsForCargo(travel->getCurrentPortPath(), instruction_file);
-                this->implementInstructions(*ship, travel, calc, instruction_file, num_of_operations, num_of_algo);
-                this->checkMissedContainers(ship, travel->getCurrentPort().getName(), num_of_algo);
+                this->implementInstructions(*ship, *travel, calc, instruction_file, num_of_operations, num_of_algo);
+                this->checkMissedContainers(*ship, travel->getCurrentPort().getName(), num_of_algo);
             }
             Container::clearIDs(); // TODO: For each port in travel, we need to delete all the containers that were left at the port
-            delete ship;
-            ship = nullptr;
-            delete travel;
-            travel = nullptr;
             delete algo;
             algo = nullptr;
             if (num_of_algo == 1) extractGeneralErrors(errs_in_ctor); // Update the errors with general errors found during the travel.
@@ -330,13 +324,13 @@ bool Simulator::validateMoveOp(int num_of_algo, ShipPlan &ship, WeightBalanceCal
 }
 
 bool
-Simulator::validateRejectOp(int num_of_algo, ShipPlan &ship, Route *travel, WeightBalanceCalculator &calc,
+Simulator::validateRejectOp(int num_of_algo, ShipPlan &ship, Route &travel, WeightBalanceCalculator &calc,
                             int floor_num, int x, int y, const string &cont_id, bool &has_potential_to_be_loaded) {
     Container *cont;
     if (!Container::validateID(cont_id, false)) {
         return true; // Container got rejected cause of bad ID, which is legal!
     }
-    cont = travel->getCurrentPort().getWaitingContainerByID(cont_id);
+    cont = travel.getCurrentPort().getWaitingContainerByID(cont_id);
     //Container validation
     if (cont == nullptr) {
         errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: "+this->curr_port_name+"- Reject a container with ID: "+cont_id+"- that wasn't provided by the port.");
@@ -346,7 +340,7 @@ Simulator::validateRejectOp(int num_of_algo, ShipPlan &ship, Route *travel, Weig
         errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: "+this->curr_port_name+"- Reject a container with ID: "+cont_id+"- that was already loaded.");
         return false;
     } else if (calc.tryOperation('L', cont->getWeight(), x, y) == WeightBalanceCalculator::APPROVED &&
-               travel->isInRoute(cont->getDestPort()) && travel->getCurrentPort().getName() != cont->getDestPort()) {
+               travel.isInRoute(cont->getDestPort()) && travel.getCurrentPort().getName() != cont->getDestPort()) {
         if (ship.getNumOfFreeSpots() > 0) {
             errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: "+this->curr_port_name+"- Reject a container with ID: "+cont_id+"- although it can be loaded correctly.");
             return false;
@@ -375,9 +369,9 @@ int getFarthestDestOfContainerIndex(vector<Container>& conts) {
     return max_ind;
 }
 
-bool checkSortedContainers(vector<Container>& conts, Route *travel, const string &cont_id) {
+bool checkSortedContainers(vector<Container>& conts, Route &travel, const string &cont_id) {
     int farthest_port_num;
-    travel->sortContainersByDestination(conts);
+    travel.sortContainersByDestination(conts);
     farthest_port_num = getFarthestDestOfContainerIndex(
             conts); // get the maximal index of a container that was load to the ship.
     if (distance(conts.begin(), find(conts.begin(), conts.end(), *(Port::getContainerByIDFrom(conts, cont_id)))) <
@@ -388,7 +382,7 @@ bool checkSortedContainers(vector<Container>& conts, Route *travel, const string
 }
 
 void Simulator::checkRemainingContainers(map<string, Container *> unloaded_containers,
-                                         map<string, Container *> rejected_containers, Port &curr_port, Route *travel,
+                                         map<string, Container *> rejected_containers, Port &curr_port, Route &travel,
                                          int num_of_algo, int num_free_spots) {
     for (const auto &entry : unloaded_containers) {
         if (curr_port.getWaitingContainerByID(entry.first) != nullptr) {
@@ -410,24 +404,13 @@ void Simulator::checkRemainingContainers(map<string, Container *> unloaded_conta
     }
 }
 
-// Deletes only the containers that was unloaded from ship
-void deleteRemainingContainers(map<string, Container *> &unloaded_containers,
-                               map<string, Container *> &rejected_containers) {
-    for (auto &entry : unloaded_containers) {
-        if (rejected_containers.find(entry.first) != rejected_containers.end()) {
-            continue; // found an unloaded container which was provided by the port
-        }
-    }
-    unloaded_containers.clear();
-}
-
-void Simulator::implementInstructions(ShipPlan &ship, Route *travel,
+void Simulator::implementInstructions(ShipPlan &ship, Route &travel,
                                       WeightBalanceCalculator &calc, const string &instruction_file,
                                       int &num_of_operations, int num_of_algo) {
     FileHandler file(instruction_file);
     vector<string> instruction;
     Container *cont_to_load;
-    Port *current_port = &(travel->getCurrentPort());
+    Port *current_port = &(travel.getCurrentPort());
     map<string, Container *> rejected_containers;
     map<string, Container *> unloaded_containers;
     int x, y, floor_num;
@@ -512,12 +495,10 @@ void Simulator::implementInstructions(ShipPlan &ship, Route *travel,
     }
     checkRemainingContainers(unloaded_containers, rejected_containers, *current_port, travel, num_of_algo,
                              ship.getNumOfFreeSpots());
-    // Delete the remaining containers at unloaded+rejected.
-    deleteRemainingContainers(unloaded_containers, rejected_containers);
 }
 
-void Simulator::checkMissedContainers(ShipPlan *ship, const string &port_name, int num_of_algo) {
-    vector<Container *> conts = ship->getContainersForDest(port_name);
+void Simulator::checkMissedContainers(ShipPlan &ship, const string &port_name, int num_of_algo) {
+    vector<Container *> conts = ship.getContainersForDest(port_name);
     if ((int) conts.size() > 0) {
         errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- There are some containers that were not unloaded at their destination port: " + port_name);
         this->err_detected = true;

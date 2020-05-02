@@ -48,7 +48,7 @@ public:
      * Performs the instructions at the given instructions file while validating the algorithm decisions.
      */
     void
-    implementInstructions(ShipPlan &ship, Route *travel, WeightBalanceCalculator &calc,
+    implementInstructions(ShipPlan &ship, Route &travel, WeightBalanceCalculator &calc,
                           const string &instruction_file, int &num_of_operations, int num_of_algo);
 
     /**
@@ -80,7 +80,7 @@ public:
     /**
      * Validates a reject instruction.
      */
-    bool validateRejectOp(int num_of_algo, ShipPlan &ship, Route *travel, WeightBalanceCalculator &calc,
+    bool validateRejectOp(int num_of_algo, ShipPlan &ship, Route &travel, WeightBalanceCalculator &calc,
                                 int floor_num, int x, int y, const string &cont_id, bool &has_potential_to_be_loaded);
 
     /**
@@ -88,12 +88,12 @@ public:
      */
     void
     checkRemainingContainers(map<string, Container *> unloaded_containers, map<string, Container *> rejected_containers,
-                             Port &curr_port, Route *travel, int num_of_algo, int num_free_spots);
+                             Port &curr_port, Route &travel, int num_of_algo, int num_free_spots);
 
     /**
      * Checks that there was no containers left on the ship destinated for the given port.
      */
-    void checkMissedContainers(ShipPlan *ship, const string &port_name, int num_of_algo);
+    void checkMissedContainers(ShipPlan &ship, const string &port_name, int num_of_algo);
 
     /**
      * Merging given errors with the errors member.
