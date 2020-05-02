@@ -126,6 +126,10 @@ void BaseAlgorithm::findLoadingSpot(Container *cont, FileHandler &instructionsFi
 }
 
 bool BaseAlgorithm::checkMoveContainer(Container* cont, Spot& spot, FileHandler& instructionsFile) {
+    // Prevent warnings
+    (void)cont;
+    (void)spot;
+    (void)instructionsFile;
     return false; // Naive implementation no move allowed
 }
 

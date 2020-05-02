@@ -6,7 +6,7 @@
 class AlgorithmReverse : public BaseAlgorithm {
 
 protected:
-    Spot *getEmptySpot(int &returnFloorNum) override;
+    bool checkMoveContainer(Container *cont, Spot &spot, FileHandler &instructionsFile) override;
 };
 
 #endif //SHIPPROJECT_ALGORITHMREVERSE_H

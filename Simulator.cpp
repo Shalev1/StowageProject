@@ -281,8 +281,8 @@ bool Simulator::validateMoveOp(int num_of_algo, ShipPlan &ship, WeightBalanceCal
     }
     source_pos = &(ship.getSpotAt(source_floor_num, source_x, source_y));
     dest_pos = &(ship.getSpotAt(dest_floor_num, dest_x, dest_y));
-    if (source_pos->getAvailable() || source_pos->getContainer() == nullptr ||
-        dest_pos->getAvailable() || dest_pos->getContainer() != nullptr) {
+    if (!source_pos->getAvailable() || source_pos->getContainer() == nullptr ||
+        !dest_pos->getAvailable() || dest_pos->getContainer() != nullptr) {
         errors[num_of_algo].push_back("Travel: " + this->curr_travel_name + ", Port: "+this->curr_port_name+", Move a container with ID: "+cont_id+", using unavailable spot.");
         return false;
     }
