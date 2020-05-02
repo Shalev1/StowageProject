@@ -91,22 +91,6 @@ ShipPlan::ShipPlan(const string &file_path, vector<string> &err_msg, bool &succe
     initShipPlanFromFile(file_path, err_msg, success);
 }
 
-ShipPlan::~ShipPlan() {
-    //Iterate over the ship's space and delete the remaining containers
-    for (int floor_num = 0; floor_num < num_of_decks; ++floor_num) {
-        //Iterate over the current floor's floor map
-        for (int x = 0; x < rows; ++x) {
-            for (int y = 0; y < cols; ++y) {
-                Spot curr_spot = this->getSpotAt(floor_num, x, y);
-                if (curr_spot.getContainer() != nullptr) {
-                    delete curr_spot.getContainer(); // deletes container forever
-                    curr_spot.getContainer();
-                }
-            }
-        }
-    }
-}
-
 ostream &operator<<(ostream &out, const ShipPlan &s) {
     out << "The ship size is: " << s.rows << "," << s.cols
         << "," << s.num_of_decks << "(Rows,Colums,Height)" << endl;

@@ -15,8 +15,8 @@
 //---Main class---//
 class Port {
 private:
-    string name;                           // 2 letters country code, space, 3 letters port code
-    vector<Container*> waitingContainers; // Containers waiting in this port to be loaded to the ship
+    string name; // 5 letters represents the port code
+    vector<Container> waitingContainers; // Containers waiting in this port to be loaded to the ship
 
 public:
     //---Constructors and Destructors---//
@@ -31,7 +31,7 @@ public:
      */
     static bool validateName(const string &name);
 
-    vector<Container *> &getWaitingContainers() {
+    vector<Container>& getWaitingContainers() {
         return waitingContainers;
     }
 
@@ -49,13 +49,16 @@ public:
     /**
      * Return the container with id equals to @param id or nullptr if there is not one like that
      */
-    Container *getWaitingContainerByID(const string &id);
+    Container* getWaitingContainerByID(const string &id);
 
     /**
     * Return the container with id equals to @param id or nullptr if there is not one like that
     */
-    static Container *getContainerByIDFrom(const vector<Container *> &containers, const string &id);
+    static Container* getContainerByIDFrom(vector<Container>& containers, const string& id);
 
+    /**
+     * return @param name is uppercase format
+     */
     string nameToUppercase(const string &name);
 
     friend ostream &operator<<(ostream &os, const Port &p);

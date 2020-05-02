@@ -21,7 +21,7 @@ void Route::initRouteFromFile(const string& path, vector<string>& errVector, boo
         }
         prevName = name;
     }
-    if((int)ports.size() == 0){
+    if((int)ports.size() < 2){
         errVector.emplace_back("Illegal Route file given - no valid port in route");
         fatalError = true;
     }
@@ -142,22 +142,13 @@ bool Route::isInRoute(const string &portName) const {
     return false;
 }
 
-void Route::sortContainersByDestination(vector<Container*>& containers){
-    sort(containers.begin(), containers.end(),[this](Container* c1, Container* c2){
-        string dest1 = c1->getDestPort();
-        string dest2 = c2->getDestPort();
+void Route::sortContainersByDestination(vector<Container>& containers){
+    sort(containers.begin(), containers.end(),[this](Container& c1, Container& c2){
+        string dest1 = c1.getDestPort();
+        string dest2 = c2.getDestPort();
         string closeDest = this->getCloserDestination(dest1, dest2);
         return dest1 == closeDest;
     });
-}
-
-void Route::clearCurrentPort() {
-    vector<Container*> containers = getCurrentPort().getWaitingContainers();
-    for (int i = 0; i < (int)containers.size(); i++) {
-        if(containers[i]->getSpotInFloor() == nullptr){
-            delete containers[i];
-        }
-    }
 }
 
 ostream& operator<<(ostream& os, const Route& r){

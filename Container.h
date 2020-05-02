@@ -23,13 +23,14 @@ private:
     int weight;
     string dest_port;
     Spot *spot_in_floor;
-    const string id;
+    string id;
     static set<string> ids; // saves all of the ids that currently in use
 public:
     //---Constructors and Destructors---//
-    Container(int weight, string dest_port, const string id);
-
-    Container &operator=(const Container &c) = delete;
+    Container(int weight, string dest_port, string id);
+    bool operator== (const Container& c) {
+        return id == c.id;
+    }
 
     //---Setters and Getters---//
     int getWeight() const {

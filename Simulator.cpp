@@ -147,7 +147,6 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
                 algo->getInstructionsForCargo(travel->getCurrentPortPath(), instruction_file);
                 this->implementInstructions(*ship, travel, calc, instruction_file, num_of_operations, num_of_algo);
                 this->checkMissedContainers(ship, travel->getCurrentPort().getName(), num_of_algo);
-                travel->clearCurrentPort();
             }
             Container::clearIDs(); // TODO: For each port in travel, we need to delete all the containers that were left at the port
             delete ship;
@@ -366,22 +365,22 @@ void removeUnloadedContainer(map<string, Container *> &unloaded_containers, Cont
     }
 }
 
-int getFarthestDestOfContainerIndex(vector<Container *> conts) {
+int getFarthestDestOfContainerIndex(vector<Container>& conts) {
     int max_ind = -1;
     for (int i = 0; i < (int) conts.size(); ++i) {
-        if (conts[i]->getSpotInFloor() != nullptr) {                // find a container that was loaded on the ship
+        if (conts[i].getSpotInFloor() != nullptr) {                // find a container that was loaded on the ship
             max_ind = i; // i is always being raised
         }
     }
     return max_ind;
 }
 
-bool checkSortedContainers(vector<Container *> conts, Route *travel, const string &cont_id) {
+bool checkSortedContainers(vector<Container>& conts, Route *travel, const string &cont_id) {
     int farthest_port_num;
     travel->sortContainersByDestination(conts);
     farthest_port_num = getFarthestDestOfContainerIndex(
             conts); // get the maximal index of a container that was load to the ship.
-    if (distance(conts.begin(), find(conts.begin(), conts.end(), Port::getContainerByIDFrom(conts, cont_id))) <
+    if (distance(conts.begin(), find(conts.begin(), conts.end(), *(Port::getContainerByIDFrom(conts, cont_id)))) <
         farthest_port_num) { // The left side of the statement is just to find cont_id's index in conts
         return false;
     }
@@ -418,7 +417,6 @@ void deleteRemainingContainers(map<string, Container *> &unloaded_containers,
         if (rejected_containers.find(entry.first) != rejected_containers.end()) {
             continue; // found an unloaded container which was provided by the port
         }
-        delete entry.second; // Delete the container it FOREVER.
     }
     unloaded_containers.clear();
 }
