@@ -40,6 +40,13 @@ protected:
     virtual void findLoadingSpot(Container *cont, FileHandler &instructionsFile);
 
     /**
+     * Check it's possible to use move instruction for @param cont from the ship (places in @param spot)
+     * If it's possible, write move instruction in the instructions file
+     * Return true if succeed and false if fails
+     */
+    virtual bool checkMoveContainer(Container* cont, Spot& spot, FileHandler& instructionsFile);
+
+    /**
      * Remove @param cont from the ship (places in @param spot)
      * Also Unload all the containers above it and insert them in reloadContainers
      */

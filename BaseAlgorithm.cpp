@@ -125,6 +125,10 @@ void BaseAlgorithm::findLoadingSpot(Container *cont, FileHandler &instructionsFi
     ship.insertContainer(empty_spot, *cont);
 }
 
+bool BaseAlgorithm::checkMoveContainer(Container* cont, Spot& spot, FileHandler& instructionsFile) {
+    return false; // Naive implementation no move allowed
+}
+
 void BaseAlgorithm::markRemoveContainers(Container &cont, Spot &spot, vector<Container *> &reload_containers,
                                      FileHandler &instructionsFile) {
     int curr_floor_num = ship.getNumOfDecks() - 1;
@@ -141,11 +145,13 @@ void BaseAlgorithm::markRemoveContainers(Container &cont, Spot &spot, vector<Con
                                     curr_spot->getPlaceY()) != WeightBalanceCalculator::APPROVED) { // Check if removing this container will turn the ship out of balance.
             // TODO ex3: Handle error
         }
-        reload_containers.push_back(curr_spot->getContainer());
-        // Add unload instruction, will be reloaded later TODO: change to move instruction in ex2
-        instructionsFile.writeInstruction("U", curr_spot->getContainer()->getID(), curr_floor_num, spot.getPlaceX(),
-                                          spot.getPlaceY());
-        ship.removeContainer(curr_spot);
+        if(!checkMoveContainer(curr_spot->getContainer(), *curr_spot, instructionsFile)) {
+            reload_containers.push_back(curr_spot->getContainer());
+            // Add unload instruction, will be reloaded later
+            instructionsFile.writeInstruction("U", curr_spot->getContainer()->getID(), curr_floor_num, spot.getPlaceX(),
+                                              spot.getPlaceY());
+            ship.removeContainer(curr_spot);
+        }
         curr_floor_num--;
     }
     if (weightCal.tryOperation('U', cont.getWeight(), spot.getPlaceX(),
