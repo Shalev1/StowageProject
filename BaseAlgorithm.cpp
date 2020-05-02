@@ -18,10 +18,7 @@ int BaseAlgorithm::setWeightBalanceCalculator(WeightBalanceCalculator &calculato
 
 int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_and_file_name, const std::string &output_full_path_and_file_name) {
     route.moveToNextPortWithoutContInit();
-    //TODO: Replace with an empty file instead of NO_FILE, simulator should send empty file
-    if (input_full_path_and_file_name != NO_FILE) {
-        route.getCurrentPort().initWaitingContainers(input_full_path_and_file_name);
-    }
+    route.getCurrentPort().initWaitingContainers(input_full_path_and_file_name);
     vector<Container*>& waitingContainers = route.getCurrentPort().getWaitingContainers();
 
     vector<Container *> reloadContainers;
