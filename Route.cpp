@@ -110,7 +110,7 @@ bool Route::moveToNextPort(vector<string>& errVector) {
                     currentPortPath = empty_file;
                 } else {
                     currentPortPath = dir + std::filesystem::path::preferred_separator + (*it);
-                    ports[currentPortNum].initWaitingContainers(currentPortPath);
+                    ports[currentPortNum].initWaitingContainers(currentPortPath, errVector);
                 }
                 portsContainersPaths.erase(it);
                 return true;
