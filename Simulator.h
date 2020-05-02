@@ -4,9 +4,11 @@
 #include <string>
 #include <iostream>
 #include <map>
+#include <search.h>
 #include "ShipPlan.h"
 #include "Route.h"
-#include "Algorithm.h"
+#include "AbstractAlgorithm.h"
+#include "BaseAlgorithm.h"
 #include "AlgorithmReverse.h"
 #include "Utils.h"
 
@@ -25,7 +27,10 @@ private:
     vector<vector<string>> errors;
     string curr_travel_name;
     string curr_port_name;
-
+    inline static map<string, AbstractAlgorithm::Action> actionDic = {{"L", AbstractAlgorithm::Action::LOAD},
+                                                                      {"U", AbstractAlgorithm::Action::UNLOAD},
+                                                                      {"M", AbstractAlgorithm::Action::MOVE},
+                                                                      {"R", AbstractAlgorithm::Action::REJECT}};
 public:
     //---Constructors and Destructors---//
     explicit Simulator(const string &root);
@@ -91,7 +96,7 @@ public:
     void checkMissedContainers(ShipPlan *ship, const string &port_name, int num_of_algo);
 
     /**
-     * Creating a results file containing the number of operations performed in each travel for eavh algorithm.
+     * Creating a results file containing the number of operations performed in each travel for each algorithm.
      */
     void createResultsFile();
 

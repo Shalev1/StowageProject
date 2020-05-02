@@ -122,33 +122,6 @@ ShipProject/fast:
 	$(MAKE) -f CMakeFiles\ShipProject.dir\build.make CMakeFiles/ShipProject.dir/build
 .PHONY : ShipProject/fast
 
-Algorithm.obj: Algorithm.cpp.obj
-
-.PHONY : Algorithm.obj
-
-# target to build an object file
-Algorithm.cpp.obj:
-	$(MAKE) -f CMakeFiles\ShipProject.dir\build.make CMakeFiles/ShipProject.dir/Algorithm.cpp.obj
-.PHONY : Algorithm.cpp.obj
-
-Algorithm.i: Algorithm.cpp.i
-
-.PHONY : Algorithm.i
-
-# target to preprocess a source file
-Algorithm.cpp.i:
-	$(MAKE) -f CMakeFiles\ShipProject.dir\build.make CMakeFiles/ShipProject.dir/Algorithm.cpp.i
-.PHONY : Algorithm.cpp.i
-
-Algorithm.s: Algorithm.cpp.s
-
-.PHONY : Algorithm.s
-
-# target to generate assembly for a file
-Algorithm.cpp.s:
-	$(MAKE) -f CMakeFiles\ShipProject.dir\build.make CMakeFiles/ShipProject.dir/Algorithm.cpp.s
-.PHONY : Algorithm.cpp.s
-
 AlgorithmReverse.obj: AlgorithmReverse.cpp.obj
 
 .PHONY : AlgorithmReverse.obj
@@ -175,6 +148,33 @@ AlgorithmReverse.s: AlgorithmReverse.cpp.s
 AlgorithmReverse.cpp.s:
 	$(MAKE) -f CMakeFiles\ShipProject.dir\build.make CMakeFiles/ShipProject.dir/AlgorithmReverse.cpp.s
 .PHONY : AlgorithmReverse.cpp.s
+
+BaseAlgorithm.obj: BaseAlgorithm.cpp.obj
+
+.PHONY : BaseAlgorithm.obj
+
+# target to build an object file
+BaseAlgorithm.cpp.obj:
+	$(MAKE) -f CMakeFiles\ShipProject.dir\build.make CMakeFiles/ShipProject.dir/BaseAlgorithm.cpp.obj
+.PHONY : BaseAlgorithm.cpp.obj
+
+BaseAlgorithm.i: BaseAlgorithm.cpp.i
+
+.PHONY : BaseAlgorithm.i
+
+# target to preprocess a source file
+BaseAlgorithm.cpp.i:
+	$(MAKE) -f CMakeFiles\ShipProject.dir\build.make CMakeFiles/ShipProject.dir/BaseAlgorithm.cpp.i
+.PHONY : BaseAlgorithm.cpp.i
+
+BaseAlgorithm.s: BaseAlgorithm.cpp.s
+
+.PHONY : BaseAlgorithm.s
+
+# target to generate assembly for a file
+BaseAlgorithm.cpp.s:
+	$(MAKE) -f CMakeFiles\ShipProject.dir\build.make CMakeFiles/ShipProject.dir/BaseAlgorithm.cpp.s
+.PHONY : BaseAlgorithm.cpp.s
 
 Container.obj: Container.cpp.obj
 
@@ -509,12 +509,12 @@ help:
 	@echo ... ShipProject
 	@echo ... edit_cache
 	@echo ... rebuild_cache
-	@echo ... Algorithm.obj
-	@echo ... Algorithm.i
-	@echo ... Algorithm.s
 	@echo ... AlgorithmReverse.obj
 	@echo ... AlgorithmReverse.i
 	@echo ... AlgorithmReverse.s
+	@echo ... BaseAlgorithm.obj
+	@echo ... BaseAlgorithm.i
+	@echo ... BaseAlgorithm.s
 	@echo ... Container.obj
 	@echo ... Container.i
 	@echo ... Container.s

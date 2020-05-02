@@ -34,14 +34,16 @@ ostream &operator<<(ostream &out, const Container &c) {
 bool Container::validateID(const string &new_id, bool newOne) {
     regex form("([A-Z]{3})([JUZ]{1})([0-9]{7})");
     if (regex_match(new_id, form)) {
-        if (!newOne) // Not a new container, just need to valid ID format so return true
-            return true;
-        if (ids.find(new_id) == ids.end()) { // check if id wasn't enter before
-            return true;
-        }
-        if (newOne)
-            cout << "WARNING: Container id: " << new_id << " already in use, container ignored" << endl;
-        return false;
+        return true;
+        //TODO: add new way to check unique ID
+//        if (!newOne) // Not a new container, just need to valid ID format so return true
+//            return true;
+//        if (ids.find(new_id) == ids.end()) { // check if id wasn't enter before
+//            return true;
+//        }
+//        if (newOne)
+//            cout << "WARNING: Container id: " << new_id << " already in use, container ignored" << endl;
+//        return false;
     }
     if (newOne)
         cout << "WARNING: Illegal container ID was given: " << new_id << endl;

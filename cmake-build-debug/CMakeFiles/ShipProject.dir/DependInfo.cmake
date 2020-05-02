@@ -4,8 +4,8 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "C:/Users/tomer/CLionProjects/ShipProject/Algorithm.cpp" "C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/CMakeFiles/ShipProject.dir/Algorithm.cpp.obj"
   "C:/Users/tomer/CLionProjects/ShipProject/AlgorithmReverse.cpp" "C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/CMakeFiles/ShipProject.dir/AlgorithmReverse.cpp.obj"
+  "C:/Users/tomer/CLionProjects/ShipProject/BaseAlgorithm.cpp" "C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/CMakeFiles/ShipProject.dir/BaseAlgorithm.cpp.obj"
   "C:/Users/tomer/CLionProjects/ShipProject/Container.cpp" "C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/CMakeFiles/ShipProject.dir/Container.cpp.obj"
   "C:/Users/tomer/CLionProjects/ShipProject/Floor.cpp" "C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/CMakeFiles/ShipProject.dir/Floor.cpp.obj"
   "C:/Users/tomer/CLionProjects/ShipProject/Port.cpp" "C:/Users/tomer/CLionProjects/ShipProject/cmake-build-debug/CMakeFiles/ShipProject.dir/Port.cpp.obj"

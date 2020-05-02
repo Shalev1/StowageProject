@@ -10,25 +10,31 @@
 #include "Utils.h"
 
 #define indexOfFirst_InPath (5)
+#define NO_FILE "NO FILE"
 
 using std::map;
 
 //---Main class---//
 class Route {
 private:
-    int currentPortNum; // current port number in ports, initialize to -1 until start moving
+    int currentPortNum = -1; // current port number in ports, initialize to -1 until start moving
     vector<Port> ports; // The destination in the current route
     string dir; // The directory of the files
     vector<string> portsContainersPaths; // Contain relative paths to the containers files, that have not used yet
+    string currentPortPath;
     map<string, int> portVisits; // How many times ports were visited
 
+public:
+
+    // Constructors
+    Route() = default;
+    explicit Route(const string &path);
+
+
     /**
-     * Call in the constructor, init the route from the given path file
+     * Init the route from the given path file
      */
     void initRouteFromFile(const string &path);
-
-public:
-    explicit Route(const string &path);
 
     /**
      * Sort the given paths for containers files base on the asked sorting formula
@@ -49,8 +55,22 @@ public:
      */
     bool moveToNextPort();
 
+    /**
+     * Return the true if there is at least one more port in the route
+     * Also increase port number by one
+     */
+    bool moveToNextPortWithoutContInit();
+
     Port &getCurrentPort() {
         return ports[currentPortNum];
+    }
+
+    string& getCurrentPortPath(){
+        return currentPortPath;
+    }
+
+    int getNumOfVisitsInPort(string& portName){
+        return portVisits[portName];
     }
 
     /**
