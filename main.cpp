@@ -62,8 +62,10 @@ int main(int argc, char *argv[]) {
     }
 
     Simulator sim(output_path);
-    sim.runSimulation(algorithm_path, travel_path);
+    if(sim.runSimulation(algorithm_path, travel_path)){
+        sim.printSimulationResults();
+    }
+    sim.printSimulationErrors();
 
-    sim.printSimulationDetails();
     return EXIT_SUCCESS;
 }

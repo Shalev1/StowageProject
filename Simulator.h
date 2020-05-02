@@ -37,7 +37,7 @@ public:
     /**
      * Main function that runs the simulation.
      */
-    void runSimulation(string algorithm_path, string output_path);
+    bool runSimulation(string algorithm_path, string output_path);
 
     /**
      * Performs the instructions at the given instructions file while validating the algorithm decisions.
@@ -106,9 +106,14 @@ public:
     void fillSimErrors();
 
     /**
-     * Prints the simulation details.
+     * Prints the simulation results.
      */
-    void printSimulationDetails();
+    void printSimulationResults();
+
+    /**
+     * Prints the simulation errors.
+     */
+    void printSimulationErrors();
 };
 
 #endif //STOWAGEPROJECT_SIMULATOR_H
