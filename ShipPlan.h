@@ -21,9 +21,6 @@ public:
     //---Constructors and Destructors---//
     ShipPlan() = default;
     ShipPlan(const string &file_path,  vector<string> &err_msg, bool &success); //C'tor
-    ShipPlan &operator=(const ShipPlan &f) = delete;
-
-    ~ShipPlan();
 
     //---Setters and Getters---//
     int getNumOfDecks() const {

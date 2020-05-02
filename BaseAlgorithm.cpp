@@ -171,6 +171,5 @@ void BaseAlgorithm::markRemoveContainers(Container &cont, Spot &spot, vector<Con
     instructionsFile.writeInstruction("U", spot.getContainer()->getID(), curr_floor_num, spot.getPlaceX(),
                                       spot.getPlaceY());
     ship.removeContainer(&spot);
-    delete &cont;
 }
 

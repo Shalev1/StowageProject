@@ -420,7 +420,6 @@ void deleteRemainingContainers(map<string, Container *> &unloaded_containers,
         if (rejected_containers.find(entry.first) != rejected_containers.end()) {
             continue; // found an unloaded container which was provided by the port
         }
-        delete entry.second; // Delete the container it FOREVER.
     }
     unloaded_containers.clear();
 }
