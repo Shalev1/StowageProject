@@ -1,6 +1,6 @@
 COMP = g++-8.3.0
 OBJS = main.o Simulator.o ShipPlan.o Floor.o Spot.o Container.o Port.o Route.o Utils.o BaseAlgorithm.o  WeightBalanceCalculator.o AlgorithmReverse.o
-EXEC = ex1
+EXEC = simulator
 CPP_COMP_FLAG = -std=c++2a -Wall -Wextra -Werror -pedantic-errors -DNDEBUG
 CPP_LINK_FLAG = -lstdc++fs
 

@@ -131,7 +131,7 @@ void Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
             while (travel->moveToNextPort()) { // For each port in travel
                 curr_port_name = travel->getCurrentPort().getName();
                 instruction_file = travel_dir.path().string();
-                instruction_file = instruction_file + std::filesystem::path::preferred_separator + "instructions" + std::to_string(x) +".csv";
+                instruction_file = instruction_file + std::filesystem::path::preferred_separator + "instructions.csv";
                 algo->getInstructionsForCargo(travel->getCurrentPortPath(), instruction_file);
                 this->implementInstructions(*ship, travel, calc, instruction_file, num_of_operations, num_of_algo);
                 this->checkMissedContainers(ship, travel->getCurrentPort().getName(), num_of_algo);
