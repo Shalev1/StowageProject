@@ -80,6 +80,14 @@ void Route::initPortsContainersFiles(const string& dir, vector<string>& paths){
     this->portsContainersPaths = paths;
 }
 
+bool Route::moveToNextPortWithoutContInit() {
+    if(!hasNextPort())
+        return false;
+    currentPortNum++;
+    portVisits[getCurrentPort().getName()]++;
+    return true;
+}
+
 bool Route::moveToNextPort() {
     if(!hasNextPort())
         return false;
@@ -95,9 +103,10 @@ bool Route::moveToNextPort() {
             if (portNum == portVisits[getCurrentPort().getName()]) {
                 if (currentPortNum == (int) ports.size() - 1) { // last port
                     cout << "WARNING: Last port shouldn't has a waiting containers file, file ignored" << endl;
+                    currentPortPath = NO_FILE;
                 } else {
-                    ports[currentPortNum].initWaitingContainers(
-                            dir + std::filesystem::path::preferred_separator + (*it));
+                    currentPortPath = dir + std::filesystem::path::preferred_separator + (*it);
+                    ports[currentPortNum].initWaitingContainers(currentPortPath);
                 }
                 portsContainersPaths.erase(it);
                 return true;
@@ -108,6 +117,7 @@ bool Route::moveToNextPort() {
         cout << "WARNING: No waiting containers in Port " << getCurrentPort().getName() <<
             " for visit number: " << portVisits[getCurrentPort().getName()]<< endl;
     }
+    currentPortPath = NO_FILE;
     return true;
 }
 

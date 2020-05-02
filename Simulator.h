@@ -5,8 +5,10 @@
 #include <iostream>
 #include <filesystem>
 #include <map>
+#include <search.h>
 #include "ShipPlan.h"
 #include "Route.h"
+#include "AbstractAlgorithm.h"
 #include "BaseAlgorithm.h"
 #include "AlgorithmReverse.h"
 #include "Utils.h"
@@ -24,6 +26,11 @@ private:
     bool err_detected;
     vector<vector<string>> statistics;
     vector<vector<string>> errors;
+    //enum class Action { LOAD = 'L', UNLOAD = 'U', MOVE = 'M', REJECT = 'R'};
+    inline static map<string, AbstractAlgorithm::Action> actionDic = {{"L", AbstractAlgorithm::Action::LOAD},
+                              {"U", AbstractAlgorithm::Action::UNLOAD},
+                              {"M", AbstractAlgorithm::Action::MOVE},
+                              {"R", AbstractAlgorithm::Action::REJECT}};
 
 public:
     //---Constructors and Destructors---//

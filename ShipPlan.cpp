@@ -28,7 +28,7 @@ void ShipPlan::updateSpot(int x, int y, int unavailable_floors) {
     }
 }
 
-ShipPlan::ShipPlan(const string &file_path, bool &valid_ctor) {
+int ShipPlan::initShipPlanFromFile(const string &file_path, bool &valid_ctor) {
     FileHandler file(file_path);
     vector<string> line;
     int x, y, unavailable_floors;
@@ -36,16 +36,16 @@ ShipPlan::ShipPlan(const string &file_path, bool &valid_ctor) {
     if (!file.getNextLineAsTokens(line)) {
         cout << "ERROR: Empty file was given. Skipping to the next Travel..." << endl;
         valid_ctor = false;
-        return;
+        return 1;
     }
     if (!validateShipPlanLine(line)) {
         valid_ctor = false;
-        return;
+        return 1;
     }
     if (!validateShipSize(string2int(line[0]), string2int(line[1]), string2int(line[2]))) {
         cout << "ERROR: Invalid file was given- exceeded ship limits. Skipping to the next Travel..." << endl;
         valid_ctor = false;
-        return;
+        return 1;
     }
     setNumOfDecks(string2int(line[0]));
     setShipRows(string2int(line[1]));
@@ -59,7 +59,7 @@ ShipPlan::ShipPlan(const string &file_path, bool &valid_ctor) {
     while (file.getNextLineAsTokens(line)) {
         if (!validateShipPlanLine(line)) {
             valid_ctor = false;
-            return;
+            return 1;
         }
         x = string2int(line[0]);
         y = string2int(line[1]);
@@ -80,6 +80,11 @@ ShipPlan::ShipPlan(const string &file_path, bool &valid_ctor) {
             updateSpot(x, y, unavailable_floors);
         }
     }
+    return 0;
+}
+
+ShipPlan::ShipPlan(const string &file_path, bool &valid_ctor) {
+    initShipPlanFromFile(file_path, valid_ctor);
 }
 
 ShipPlan::~ShipPlan() {

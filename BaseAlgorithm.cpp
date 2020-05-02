@@ -1,22 +1,31 @@
 #include "BaseAlgorithm.h"
 
 int BaseAlgorithm::readShipPlan(const std::string &full_path_and_file_name) {
-
+    bool valid = true;
+    ship.initShipPlanFromFile(full_path_and_file_name, valid);
+    return 0;
 }
 
 int BaseAlgorithm::readShipRoute(const std::string &full_path_and_file_name) {
     route.initRouteFromFile(full_path_and_file_name);
+    return 0;
 }
 
-void BaseAlgorithm::getInstructionsForCargo(vector<Container *> &loadContainers, const string &instructionsFilePath) {
-    vector<Container *> algoContainers;
-    // Copy the given Containers, Algorithm use its own copy
-    for (int i = 0; i < (int) loadContainers.size(); i++) {
-        Container *c = new Container(*loadContainers[i]);
-        algoContainers.push_back(c);
+int BaseAlgorithm::setWeightBalanceCalculator(WeightBalanceCalculator &calculator) {
+    weightCal = calculator;
+    return 0;
+}
+
+int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_and_file_name, const std::string &output_full_path_and_file_name) {
+    route.moveToNextPortWithoutContInit();
+    //TODO: Replace with an empty file instead of NO_FILE, simulator should send empty file
+    if (input_full_path_and_file_name != NO_FILE) {
+        route.getCurrentPort().initWaitingContainers(input_full_path_and_file_name);
     }
+    vector<Container*>& waitingContainers = route.getCurrentPort().getWaitingContainers();
+
     vector<Container *> reloadContainers;
-    FileHandler instructionsFile(instructionsFilePath, true);
+    FileHandler instructionsFile(output_full_path_and_file_name, true);
 
     // Get Unload instructions for containers with destination equals to this port
     getUnloadInstructions(route.getCurrentPort().getName(), reloadContainers, instructionsFile);
@@ -25,27 +34,24 @@ void BaseAlgorithm::getInstructionsForCargo(vector<Container *> &loadContainers,
     getReloadInstructions(reloadContainers, instructionsFile);
 
     // Sort incoming containers by their destination
-    route.sortContainersByDestination(algoContainers);
+    route.sortContainersByDestination(waitingContainers);
 
-    for (auto it = algoContainers.begin(); it != algoContainers.end(); ++it) {
+    for (auto it = waitingContainers.begin(); it != waitingContainers.end(); ++it) {
         if ((*it)->getDestPort() == route.getCurrentPort().getName()) {
             instructionsFile.writeInstruction("R", (*it)->getID(), -1, -1, -1); // TODO: ex2 return error code
             cout << "WARNING: Container: " << (*it)->getID()
                  << " will not be loaded, its destination is the current port." << endl;
-            delete *it;
             continue;
         }
         if (!route.isInRoute((*it)->getDestPort())) {
             instructionsFile.writeInstruction("R", (*it)->getID(), -1, -1, -1); // TODO: ex2 return error code
             cout << "WARNING: Container: " << (*it)->getID()
                  << " will not be loaded, its destination is not a part of the remaining route." << endl;
-            delete *it;
             continue;
         }
         findLoadingSpot(*it, instructionsFile);
-        if ((*it)->getSpotInFloor() == nullptr)
-            delete *it;
     }
+    return 0;
 }
 
 void BaseAlgorithm::getUnloadInstructions(const string &portName, vector<Container *> &reloadContainers,
@@ -68,9 +74,9 @@ void BaseAlgorithm::getUnloadInstructions(const string &portName, vector<Contain
     }
 }
 
-void BaseAlgorithm::getReloadInstructions(vector<Container *> &reload_containers, FileHandler &instructionsFile) {
-    for (size_t i = 0; i < reload_containers.size(); ++i) {
-        findLoadingSpot(reload_containers[i], instructionsFile);
+void BaseAlgorithm::getReloadInstructions(vector<Container*>& reload_containers, FileHandler& instructionsFile) {
+    for (auto & reload_container : reload_containers) {
+        findLoadingSpot(reload_container, instructionsFile);
     }
 }
 
@@ -101,7 +107,7 @@ void BaseAlgorithm::findLoadingSpot(Container *cont, FileHandler &instructionsFi
     }
     vector<Spot *> failedSpots; // All spots that returned form getEmptySpot but put the container will make the ship unbalance
     // validate that ship will be balance. If not, find another spot.
-    while (weightCal->tryOperation('L', cont->getWeight(), empty_spot->getPlaceX(),
+    while (weightCal.tryOperation('L', cont->getWeight(), empty_spot->getPlaceX(),
             empty_spot->getPlaceY()) != WeightBalanceCalculator::APPROVED) {
         empty_spot->setAvailable(false);
         failedSpots.push_back(empty_spot);
@@ -134,7 +140,7 @@ void BaseAlgorithm::markRemoveContainers(Container &cont, Spot &spot, vector<Con
             curr_floor_num--;
             continue;
         }
-        if (weightCal->tryOperation('U', cont.getWeight(), curr_spot->getPlaceX(),
+        if (weightCal.tryOperation('U', cont.getWeight(), curr_spot->getPlaceX(),
                                     curr_spot->getPlaceY()) != WeightBalanceCalculator::APPROVED) { // Check if removing this container will turn the ship out of balance.
             // TODO ex3: Handle error
         }
@@ -145,7 +151,7 @@ void BaseAlgorithm::markRemoveContainers(Container &cont, Spot &spot, vector<Con
         ship.removeContainer(curr_spot);
         curr_floor_num--;
     }
-    if (weightCal->tryOperation('U', cont.getWeight(), spot.getPlaceX(),
+    if (weightCal.tryOperation('U', cont.getWeight(), spot.getPlaceX(),
                                 spot.getPlaceY()) != WeightBalanceCalculator::APPROVED) { // Check if removing this container will turn the ship out of balance.
         // TODO ex3: Handle error
     }

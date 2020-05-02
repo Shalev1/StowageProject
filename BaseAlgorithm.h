@@ -49,10 +49,10 @@ protected:
 public:
 
     /**
-     *  Fill the instructions vector with the instructions that need to do in this port.
-     *  Get the containers to be loaded in this port
+     *  Fill the instructions file with the instructions that need to do in this port.
+     *  Get the containers to be loaded in this port from the input file
      */
-    virtual void getInstructionsForCargo(vector<Container *> &loadContainers, const string &instructionsFile);
+    virtual int getInstructionsForCargo(const std::string &input_full_path_and_file_name, const std::string &output_full_path_and_file_name) override;
 
     /**
      * Read the ship plan from the given file

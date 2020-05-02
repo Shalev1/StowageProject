@@ -19,6 +19,7 @@ private:
 
 public:
     //---Constructors and Destructors---//
+    ShipPlan() = default;
     ShipPlan(const string &file_path, bool &valid_ctor); //C'tor
     ShipPlan &operator=(const ShipPlan &f) = delete;
 
@@ -58,6 +59,8 @@ public:
     }
 
     //---Class Functions---//
+
+    int initShipPlanFromFile(const string& file_path, bool &valid_ctor);
 
     friend ostream &operator<<(ostream &out, const ShipPlan &s);
 

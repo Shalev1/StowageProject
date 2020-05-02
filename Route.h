@@ -10,6 +10,7 @@
 #include "Utils.h"
 
 #define indexOfFirst_InPath (5)
+#define NO_FILE "NO FILE"
 
 using std::map;
 
@@ -20,6 +21,7 @@ private:
     vector<Port> ports; // The destination in the current route
     string dir; // The directory of the files
     vector<string> portsContainersPaths; // Contain relative paths to the containers files, that have not used yet
+    string currentPortPath;
     map<string, int> portVisits; // How many times ports were visited
 
 public:
@@ -53,8 +55,22 @@ public:
      */
     bool moveToNextPort();
 
+    /**
+     * Return the true if there is at least one more port in the route
+     * Also increase port number by one
+     */
+    bool moveToNextPortWithoutContInit();
+
     Port &getCurrentPort() {
         return ports[currentPortNum];
+    }
+
+    string& getCurrentPortPath(){
+        return currentPortPath;
+    }
+
+    int getNumOfVisitsInPort(string& portName){
+        return portVisits[portName];
     }
 
     /**

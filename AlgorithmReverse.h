@@ -5,10 +5,6 @@
 
 class AlgorithmReverse : public BaseAlgorithm {
 
-public:
-    AlgorithmReverse(const ShipPlan &plan, Route *travel, WeightBalanceCalculator *cal) : BaseAlgorithm{plan, travel,
-                                                                                                    cal} {}
-
 protected:
     Spot *getEmptySpot(int &returnFloorNum) override;
 };

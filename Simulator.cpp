@@ -92,17 +92,24 @@ void Simulator::runSimulation() {
             //SIMULATION
             switch (num_of_algo) {
                 case 1:
-                    algo = new BaseAlgorithm(*ship, travel, &calc);
+                    algo = new BaseAlgorithm();
                     break;
                 case 2:
-                    algo = new AlgorithmReverse(*ship, travel, &calc);
+                    algo = new AlgorithmReverse();
                     break;
+                default:
+                    algo = new BaseAlgorithm(); // To be sure algo initialize (just to prevent warning...)
             }
+            algo->readShipPlan(plan_path);
+            algo->readShipRoute(travel_path);
+            algo->setWeightBalanceCalculator(calc);
             string instruction_file;
+            int x = 0;
             while (travel->moveToNextPort()) { // For each port in travel
+                x++;
                 instruction_file = travel_dir.path().string();
-                instruction_file = instruction_file + std::filesystem::path::preferred_separator + "instructions.csv";
-                algo->getInstructionsForCargo(travel->getCurrentPort().getWaitingContainers(), instruction_file);
+                instruction_file = instruction_file + std::filesystem::path::preferred_separator + "instructions" + std::to_string(x) +".csv";
+                algo->getInstructionsForCargo(travel->getCurrentPortPath(), instruction_file);
                 this->implementInstructions(*ship, travel, calc, instruction_file, num_of_operations, num_of_algo);
                 this->checkMissedContainers(ship, travel->getCurrentPort().getName());
                 travel->clearCurrentPort();
@@ -115,7 +122,7 @@ void Simulator::runSimulation() {
             delete algo;
             algo = nullptr;
             travel_files.clear();
-            FileHandler::deleteFile(instruction_file); // TODO: Save all crane_instructions files per port
+            //FileHandler::deleteFile(instruction_file); // TODO: Save all crane_instructions files per port
             // Check if there was an error by the algorithm. if there was, number of operation is '-1'.
             if (this->err_in_travel) {
                 err_detected = true;
@@ -281,6 +288,7 @@ bool Simulator::validateMoveOp(int num_of_algo, ShipPlan &ship, WeightBalanceCal
 bool
 Simulator::validateRejectOp(int num_of_algo, ShipPlan &ship, Route *travel, WeightBalanceCalculator &calc,
                             int floor_num, int x, int y, const string &cont_id, bool &has_potential_to_be_loaded) {
+    cout << "DSGFDSGDFGDFGd " << travel->getCurrentPort().getName() << endl;
     Container *cont;
     if (!Container::validateID(cont_id, false)) {
         return true; // Container got rejected cause of bad ID, which is legal!
@@ -388,8 +396,8 @@ void Simulator::implementInstructions(ShipPlan &ship, Route *travel,
             cout << "WARNING: Skipping an invalid instruction, continue to the next one." << endl;
             continue;
         }
-        iType command = BaseAlgorithm::dic.at(instruction[0]);
-        if (command != R) {
+        AbstractAlgorithm::Action command = actionDic.at(instruction[0]);
+        if (command != AbstractAlgorithm::Action::REJECT) {
             if (!Container::validateID(instruction[1], false)) {
                 cout << "WARNING: Skipping an invalid instruction, continue to the next one." << endl;
                 continue; // Bad id for container
@@ -404,7 +412,7 @@ void Simulator::implementInstructions(ShipPlan &ship, Route *travel,
         x = string2int(instruction[3]);
         y = string2int(instruction[4]);
         switch (command) {
-            case L: {
+            case AbstractAlgorithm::Action::LOAD: {
                 if (!validateLoadOp(num_of_algo, ship, calc, floor_num, x, y, cont_to_load)) {
                     this->err_in_travel = true;
                     return;
@@ -416,7 +424,7 @@ void Simulator::implementInstructions(ShipPlan &ship, Route *travel,
                 num_of_operations++;
                 break;
             }
-            case U: {
+            case AbstractAlgorithm::Action::UNLOAD: {
                 if (!validateUnloadOp(num_of_algo, ship, calc, floor_num, x, y, instruction[1])) {
                     this->err_in_travel = true;
                     return;
@@ -430,7 +438,7 @@ void Simulator::implementInstructions(ShipPlan &ship, Route *travel,
                 num_of_operations++;
                 break;
             }
-            case M: {
+            case AbstractAlgorithm::Action::MOVE: {
                 if (!validateMoveOp(num_of_algo, ship, calc, floor_num, x, y, string2int(instruction[5]),
                                     string2int(instruction[6]), string2int(instruction[7]), instruction[1])) {
                     this->err_in_travel = true;
@@ -443,7 +451,7 @@ void Simulator::implementInstructions(ShipPlan &ship, Route *travel,
                 num_of_operations++;
                 break;
             }
-            case R: {
+            case AbstractAlgorithm::Action::REJECT: {
                 bool has_potential_to_be_loaded = false;
                 if (!validateRejectOp(num_of_algo, ship, travel, calc, floor_num, x, y, instruction[1],
                                       has_potential_to_be_loaded)) {
