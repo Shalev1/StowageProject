@@ -2,7 +2,8 @@
 
 int BaseAlgorithm::readShipPlan(const std::string &full_path_and_file_name) {
     bool valid = true;
-    ship.initShipPlanFromFile(full_path_and_file_name, valid);
+    vector<string> err_msgs;
+    ship.initShipPlanFromFile(full_path_and_file_name, err_msgs, valid);
     return 0;
 }
 

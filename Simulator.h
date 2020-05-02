@@ -96,6 +96,13 @@ public:
     void checkMissedContainers(ShipPlan *ship, const string &port_name, int num_of_algo);
 
     /**
+     * Merging given errors with the errors member.
+     */
+    void extractGeneralErrors(vector<string> err_strings);
+
+    bool updateInput(string &algorithm_path);
+
+    /**
      * Creating a results file containing the number of operations performed in each travel for each algorithm.
      */
     void createResultsFile();
