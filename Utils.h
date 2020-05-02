@@ -38,6 +38,8 @@ bool printCSVFile(const string &file_path);
 
 bool dirExists(const string &p);
 
+string createInstructionDir(const string &output_path, const string &algorithm_name, const string &travel_name);
+
 // Class to deal with files
 class FileHandler {
 private:

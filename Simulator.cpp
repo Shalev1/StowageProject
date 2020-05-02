@@ -60,6 +60,7 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
         WeightBalanceCalculator calc;
         int num_of_operations, num_of_errors = 0;
         BaseAlgorithm *algo;
+        string instruction_file_path;
         vector<string> new_res_row;
         statistics.push_back(new_res_row);
         statistics[num_of_algo].push_back("Algorithm ." + to_string(num_of_algo));
@@ -113,7 +114,9 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
             }
             if (num_of_algo == 1) statistics[0].push_back(travel_dir.path().filename()); // creating a travel column
             travel->initPortsContainersFiles(travel_dir.path(), travel_files);
+
             //SIMULATION
+            //Choosing algorithm
             switch (num_of_algo) {
                 case 1:
                     algo = new BaseAlgorithm();
@@ -127,11 +130,16 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
             algo->readShipPlan(plan_path);
             algo->readShipRoute(travel_path);
             algo->setWeightBalanceCalculator(calc);
+            //Creating instructions directory for the algorithm
+            instruction_file_path = createInstructionDir(output_dir_path, "algorithm " + to_string(num_of_algo), this->curr_travel_name); //TODO: Hard-corded algorithm name, should make dynamic with algorithm.so
+            if(instruction_file_path == ""){
+                cout << "ERROR: Failed creating instruction files directory, creates everything inside the output folder" << endl;
+                instruction_file_path = output_dir_path;
+            }
             string instruction_file;
             while (travel->moveToNextPort()) { // For each port in travel
                 curr_port_name = travel->getCurrentPort().getName();
-                instruction_file = travel_dir.path().string();
-                instruction_file = instruction_file + std::filesystem::path::preferred_separator + "instructions.csv";
+                instruction_file = instruction_file_path + std::filesystem::path::preferred_separator + curr_port_name + "_" + to_string(travel->getNumOfVisitsInPort(curr_port_name)) + ".crane_instructions.csv";
                 algo->getInstructionsForCargo(travel->getCurrentPortPath(), instruction_file);
                 this->implementInstructions(*ship, travel, calc, instruction_file, num_of_operations, num_of_algo);
                 this->checkMissedContainers(ship, travel->getCurrentPort().getName(), num_of_algo);

@@ -71,6 +71,14 @@ bool dirExists(const string &p){
     return std::filesystem::is_directory(std::filesystem::path(p));
 }
 
+string createInstructionDir(const string &output_path, const string &algorithm_name, const string &travel_name){
+    string dir_name = output_path + std::filesystem::path::preferred_separator + algorithm_name + "_" + travel_name + "_crane_instructions";
+    if(!std::filesystem::create_directory(dir_name)){
+        return "";
+    }
+    return dir_name;
+}
+
 //---FileHandler Functions---//
 FileHandler::FileHandler(const string &path, bool truncFlag) : fs(), path(path) {
     if (truncFlag) {
