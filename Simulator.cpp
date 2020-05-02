@@ -26,13 +26,11 @@ bool validateTravelFolder(std::filesystem::directory_entry entry) {
 //Updating algorithm and output path to be the curret folder if they are missing
 bool Simulator::updateInput(string &algorithm_path) {
     if (!algorithm_path.empty() && !dirExists(algorithm_path)) {
-        cout << "FATAL ERROR: Algorithm path that was given is invalid." << endl;
-        errors[0].push_back("Algorithm path that was given is invalid.");
+        errors[0].push_back("@ FATAL ERROR: Algorithm path that was given is invalid.");
         return false;
     }
     if (!this->output_dir_path.empty() && !dirExists(this->output_dir_path)) {
-        cout << "FATAL ERROR: Output path that was given is invalid." << endl;
-        errors[0].push_back("Output path that was given is invalid.");
+        errors[0].push_back("@ FATAL ERROR: Output path that was given is invalid.");
         this->output_dir_path = std::filesystem::current_path();
         return false;
     }
@@ -53,8 +51,7 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
         return false;
     }
     if (!dirExists(travels_dir_path)) {
-        cout << "FATAL ERROR: Can't find travel directory path." << endl;
-        errors[0].push_back("Can't find travel directory path.");
+        errors[0].push_back("@ FATAL ERROR: Can't find travel directory path.");
         fillSimErrors();
         err_detected = true;
         return false;
@@ -438,13 +435,15 @@ void Simulator::implementInstructions(ShipPlan &ship, Route *travel,
     int x, y, floor_num;
     while (file.getNextLineAsTokens(instruction)) {
         if (!validateInstruction(instruction)) {
-            cout << "WARNING: Skipping an invalid instruction, continue to the next one." << endl;
+            errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: "+this->curr_port_name+"- Invalid instruction detected.");
+            this->err_in_travel = true;
             continue;
         }
         AbstractAlgorithm::Action command = actionDic.at(instruction[0]);
         if (command != AbstractAlgorithm::Action::REJECT) {
             if (!Container::validateID(instruction[1], false)) {
-                cout << "WARNING: Skipping an invalid instruction, continue to the next one." << endl;
+                errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: "+this->curr_port_name+"- Instruction with invalid container ID detected.");
+                this->err_in_travel = true;
                 continue; // Bad id for container
             }
             cont_to_load = current_port->getWaitingContainerByID(instruction[1]);
@@ -508,7 +507,8 @@ void Simulator::implementInstructions(ShipPlan &ship, Route *travel,
                 break;
             }
             default: {
-                cout << "WARNING: Skipping an invalid instruction, continue to the next one." << endl;
+                errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: "+this->curr_port_name+"- Invalid instruction detected.");
+                this->err_in_travel = true;
             }
         }
     }
@@ -520,8 +520,7 @@ void Simulator::implementInstructions(ShipPlan &ship, Route *travel,
 
 void Simulator::checkMissedContainers(ShipPlan *ship, const string &port_name, int num_of_algo) {
     vector<Container *> conts = ship->getContainersForDest(port_name);
-    if ((int) conts.size() > 0) { // TODO: Should this be an algorithm error? I think yes!
-        cout << this->curr_travel_name << " WARNING: There are some containers that were not unloaded at their destination port: " << port_name << endl;
+    if ((int) conts.size() > 0) {
         errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- There are some containers that were not unloaded at their destination port: " + port_name);
         this->err_detected = true;
     }
