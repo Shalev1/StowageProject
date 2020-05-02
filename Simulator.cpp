@@ -42,14 +42,14 @@ bool updateInput(string &algorithm_path, string &output_path) {
     return true;
 }
 
-void Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
+bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
     int num_of_algo = 1;
-    if (!updateInput(algorithm_path, this->output_dir_path)) return;
+    if (!updateInput(algorithm_path, this->output_dir_path)) return false;
     if (!dirExists(travels_dir_path)) {
         cout << "FATAL ERROR: Can't find travel directory path." << endl;
         errors[0].push_back("Can't find travel directory path.");
         fillSimErrors();
-        return;
+        return false;
     }
     // TODO: Handle empty algorithm.so doesnt exists
 
@@ -162,6 +162,7 @@ void Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
     if (err_detected) // Errors found, err_file should be created
         fillSimErrors();
     createResultsFile();
+    return true; // No fatal errors were detected
 }
 
 // TODO: Check if this counts as an algorithm error
@@ -559,7 +560,12 @@ void Simulator::fillSimErrors() {
     }
 }
 
-void Simulator::printSimulationDetails() { // TODO: need to handle when no output directory is given
-    printCSVFile(this->output_dir_path + std::filesystem::path::preferred_separator + "simulation.errors.csv");
+void Simulator::printSimulationResults() {
+    cout << "Results File:" << endl;
     printCSVFile(this->output_dir_path + std::filesystem::path::preferred_separator + "simulation.results.csv");
+}
+
+void Simulator::printSimulationErrors() {
+    cout << "Errors File:" << endl;
+    printCSVFile(this->output_dir_path + std::filesystem::path::preferred_separator + "simulation.errors.csv");
 }
