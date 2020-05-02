@@ -1,21 +1,20 @@
 #include "ShipPlan.h"
 
 // Make sure the line is made of only 3 integers
-bool validateShipPlanLine(const vector<string> &line) {
+bool validateShipPlanLine(const vector<string> &line, string &err_msg) {
     int i;
     for (i = 0; i < (int) (line.size()); ++i) {
         if (i == 3) {
-            cout << "ERROR: Invalid file was given- too many arguments in a line. Skipping to the next Route..."
-                 << endl;
+            err_msg = "Invalid ship fileline was detected- too many arguments in a line.";
             return false;
         }
         if (!isPositiveNumber(line[i])) {
-            cout << "ERROR: Invalid file was given. Skipping to the next Route..." << endl;
+            err_msg = "Invalid ship file line was detected.";
             return false;
         }
     }
     if (i != 3) {
-        cout << "ERROR: Invalid file was given- not enough arguments in a line. Skipping to the next Route..." << endl;
+        err_msg = "Invalid file was line was detected- not enough arguments in a line.";
         return false;
     }
     return true;
@@ -28,24 +27,32 @@ void ShipPlan::updateSpot(int x, int y, int unavailable_floors) {
     }
 }
 
-int ShipPlan::initShipPlanFromFile(const string &file_path, bool &valid_ctor) {
+void ShipPlan::initShipPlanFromFile(const string &file_path, vector<string> &errs_msg, bool &success) {
     FileHandler file(file_path);
     vector<string> line;
     int x, y, unavailable_floors;
+    string err;
+    //bool found_normal_line = false; // TODO:Handle the case in which all the lines are illegal, especially the first line
+    if(file.isFailed()){
+        errs_msg.emplace_back("Invalid ship plan file was given.");
+        success = false; // should skip to the next travel
+        return;
+    }
     // Initialize ship dimensions
     if (!file.getNextLineAsTokens(line)) {
-        cout << "ERROR: Empty file was given. Skipping to the next Travel..." << endl;
-        valid_ctor = false;
-        return 1;
+        errs_msg.emplace_back("Empty ship plan file was given.");
+        success = false; // should skip to the next travel
+        return;
     }
-    if (!validateShipPlanLine(line)) {
-        valid_ctor = false;
-        return 1;
+    if (!validateShipPlanLine(line, err)) {
+        errs_msg.push_back(err);
+        success = false; // should skip to the next travel
+        return;
     }
     if (!validateShipSize(string2int(line[0]), string2int(line[1]), string2int(line[2]))) {
-        cout << "ERROR: Invalid file was given- exceeded ship limits. Skipping to the next Travel..." << endl;
-        valid_ctor = false;
-        return 1;
+        errs_msg.emplace_back("Invalid ship plan file was given- exceeded ship limits.");
+        success = false; // should skip to the next travel
+        return;
     }
     setNumOfDecks(string2int(line[0]));
     setShipRows(string2int(line[1]));
@@ -57,34 +64,32 @@ int ShipPlan::initShipPlanFromFile(const string &file_path, bool &valid_ctor) {
     }
     this->free_spots_num = this->rows * this->cols * this->num_of_decks;
     while (file.getNextLineAsTokens(line)) {
-        if (!validateShipPlanLine(line)) {
-            valid_ctor = false;
-            return 1;
+        if (!validateShipPlanLine(line, err)) {
+            errs_msg.push_back(err);
+            continue;
         }
         x = string2int(line[0]);
         y = string2int(line[1]);
         if (!spotInRange(x, y)) {
-            cout << "WARNING: A spot that exceeds the X/Y ship limits was detected." << endl;
+            errs_msg.emplace_back("A spot that exceeds the X/Y ship limits was detected while initializing the ship plan.");
             continue;
         }
         unavailable_floors = this->num_of_decks - string2int(line[2]);
         if (unavailable_floors <= 0) {
-            cout << "WARNING: A spot which is available within the maximum number of floors or more was detected."
-                 << endl;
+            errs_msg.emplace_back("A spot which is available within the maximum number of floors or more was detected while initializing the ship plan.");
             continue;
         } else { //unavailable_floors > 0
-            if (!(this->decks[0].getFloorMap()[x][y].getAvailable())) {
+            if (!(this->decks[0].getFloorMap()[x][y].getAvailable())) { // TODO: Should I throw an error?
                 //spot was already initialized, skip this one
                 continue;
             }
             updateSpot(x, y, unavailable_floors);
         }
     }
-    return 0;
 }
 
-ShipPlan::ShipPlan(const string &file_path, bool &valid_ctor) {
-    initShipPlanFromFile(file_path, valid_ctor);
+ShipPlan::ShipPlan(const string &file_path, vector<string> &err_msg, bool &success) {
+    initShipPlanFromFile(file_path, err_msg, success);
 }
 
 ShipPlan::~ShipPlan() {

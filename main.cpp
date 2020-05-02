@@ -51,6 +51,7 @@ int main(int argc, char *argv[]) {
     string travel_path = "";
     string algorithm_path = "";
     string output_path = "";
+    bool clean_run;
     if (argc > 7) {
         cout << "ERROR: Too many agruments given." << endl;
         return EXIT_FAILURE;
@@ -62,9 +63,10 @@ int main(int argc, char *argv[]) {
     }
 
     Simulator sim(output_path);
-    if(sim.runSimulation(algorithm_path, travel_path)){
+    clean_run = sim.runSimulation(algorithm_path, travel_path);
+    sim.printSimulationErrors();
+    if(clean_run){
         sim.printSimulationResults();
     }
-    sim.printSimulationErrors();
     return EXIT_SUCCESS;
 }

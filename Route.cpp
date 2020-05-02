@@ -93,6 +93,7 @@ bool Route::moveToNextPort() {
     if(!hasNextPort())
         return false;
     currentPortNum++;
+    //cout << "-----------------Entering Port: " << getCurrentPort().getName()  << " --------------------" << endl;
     portVisits[getCurrentPort().getName()]++;
     // Search for the containers file for the current port and current visit number
     for (auto it = portsContainersPaths.begin(); it != portsContainersPaths.end(); ++it) {

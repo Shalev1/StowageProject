@@ -20,7 +20,7 @@ private:
 public:
     //---Constructors and Destructors---//
     ShipPlan() = default;
-    ShipPlan(const string &file_path, bool &valid_ctor); //C'tor
+    ShipPlan(const string &file_path,  vector<string> &err_msg, bool &success); //C'tor
     ShipPlan &operator=(const ShipPlan &f) = delete;
 
     ~ShipPlan();
@@ -60,7 +60,7 @@ public:
 
     //---Class Functions---//
 
-    int initShipPlanFromFile(const string& file_path, bool &valid_ctor);
+    void initShipPlanFromFile(const string& file_path,  vector<string> &err_msg, bool &success);
 
     friend ostream &operator<<(ostream &out, const ShipPlan &s);
 
@@ -111,6 +111,7 @@ public:
     Spot &getSpotAt(int floor_num, int x, int y) {
         return decks[floor_num].getSpotAt(x, y);
     }
+
 };
 
 #endif //STOWAGEPROJECT_SHIPPLAN_H
