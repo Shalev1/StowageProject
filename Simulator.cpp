@@ -81,11 +81,9 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
             if (!validateTravelFolder(travel_dir))
                 continue;
             vector<string> errs_in_ctor;
-            bool successful_build = true;
             ShipPlan *ship = nullptr;
             Route *travel = nullptr;
-            bool routeFound = false;
-            bool planFound = false;
+            bool successful_build = true, routeFound = false, planFound = false;
             this->err_in_travel = false;
             this->curr_travel_name = travel_dir.path().filename();
             //Iterate over the directory
@@ -161,8 +159,8 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
             travel = nullptr;
             delete algo;
             algo = nullptr;
+            if (num_of_algo == 1) extractGeneralErrors(errs_in_ctor); // Update the errors with general errors found during the travel.
             travel_files.clear();
-            // TODO: Save all crane_instructions files per port
             // Check if there was an error by the algorithm. if there was, number of operation is '-1'.
             if (this->err_in_travel) {
                 err_detected = true;
@@ -182,12 +180,13 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
     return true; // No fatal errors were detected
 }
 
-void Simulator::extractGeneralErrors(vector<string> err_strings){
+void Simulator::extractGeneralErrors(vector<string> &err_strings){
     if(!err_strings.empty())
         err_detected = true; //at least one error was found
     for(int i=0;i<(int)err_strings.size();++i){
         errors[0].push_back("Travel: " + curr_travel_name + "- " + err_strings[i]);
     }
+    err_strings.clear(); // Clearing the errors list for future re-use.
 }
 
 // TODO: Check if this counts as an algorithm error

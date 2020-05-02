@@ -98,7 +98,7 @@ public:
     /**
      * Merging given errors with the errors member.
      */
-    void extractGeneralErrors(vector<string> err_strings);
+    void extractGeneralErrors(vector<string> &err_strings);
 
     bool updateInput(string &algorithm_path);
 
