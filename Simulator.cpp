@@ -104,9 +104,7 @@ void Simulator::runSimulation() {
             algo->readShipRoute(travel_path);
             algo->setWeightBalanceCalculator(calc);
             string instruction_file;
-            int x = 0;
             while (travel->moveToNextPort()) { // For each port in travel
-                x++;
                 instruction_file = travel_dir.path().string();
                 instruction_file = instruction_file + std::filesystem::path::preferred_separator + "instructions" + std::to_string(x) +".csv";
                 algo->getInstructionsForCargo(travel->getCurrentPortPath(), instruction_file);
@@ -122,7 +120,7 @@ void Simulator::runSimulation() {
             delete algo;
             algo = nullptr;
             travel_files.clear();
-            //FileHandler::deleteFile(instruction_file); // TODO: Save all crane_instructions files per port
+            FileHandler::deleteFile(instruction_file); // TODO: Save all crane_instructions files per port
             // Check if there was an error by the algorithm. if there was, number of operation is '-1'.
             if (this->err_in_travel) {
                 err_detected = true;
@@ -288,7 +286,6 @@ bool Simulator::validateMoveOp(int num_of_algo, ShipPlan &ship, WeightBalanceCal
 bool
 Simulator::validateRejectOp(int num_of_algo, ShipPlan &ship, Route *travel, WeightBalanceCalculator &calc,
                             int floor_num, int x, int y, const string &cont_id, bool &has_potential_to_be_loaded) {
-    cout << "DSGFDSGDFGDFGd " << travel->getCurrentPort().getName() << endl;
     Container *cont;
     if (!Container::validateID(cont_id, false)) {
         return true; // Container got rejected cause of bad ID, which is legal!

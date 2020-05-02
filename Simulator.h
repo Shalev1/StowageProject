@@ -26,7 +26,6 @@ private:
     bool err_detected;
     vector<vector<string>> statistics;
     vector<vector<string>> errors;
-    //enum class Action { LOAD = 'L', UNLOAD = 'U', MOVE = 'M', REJECT = 'R'};
     inline static map<string, AbstractAlgorithm::Action> actionDic = {{"L", AbstractAlgorithm::Action::LOAD},
                               {"U", AbstractAlgorithm::Action::UNLOAD},
                               {"M", AbstractAlgorithm::Action::MOVE},
