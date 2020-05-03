@@ -31,6 +31,29 @@ private:
                                                                       {"U", AbstractAlgorithm::Action::UNLOAD},
                                                                       {"M", AbstractAlgorithm::Action::MOVE},
                                                                       {"R", AbstractAlgorithm::Action::REJECT}};
+
+
+    inline static map<int, string> errCodes = {{0,  "ship plan: a position has an equal number of floors or more than the number of floors provided in the first line (ignored)"},
+                                               {1,  "ship plan: a given position exceeds the X/Y ship limits (ignored)"},
+                                               {2,  "ship plan: bad line format after first line or duplicate x y appearance with same data (ignored)"},
+                                               {3,  "ship plan: travel error - bad first line or file cannot be read altogether (cannot run this travel)"},
+                                               {4,  "reserved"},
+                                               {5,  "travel route: a port appears twice or more consecutively (ignored)"},
+                                               {6,  " travel route: bad port symbol format (ignored)"},
+                                               {7,  "travel route: travel error - empty file or file cannot be read altogether (cannot run this travel)"},
+                                               {8,  "travel route: travel error - file with only a single valid port (cannot run this travel)"},
+                                               {9,  "reserved"},
+                                               {10, "containers at port: duplicate ID on port (ID rejected)"},
+                                               {11, "containers at port: ID already on ship (ID rejected)"},
+                                               {12, "containers at port: bad line format; missing or bad weight (ID rejected)"},
+                                               {13, "containers at port: bad line format; missing or bad port dest (ID rejected)"},
+                                               {14, "containers at port: bad line format; ID cannot be read (ignored)"},
+                                               {15, "containers at port: illegal ID check ISO 6346 (ID rejected)"},
+                                               {16, "containers at port: file cannot be read altogether (assuming no cargo to be loaded at this port)"},
+                                               {17, "containers at port: last port has waiting containers (ignored)"},
+                                               {18, "containers at port: total containers amount exceeds ship capacity (rejecting far containers)"}};
+
+
 public:
     //---Constructors and Destructors---//
     explicit Simulator(const string &root);
@@ -81,13 +104,14 @@ public:
      * Validates a reject instruction.
      */
     bool validateRejectOp(int num_of_algo, ShipPlan &ship, Route &travel, WeightBalanceCalculator &calc,
-                                int floor_num, int x, int y, const string &cont_id, bool &has_potential_to_be_loaded);
+                          int floor_num, int x, int y, const string &cont_id, bool &has_potential_to_be_loaded);
 
     /**
      * Checks that the right containers were left at the port when the ship is leaving.
      */
     void
-    checkRemainingContainers(map<string, Container *> unloaded_containers, map<string, Container *> rejected_containers,
+    checkRemainingContainers(map<string, Container *> &unloaded_containers,
+                             map<string, Container *> &rejected_containers,
                              Port &curr_port, Route &travel, int num_of_algo, int num_free_spots);
 
     /**
@@ -98,7 +122,7 @@ public:
     /**
      * Merging given errors with the errors member.
      */
-    void extractGeneralErrors(vector<string> &err_strings);
+    void extractGeneralErrors(vector<pair<int, string>> &err_strings);
 
     bool updateInput(string &algorithm_path);
 
@@ -126,6 +150,11 @@ public:
      * Prints the simulation errors.
      */
     void printSimulationErrors();
+
+    /**
+     * Receives an integer represting error codes and add them to the errors log accordingly.
+     */
+    void Simulator::analyzeErrCode(int err_code, int num_of_algo);
 };
 
 #endif //STOWAGEPROJECT_SIMULATOR_H

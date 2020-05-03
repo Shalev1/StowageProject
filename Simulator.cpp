@@ -77,7 +77,7 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
             num_of_operations = 0;
             if (!validateTravelFolder(travel_dir))
                 continue;
-            vector<string> errs_in_ctor;
+            vector<pair<int,string>> errs_in_ctor;
             std::unique_ptr<ShipPlan> ship;
             std::unique_ptr<Route> travel;
             bool successful_build = true, routeFound = false, planFound = false;
@@ -85,11 +85,11 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
             this->curr_travel_name = travel_dir.path().filename();
             //Iterate over the directory
             for (const auto &entry : std::filesystem::directory_iterator(travel_dir.path())) {
-                if (entry.path().filename() == "Plan.csv") { // A ship plan file was found
+                if (entry.path().filename().ends_with(".ship_plan.csv")) { // A ship plan file was found
                     plan_path = entry.path();
                     ship = std::make_unique<ShipPlan>(plan_path, errs_in_ctor, successful_build);
                     planFound = true;
-                } else if (entry.path().filename() == "Route.csv") { // A route file was found
+                } else if (entry.path().filename().ends_with(".route.csv")) { // A route file was found
                     route_path = entry.path();
                     travel = std::make_unique<Route>(route_path, errs_in_ctor, successful_build);
                     routeFound = true;
@@ -135,14 +135,14 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
             //Creating instructions directory for the algorithm
             instruction_file_path = createInstructionDir(output_dir_path, "algorithm " + to_string(num_of_algo), this->curr_travel_name); //TODO: Hard-corded algorithm name, should make dynamic with algorithm.so
             if(instruction_file_path == ""){
-                cout << "ERROR: Failed creating instruction files directory, creates everything inside the output folder." << endl;
+                cout << "ERROR: Failed creating instruction files directory; creates everything inside the output folder." << endl;
                 instruction_file_path = output_dir_path;
             }
             string instruction_file;
             while (travel->moveToNextPort(errs_in_ctor)) { // For each port in travel
                 curr_port_name = travel->getCurrentPort().getName();
                 instruction_file = instruction_file_path + std::filesystem::path::preferred_separator + curr_port_name + "_" + to_string(travel->getNumOfVisitsInPort(curr_port_name)) + ".crane_instructions.csv";
-                algo->getInstructionsForCargo(travel->getCurrentPortPath(), instruction_file);
+                analyzeErrCode(algo->getInstructionsForCargo(travel->getCurrentPortPath(), instruction_file), num_of_algo);
                 this->implementInstructions(*ship, *travel, calc, instruction_file, num_of_operations, num_of_algo);
                 this->checkMissedContainers(*ship, travel->getCurrentPort().getName(), num_of_algo);
             }
@@ -170,11 +170,11 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
     return true; // No fatal errors were detected
 }
 
-void Simulator::extractGeneralErrors(vector<string> &err_strings){
+void Simulator::extractGeneralErrors(vector<pair<int,string>> &err_strings){
     if(!err_strings.empty())
         err_detected = true; //at least one error was found
     for(int i=0;i<(int)err_strings.size();++i){
-        errors[0].push_back("@ Travel: " + curr_travel_name + "- " + err_strings[i]);
+        errors[0].push_back("@ Travel: " + curr_travel_name + "- " + err_strings[i].second);
     }
     err_strings.clear(); // Clearing the errors list for future re-use.
 }
@@ -381,8 +381,8 @@ bool checkSortedContainers(vector<Container>& conts, Route &travel, const string
     return true;
 }
 
-void Simulator::checkRemainingContainers(map<string, Container *> unloaded_containers,
-                                         map<string, Container *> rejected_containers, Port &curr_port, Route &travel,
+void Simulator::checkRemainingContainers(map<string, Container *> &unloaded_containers,
+                                         map<string, Container *> &rejected_containers, Port &curr_port, Route &travel,
                                          int num_of_algo, int num_free_spots) {
     for (const auto &entry : unloaded_containers) {
         if (curr_port.getWaitingContainerByID(entry.first) != nullptr) {
@@ -571,4 +571,12 @@ void Simulator::printSimulationErrors() {
     cout << "Errors File:" << endl;
     if(!printCSVFile(this->output_dir_path + std::filesystem::path::preferred_separator + "simulation.errors.csv"))
         cout << "Couldn't open errors file." << endl;
+}
+
+void Simulator::analyzeErrCode(int err_code, int num_of_algo){
+    vector<unsigned int> one_indexes = getOneIndexes(err_code);
+    for(const unsigned int index : one_indexes){
+        if(index > 18) return; // No error code is defined for indexes above 18.
+        errors[num_of_algo].push_back("@ Algorithm reported: " + errCodes.at(index));
+    }
 }

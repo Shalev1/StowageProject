@@ -50,7 +50,7 @@ void convertFileIntoVector(FileHandler &file, vector<vector<string>> &data) {
 bool printCSVFile(const string &file_path) {
     FileHandler file(file_path);
     vector<vector<string>> data;
-    if(file.isFailed()){ // File didn't load succesfully
+    if (file.isFailed()) { // File didn't load succesfully
         return false;
     }
     convertFileIntoVector(file, data);
@@ -58,7 +58,7 @@ bool printCSVFile(const string &file_path) {
         for (unsigned int j = 0; j < data[i].size(); ++j) {
             if (j == data[i].size() - 1) {
                 cout << data[i][j] << '\n';
-            } else{
+            } else {
                 cout << data[i][j] << ',';
             }
         }
@@ -67,19 +67,30 @@ bool printCSVFile(const string &file_path) {
     return true;
 }
 
-bool dirExists(const string &p){
+bool dirExists(const string &p) {
     return std::filesystem::is_directory(std::filesystem::path(p));
 }
 
-string createInstructionDir(const string &output_path, const string &algorithm_name, const string &travel_name){
-    string dir_name = output_path + std::filesystem::path::preferred_separator + algorithm_name + "_" + travel_name + "_crane_instructions";
-    if(dirExists(dir_name)){ // Check if directory already exists.
+string createInstructionDir(const string &output_path, const string &algorithm_name, const string &travel_name) {
+    string dir_name = output_path + std::filesystem::path::preferred_separator + algorithm_name + "_" + travel_name +
+                      "_crane_instructions";
+    if (dirExists(dir_name)) { // Check if directory already exists.
         return dir_name;
     }
-    if(!std::filesystem::create_directory(dir_name)){
+    if (!std::filesystem::create_directory(dir_name)) {
         return ""; // Directory did not open correctly.
     }
     return dir_name;
+}
+
+vector<unsigned int> getOneIndexes(int num) {
+    vector<unsigned int> result;
+    unsigned int index = 0;
+    while (num > 0) {
+        if (num % 2 == 1) result.push_back(index);
+        num >>= 1;
+        index++;
+    }
 }
 
 //---FileHandler Functions---//

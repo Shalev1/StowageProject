@@ -20,7 +20,7 @@ private:
 public:
     //---Constructors and Destructors---//
     ShipPlan() = default;
-    ShipPlan(const string &file_path,  vector<string> &err_msg, bool &success); //C'tor
+    ShipPlan(const string &file_path,  vector<pair<int,string>> &err_msg, bool &success); //C'tor
 
     //---Setters and Getters---//
     int getNumOfDecks() const {
@@ -57,7 +57,7 @@ public:
 
     //---Class Functions---//
 
-    void initShipPlanFromFile(const string& file_path,  vector<string> &err_msg, bool &success);
+    void initShipPlanFromFile(const string& file_path, vector<pair<int,string>> &err_msg, bool &success);
 
     friend ostream &operator<<(ostream &out, const ShipPlan &s);
 
