@@ -52,7 +52,7 @@ void Port::initWaitingContainers(const string &path, vector<pair<int,string>>& e
                 continue;
             }
             if(!Container::checkUnique(id, algoCase)){
-                errVector.emplace_back(11,"Container with ID " + id + " already exists");
+                errVector.emplace_back(11,"Container with ID " + id + " already loaded on the ship");
                 continue;
             }
             // Check that there isn't already container with the same ID in the port
