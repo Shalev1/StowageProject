@@ -32,11 +32,7 @@ string Port::nameToUppercase(const string &name) {
     return upperName;
 }
 
-void Port::addContainer(int weight, const string &destPort, const string &id) {
-    waitingContainers.emplace_back(weight, destPort, id);
-}
-
-void Port::initWaitingContainers(const string &path, vector<pair<int,string>>& errVector) {
+void Port::initWaitingContainers(const string &path, vector<pair<int,string>>& errVector, bool algoCase) {
     FileHandler fh(path);
     bool valid = true;
     string id = "";
@@ -53,6 +49,10 @@ void Port::initWaitingContainers(const string &path, vector<pair<int,string>>& e
             id = tokens[0];
             if (!Container::validateID(id)) {
                 errVector.emplace_back(15,"Illegal ID for container: " + id);
+                continue;
+            }
+            if(!Container::checkUnique(id, algoCase)){
+                errVector.emplace_back(11,"Container with ID " + id + " already exists");
                 continue;
             }
             // Check that there isn't already container with the same ID in the port
@@ -91,8 +91,8 @@ void Port::initWaitingContainers(const string &path, vector<pair<int,string>>& e
                 valid = false;
             }
         }
-        if(valid){
-            addContainer(weight, Port::nameToUppercase(dest), id);
+        if(valid){ // Valid, add the container to the port
+            waitingContainers.emplace_back(weight, Port::nameToUppercase(dest), id, algoCase);
         }
     }
 }

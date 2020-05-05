@@ -24,10 +24,11 @@ private:
     string dest_port;
     Spot *spot_in_floor;
     string id;
-    static set<string> ids; // saves all of the ids that currently in use
+    static set<string> simIds; // saves all of the ids that currently in use
+    static set<string> algoIds; // saves all of the ids that currently in use
 public:
     //---Constructors and Destructors---//
-    Container(int weight, string dest_port, string id);
+    Container(int weight, string dest_port, string id, bool algoCont = false);
     bool operator== (const Container& c) {
         return id == c.id;
     }
@@ -65,16 +66,20 @@ public:
 
     /**
      * Check if the given ID is legal for container
-     * @param newOne : is this function check validation for
-     *      new container or not (need to consider uynique ID or not)
      */
-    static bool validateID(const string &id, bool newOne = true);
+    static bool validateID(const string &id);
+
+    /**
+     * Check if the given ID isn't in use
+     */
+    static bool checkUnique(const string& id, bool algoCheck);
 
     /**
      * Clearing all containers that were used in a specific travel.
      */
     static void clearIDs() {
-        ids.clear();
+        simIds.clear();
+        algoIds.clear();
     }
 };
 

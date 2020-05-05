@@ -110,11 +110,16 @@ bool Route::moveToNextPort(vector<pair<int,string>>& errVector) {
             int portNum = stoi(portNumS);
             if (portNum == portVisits[getCurrentPort().getName()]) {
                 if (currentPortNum == (int) ports.size() - 1) { // last port
+                    FileHandler lastPortFile(dir + std::filesystem::path::preferred_separator + (*it));
+                    vector<string> tokens;
+                    if(lastPortFile.getNextLineAsTokens(tokens)){
+
+                    }
                     errVector.emplace_back(17,"Last port shouldn't has waiting containers");//TODO: move to port
                     currentPortPath = empty_file;
                 } else {
                     currentPortPath = dir + std::filesystem::path::preferred_separator + (*it);
-                    ports[currentPortNum].initWaitingContainers(currentPortPath, errVector);
+                    ports[currentPortNum].initWaitingContainers(currentPortPath, errVector, false);
                 }
                 portsContainersPaths.erase(it);
                 return true;

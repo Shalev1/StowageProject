@@ -23,7 +23,7 @@ int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_an
     route.moveToNextPortWithoutContInit();
 
     vector<pair<int,string>> errors;
-    route.getCurrentPort().initWaitingContainers(input_full_path_and_file_name, errors);
+    route.getCurrentPort().initWaitingContainers(input_full_path_and_file_name, errors, true);
     vector<Container>& waitingContainers = route.getCurrentPort().getWaitingContainers();
 
     vector<Container*> reloadContainers;
