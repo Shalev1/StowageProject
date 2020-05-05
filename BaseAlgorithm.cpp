@@ -78,7 +78,6 @@ int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_an
     for(auto& p : errors){
         errorsFlags += errorCodeBits[p.first];
     }
-    cout << errorsFlags << endl;
     return errorsFlags;
 }
 
