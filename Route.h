@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <filesystem>
 #include <map>
+
 #include "Port.h"
 #include "Utils.h"
 
@@ -34,13 +35,13 @@ public:
     /**
      * Init the route from the given path file
      */
-    void initRouteFromFile(const string &path, vector<string>& errVector, bool& fatalError);
+    void initRouteFromFile(const string &path, vector<pair<int,string>>& errVector, bool& fatalError);
 
     /**
      * Sort the given paths for containers files base on the asked sorting formula
      * dir is the base directory and paths are relative path in this directory
      */
-    void initPortsContainersFiles(const string &dir, vector<string> &paths, vector<string>& errVector);
+    void initPortsContainersFiles(const string &dir, vector<string> &paths, vector<pair<int,string>>& errVector);
 
     /**
      * Return if there is at least one more port in the route
@@ -53,7 +54,7 @@ public:
      * Return the true if there is at least one more port in the route
      * Also load the waiting containers in this port
      */
-    bool moveToNextPort(vector<string>& errVector);
+    bool moveToNextPort(vector<pair<int,string>>& errVector);
 
     /**
      * Return the true if there is at least one more port in the route
