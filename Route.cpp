@@ -1,14 +1,14 @@
 #include "Route.h"
 
-Route::Route(const string &path, vector<pair<int,string>>& errVector, bool& fatalError) : currentPortNum(-1) {
-    initRouteFromFile(path, errVector, fatalError);
+Route::Route(const string &path, vector<pair<int,string>>& errVector, bool& success) : currentPortNum(-1) {
+    initRouteFromFile(path, errVector, success);
 }
 
-void Route::initRouteFromFile(const string& path, vector<pair<int,string>>& errVector, bool& fatalError) {
+void Route::initRouteFromFile(const string& path, vector<pair<int,string>>& errVector, bool& success) {
     FileHandler fh(path);
     if(fh.isFailed()){
         errVector.emplace_back(7,"Error while opening route file- can't run this travel");
-        fatalError = true;
+        success = false;
     }
     string name;
     string prevName;
@@ -27,7 +27,7 @@ void Route::initRouteFromFile(const string& path, vector<pair<int,string>>& errV
     }
     if((int)ports.size() < 2){
         errVector.emplace_back(8,"Illegal Route file given - less then two valid ports in route - can't run this travel");
-        fatalError = true;
+        success = false;
     }
     empty_file = string("Files") + std::filesystem::path::preferred_separator + string("empty_file.csv");
 }

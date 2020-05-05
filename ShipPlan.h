@@ -20,7 +20,6 @@ private:
 public:
     //---Constructors and Destructors---//
     ShipPlan() = default;
-    ShipPlan(const string &file_path,  vector<pair<int,string>> &err_msg, bool &success); //C'tor
 
     //---Setters and Getters---//
     int getNumOfDecks() const {

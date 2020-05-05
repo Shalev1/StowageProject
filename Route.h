@@ -29,7 +29,7 @@ private:
 public:
     // Constructors
     Route() = default;
-    explicit Route(const string &path, vector<pair<int,string>>& errVector, bool& fatalError);
+    explicit Route(const string &path, vector<pair<int,string>>& errVector, bool& success);
 
 
     /**

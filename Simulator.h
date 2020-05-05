@@ -20,6 +20,8 @@ using std::to_string;
 //---Main class---//
 class Simulator {
 private:
+    ShipPlan ship;
+    Route travel;
     string output_dir_path;
     bool err_in_travel;
     bool err_detected;
@@ -31,7 +33,6 @@ private:
                                                                       {"U", AbstractAlgorithm::Action::UNLOAD},
                                                                       {"M", AbstractAlgorithm::Action::MOVE},
                                                                       {"R", AbstractAlgorithm::Action::REJECT}};
-
 
     inline static map<int, string> errCodes = {{0,  "ship plan: a position has an equal number of floors or more than the number of floors provided in the first line (ignored)"},
                                                {1,  "ship plan: a given position exceeds the X/Y ship limits (ignored)"},
@@ -54,24 +55,16 @@ private:
                                                {18, "containers at port: total containers amount exceeds ship capacity (rejecting far containers)"}};
 
 
-public:
-    //---Constructors and Destructors---//
-    explicit Simulator(const string &root);
-
-    Simulator(const Simulator &other) = delete;
-
-    Simulator &operator=(const Simulator &other) = delete;
-
     /**
-     * Main function that runs the simulation.
+     * Iterates over the given travel folder and initializes the ship plan and the route.
      */
-    bool runSimulation(string algorithm_path, string output_path);
+    bool scanTravelDir(int num_of_algo, string &plan_path, string &route_path, vector<string> &travel_files, const std::filesystem::path &travel_dir);
 
     /**
      * Performs the instructions at the given instructions file while validating the algorithm decisions.
      */
     void
-    implementInstructions(ShipPlan &ship, Route &travel, WeightBalanceCalculator &calc,
+    implementInstructions(WeightBalanceCalculator &calc,
                           const string &instruction_file, int &num_of_operations, int num_of_algo);
 
     /**
@@ -117,13 +110,16 @@ public:
     /**
      * Checks that there was no containers left on the ship destinated for the given port.
      */
-    void checkMissedContainers(ShipPlan &ship, const string &port_name, int num_of_algo);
+    void checkMissedContainers(const string &port_name, int num_of_algo);
 
     /**
      * Merging given errors with the errors member.
      */
     void extractGeneralErrors(vector<pair<int, string>> &err_strings);
 
+    /**
+     * Updating algorithm and output path to be the curret folder if they are missing
+     */
     bool updateInput(string &algorithm_path);
 
     /**
@@ -142,6 +138,24 @@ public:
     void fillSimErrors();
 
     /**
+     * Receives an integer represting error codes and add them to the errors log accordingly.
+     */
+    void analyzeErrCode(int err_code, int num_of_algo);
+
+public:
+    //---Constructors and Destructors---//
+    explicit Simulator(const string &root);
+
+    Simulator(const Simulator &other) = delete;
+
+    Simulator &operator=(const Simulator &other) = delete;
+
+    /**
+     * Main function that runs the simulation.
+     */
+    bool runSimulation(string algorithm_path, string output_path);
+
+    /**
      * Prints the simulation results.
      */
     void printSimulationResults();
@@ -151,10 +165,6 @@ public:
      */
     void printSimulationErrors();
 
-    /**
-     * Receives an integer represting error codes and add them to the errors log accordingly.
-     */
-    void analyzeErrCode(int err_code, int num_of_algo);
 };
 
 #endif //STOWAGEPROJECT_SIMULATOR_H

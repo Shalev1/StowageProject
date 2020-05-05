@@ -24,7 +24,6 @@ bool validateTravelFolder(std::filesystem::directory_entry entry) {
     return false;
 }
 
-//Updating algorithm and output path to be the curret folder if they are missing
 bool Simulator::updateInput(string &algorithm_path) {
     if (!algorithm_path.empty() && !dirExists(algorithm_path)) {
         errors[0].push_back("@ FATAL ERROR: Algorithm path that was given is invalid.");
@@ -44,6 +43,59 @@ bool Simulator::updateInput(string &algorithm_path) {
     return true;
 }
 
+bool Simulator::scanTravelDir(int num_of_algo, string &plan_path, string &route_path, vector<string> &travel_files, const std::filesystem::path &travel_dir){
+    bool success_build = true, route_found = false, plan_found = false;
+    vector<pair<int, string>> errs_in_ctor;
+
+    for (const auto &entry : std::filesystem::directory_iterator(travel_dir)) {
+        if (endsWith(entry.path().filename(), ".ship_plan.csv")) { // A ship plan file was found
+            if (plan_found) {
+                if (num_of_algo == 1)
+                    errors[0].push_back(
+                            "@ Travel: " + this->curr_travel_name + " already found a ship plan file.");
+                err_detected = true;
+                continue;
+            }
+            plan_path = entry.path();
+            ship = ShipPlan(); // Reset the ship before initialization
+            ship.initShipPlanFromFile(plan_path, errs_in_ctor, success_build);
+            plan_found = true;
+        } else if (endsWith(entry.path().filename(), ".route.csv")) { // A route file was found
+            if (route_found) {
+                if (num_of_algo == 1)
+                    errors[0].push_back("@ Travel: " + this->curr_travel_name + " already found a route file.");
+                err_detected = true;
+                continue;
+            }
+            route_path = entry.path();
+
+            travel = Route();
+            travel.initRouteFromFile(route_path, errs_in_ctor, success_build);
+            route_found = true;
+        } else { // The rest of the files, may include some containers details.
+            travel_files.push_back(entry.path().filename());
+        }
+    }
+    if (!plan_found) {
+        if (num_of_algo == 1) errors[0].push_back("@ Travel: " + this->curr_travel_name + " has no Plan file.");
+        err_detected = true;
+        return false;
+    }
+    if (!route_found) {
+        if (num_of_algo == 1)
+            errors[0].push_back("@ Travel: " + this->curr_travel_name + " has no Route file.");
+        err_detected = true;
+        return false;
+    }
+    // Adding errors that were detected during Ship and Route builders
+    if (num_of_algo == 1) extractGeneralErrors(errs_in_ctor);
+    if (!success_build) {
+        err_detected = true;
+        return false; //One of the files of the travel is invalid, continue to the next travel.
+    }
+    return true;
+}
+
 bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
     int num_of_algo = 1;
     if (!updateInput(algorithm_path)) {
@@ -60,7 +112,7 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
     // TODO: Handle empty algorithm.so doesnt exists
 
     while (num_of_algo <= NUM_OF_ALGORITHMS) {
-        vector<string> travel_files(1);
+        vector<string> travel_files;
         string plan_path, route_path;
         WeightBalanceCalculator calc;
         int num_of_operations, num_of_errors = 0;
@@ -80,58 +132,16 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
             if (!validateTravelFolder(travel_dir))
                 continue;
             vector<pair<int, string>> errs_in_ctor;
-            std::unique_ptr<ShipPlan> ship;
-            std::unique_ptr<Route> travel;
-            bool successful_build = true, route_found = false, plan_found = false;
             this->err_in_travel = false;
             this->curr_travel_name = travel_dir.path().filename();
+
             //Iterate over the directory
-            for (const auto &entry : std::filesystem::directory_iterator(travel_dir.path())) {
-                if (endsWith(entry.path().filename(), ".ship_plan.csv")) { // A ship plan file was found
-                    if (plan_found) {
-                        if (num_of_algo == 1)
-                            errors[0].push_back(
-                                    "@ Travel: " + this->curr_travel_name + " already found a ship plan file.");
-                        err_detected = true;
-                        continue;
-                    }
-                    plan_path = entry.path();
-                    ship = std::make_unique<ShipPlan>(plan_path, errs_in_ctor, successful_build);
-                    plan_found = true;
-                } else if (endsWith(entry.path().filename(), ".route.csv")) { // A route file was found
-                    if (route_found) {
-                        if (num_of_algo == 1)
-                            errors[0].push_back("@ Travel: " + this->curr_travel_name + " already found a route file.");
-                        err_detected = true;
-                        continue;
-                    }
-                    route_path = entry.path();
-                    travel = std::make_unique<Route>(route_path, errs_in_ctor, successful_build);
-                    route_found = true;
-                } else { // The rest of the files, may include some containers details.
-                    travel_files.push_back(entry.path().filename());
-                }
-            }
-            if (!plan_found) {
-                if (num_of_algo == 1) errors[0].push_back("@ Travel: " + this->curr_travel_name + " has no Plan file.");
-                err_detected = true;
-                continue;
-            }
-            if (!route_found) {
-                if (num_of_algo == 1)
-                    errors[0].push_back("@ Travel: " + this->curr_travel_name + " has no Route file.");
-                err_detected = true;
-                continue;
-            }
-            // Adding errors that were detected during Ship and Route builders
-            if (num_of_algo == 1) extractGeneralErrors(errs_in_ctor);
-            if (!successful_build) { // TODO: need to delete the ship or the travel before continuing
-                err_detected = true;
-                continue; //One of the files of the travel is invalid, continue to the next travel.
+            if(!scanTravelDir(num_of_algo, plan_path, route_path, travel_files, travel_dir.path())){
+                continue; // Fatal error detected. Skip to the next travel.
             }
 
             if (num_of_algo == 1) statistics[0].push_back(travel_dir.path().filename()); // creating a travel column
-            travel->initPortsContainersFiles(travel_dir.path(), travel_files, errs_in_ctor);
+            travel.initPortsContainersFiles(travel_dir.path(), travel_files, errs_in_ctor);
 
             //SIMULATION
             //Choosing algorithm
@@ -158,15 +168,15 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
                 instruction_file_path = output_dir_path;
             }
             string instruction_file;
-            while (travel->moveToNextPort(errs_in_ctor)) { // For each port in travel
-                curr_port_name = travel->getCurrentPort().getName();
+            while (travel.moveToNextPort(errs_in_ctor)) { // For each port in travel
+                curr_port_name = travel.getCurrentPort().getName();
                 instruction_file =
                         instruction_file_path + std::filesystem::path::preferred_separator + curr_port_name + "_" +
-                        to_string(travel->getNumOfVisitsInPort(curr_port_name)) + ".crane_instructions.csv";
-                analyzeErrCode(algo->getInstructionsForCargo(travel->getCurrentPortPath(), instruction_file),
+                        to_string(travel.getNumOfVisitsInPort(curr_port_name)) + ".crane_instructions.csv";
+                analyzeErrCode(algo->getInstructionsForCargo(travel.getCurrentPortPath(), instruction_file),
                                num_of_algo);
-                this->implementInstructions(*ship, *travel, calc, instruction_file, num_of_operations, num_of_algo);
-                this->checkMissedContainers(*ship, travel->getCurrentPort().getName(), num_of_algo);
+                this->implementInstructions(calc, instruction_file, num_of_operations, num_of_algo);
+                this->checkMissedContainers(travel.getCurrentPort().getName(), num_of_algo);
             }
             Container::clearIDs(); // TODO: For each port in travel, we need to delete all the containers that were left at the port
             delete algo;
@@ -463,8 +473,7 @@ void Simulator::checkRemainingContainers(map<string, Container *> &unloaded_cont
     }
 }
 
-void Simulator::implementInstructions(ShipPlan &ship, Route &travel,
-                                      WeightBalanceCalculator &calc, const string &instruction_file,
+void Simulator::implementInstructions(WeightBalanceCalculator &calc, const string &instruction_file,
                                       int &num_of_operations, int num_of_algo) {
     FileHandler file(instruction_file);
     vector<string> instruction;
@@ -561,7 +570,7 @@ void Simulator::implementInstructions(ShipPlan &ship, Route &travel,
                              ship.getNumOfFreeSpots());
 }
 
-void Simulator::checkMissedContainers(ShipPlan &ship, const string &port_name, int num_of_algo) {
+void Simulator::checkMissedContainers(const string &port_name, int num_of_algo) {
     vector<Container *> conts = ship.getContainersForDest(port_name);
     if ((int) conts.size() > 0) {
         errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name +

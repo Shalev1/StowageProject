@@ -101,10 +101,6 @@ void ShipPlan::initShipPlanFromFile(const string &file_path, vector<pair<int,str
     }
 }
 
-ShipPlan::ShipPlan(const string &file_path, vector<pair<int,string>> &err_msg, bool &success) {
-    initShipPlanFromFile(file_path, err_msg, success);
-}
-
 ostream &operator<<(ostream &out, const ShipPlan &s) {
     out << "The ship size is: " << s.rows << "," << s.cols
         << "," << s.num_of_decks << "(Rows,Colums,Height)" << endl;
