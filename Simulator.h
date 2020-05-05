@@ -61,6 +61,11 @@ private:
     bool scanTravelDir(int num_of_algo, string &plan_path, string &route_path, vector<string> &travel_files, const std::filesystem::path &travel_dir);
 
     /**
+     * Executing the travel simulation-
+     */
+    void executeTravel(int num_of_algo, BaseAlgorithm *&algo, WeightBalanceCalculator &calc, vector<pair<int, string>> &errs_in_ctor, int &num_of_errors);
+
+    /**
      * Performs the instructions at the given instructions file while validating the algorithm decisions.
      */
     void

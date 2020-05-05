@@ -96,6 +96,42 @@ bool Simulator::scanTravelDir(int num_of_algo, string &plan_path, string &route_
     return true;
 }
 
+void Simulator::executeTravel(int num_of_algo, BaseAlgorithm *&algo, WeightBalanceCalculator &calc, vector<pair<int, string>> &errs_in_ctor, int &num_of_errors){
+    string instruction_file_path;
+    string instruction_file;
+    int num_of_operations = 0;
+    //Creating instructions directory for the algorithm
+    instruction_file_path = createInstructionDir(output_dir_path, "algorithm " + to_string(num_of_algo),
+                                                 this->curr_travel_name); //TODO: Hard-corded algorithm name, should make dynamic with algorithm.so
+    if (instruction_file_path.empty()) {
+        cout
+                << "ERROR: Failed creating instruction files directory; creates everything inside the output folder."
+                << endl;
+        instruction_file_path = output_dir_path;
+    }
+    while (travel.moveToNextPort(errs_in_ctor)) { // For each port in travel
+        curr_port_name = travel.getCurrentPort().getName();
+        instruction_file =
+                instruction_file_path + std::filesystem::path::preferred_separator + curr_port_name + "_" +
+                to_string(travel.getNumOfVisitsInPort(curr_port_name)) + ".crane_instructions.csv";
+        analyzeErrCode(algo->getInstructionsForCargo(travel.getCurrentPortPath(), instruction_file),
+                       num_of_algo);
+        this->implementInstructions(calc, instruction_file, num_of_operations, num_of_algo);
+        this->checkMissedContainers(travel.getCurrentPort().getName(), num_of_algo);
+    }
+    Container::clearIDs(); // TODO: For each port in travel, we need to delete all the containers that were left at the port
+    delete algo;
+    algo = nullptr;
+    // Check if there was an error by the algorithm. if there was, number of operation is '-1'.
+    if (this->err_in_travel) {
+        err_detected = true;
+        num_of_errors++;
+        statistics[num_of_algo].push_back("-1");
+    } else {
+        statistics[num_of_algo].push_back(to_string(num_of_operations));
+    }
+}
+
 bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
     int num_of_algo = 1;
     if (!updateInput(algorithm_path)) {
@@ -110,14 +146,12 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
         return false;
     }
     // TODO: Handle empty algorithm.so doesnt exists
-
     while (num_of_algo <= NUM_OF_ALGORITHMS) {
         vector<string> travel_files;
         string plan_path, route_path;
         WeightBalanceCalculator calc;
-        int num_of_operations, num_of_errors = 0;
+        int num_of_errors = 0;
         BaseAlgorithm *algo;
-        string instruction_file_path;
         vector<string> new_res_row;
         statistics.push_back(new_res_row);
         statistics[num_of_algo].push_back("Algorithm ." + to_string(num_of_algo));
@@ -128,7 +162,6 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
         cout << "\nExecuting Algorithm no. " << num_of_algo << ":" << endl;
         for (const auto &travel_dir : std::filesystem::directory_iterator(
                 travels_dir_path)) { // Foreach Travel, do the following:
-            num_of_operations = 0;
             if (!validateTravelFolder(travel_dir))
                 continue;
             vector<pair<int, string>> errs_in_ctor;
@@ -158,40 +191,10 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
             algo->readShipPlan(plan_path);
             algo->readShipRoute(route_path);
             algo->setWeightBalanceCalculator(calc);
-            //Creating instructions directory for the algorithm
-            instruction_file_path = createInstructionDir(output_dir_path, "algorithm " + to_string(num_of_algo),
-                                                         this->curr_travel_name); //TODO: Hard-corded algorithm name, should make dynamic with algorithm.so
-            if (instruction_file_path == "") {
-                cout
-                        << "ERROR: Failed creating instruction files directory; creates everything inside the output folder."
-                        << endl;
-                instruction_file_path = output_dir_path;
-            }
-            string instruction_file;
-            while (travel.moveToNextPort(errs_in_ctor)) { // For each port in travel
-                curr_port_name = travel.getCurrentPort().getName();
-                instruction_file =
-                        instruction_file_path + std::filesystem::path::preferred_separator + curr_port_name + "_" +
-                        to_string(travel.getNumOfVisitsInPort(curr_port_name)) + ".crane_instructions.csv";
-                analyzeErrCode(algo->getInstructionsForCargo(travel.getCurrentPortPath(), instruction_file),
-                               num_of_algo);
-                this->implementInstructions(calc, instruction_file, num_of_operations, num_of_algo);
-                this->checkMissedContainers(travel.getCurrentPort().getName(), num_of_algo);
-            }
-            Container::clearIDs(); // TODO: For each port in travel, we need to delete all the containers that were left at the port
-            delete algo;
-            algo = nullptr;
+            executeTravel(num_of_algo, algo, calc, errs_in_ctor, num_of_errors);
             if (num_of_algo == 1)
                 extractGeneralErrors(errs_in_ctor); // Update the errors with general errors found during the travel.
             travel_files.clear();
-            // Check if there was an error by the algorithm. if there was, number of operation is '-1'.
-            if (this->err_in_travel) {
-                err_detected = true;
-                num_of_errors++;
-                statistics[num_of_algo].push_back("-1");
-            } else {
-                statistics[num_of_algo].push_back(to_string(num_of_operations));
-            }
         } // Done traveling
         if (num_of_algo == 1) statistics[0].push_back("Num Errors"); // creating a Num Errors column
         statistics[num_of_algo].push_back(to_string(num_of_errors));
