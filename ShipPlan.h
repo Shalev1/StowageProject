@@ -109,6 +109,11 @@ public:
         return decks[floor_num].getSpotAt(x, y);
     }
 
+    /**
+     * Return the number of unavailable floors for the given spot
+     */
+    int getUnavailableFloorsNum(int x, int y);
+
 };
 
 #endif //STOWAGEPROJECT_SHIPPLAN_H

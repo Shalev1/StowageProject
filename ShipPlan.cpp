@@ -27,6 +27,14 @@ void ShipPlan::updateSpot(int x, int y, int unavailable_floors) {
     }
 }
 
+int ShipPlan::getUnavailableFloorsNum(int x, int y){
+    int counter = 0;
+    while(!decks[counter].getFloorMap()[x][y].getAvailable() && counter < num_of_decks){
+        counter++;
+    }
+    return counter;
+}
+
 void ShipPlan::initShipPlanFromFile(const string &file_path, vector<pair<int,string>> &errs_msg, bool &success) {
     FileHandler file(file_path);
     vector<string> line;
@@ -78,9 +86,15 @@ void ShipPlan::initShipPlanFromFile(const string &file_path, vector<pair<int,str
             errs_msg.emplace_back(0, "A spot which is available within the maximum number of floors or more was detected while initializing the ship plan.");
             continue;
         } else { //unavailable_floors > 0
-            if (!(this->decks[0].getFloorMap()[x][y].getAvailable())) { // TODO: Should I throw an error?
-                //spot was already initialized, skip this one
-                continue;
+            if (!(this->decks[0].getFloorMap()[x][y].getAvailable())) { // In case the same spot was already initialized
+                if(getUnavailableFloorsNum(x, y) == unavailable_floors) {
+                    errs_msg.emplace_back(2, "A spot which was already initialized with the same number of available floors was detected while initializing the ship plan.");
+                    continue;
+                } else {
+                    errs_msg.emplace_back(2, "A spot which was already initialized with a different number of available floors was detected while initializing the ship plan.");
+                    success = false; // should skip to the next travel
+                    return;
+                }
             }
             updateSpot(x, y, unavailable_floors);
         }

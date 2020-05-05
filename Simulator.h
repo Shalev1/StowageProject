@@ -35,9 +35,9 @@ private:
 
     inline static map<int, string> errCodes = {{0,  "ship plan: a position has an equal number of floors or more than the number of floors provided in the first line (ignored)"},
                                                {1,  "ship plan: a given position exceeds the X/Y ship limits (ignored)"},
-                                               {2,  "ship plan: bad line format after first line or duplicate x y appearance with same data (ignored)"},
+                                               {2,  "ship plan: bad line format after first line or duplicate x,y appearance with same data (ignored)"},
                                                {3,  "ship plan: travel error - bad first line or file cannot be read altogether (cannot run this travel)"},
-                                               {4,  "reserved"},
+                                               {4,  "ship plan: travel error - duplicate x,y appearance with different data (cannot run this travel)"},
                                                {5,  "travel route: a port appears twice or more consecutively (ignored)"},
                                                {6,  " travel route: bad port symbol format (ignored)"},
                                                {7,  "travel route: travel error - empty file or file cannot be read altogether (cannot run this travel)"},

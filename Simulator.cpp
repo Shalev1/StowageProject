@@ -80,29 +80,39 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
             vector<pair<int,string>> errs_in_ctor;
             std::unique_ptr<ShipPlan> ship;
             std::unique_ptr<Route> travel;
-            bool successful_build = true, routeFound = false, planFound = false;
+            bool successful_build = true, route_found = false, plan_found = false;
             this->err_in_travel = false;
             this->curr_travel_name = travel_dir.path().filename();
             //Iterate over the directory
             for (const auto &entry : std::filesystem::directory_iterator(travel_dir.path())) {
                 if (entry.path().filename().ends_with(".ship_plan.csv")) { // A ship plan file was found
+                    if(plan_found){
+                        if (num_of_algo == 1) errors[0].push_back("@ Travel: " + this->curr_travel_name + " already found a ship plan file.");
+                        err_detected = true;
+                        continue;
+                    }
                     plan_path = entry.path();
                     ship = std::make_unique<ShipPlan>(plan_path, errs_in_ctor, successful_build);
-                    planFound = true;
+                    plan_found = true;
                 } else if (entry.path().filename().ends_with(".route.csv")) { // A route file was found
+                    if(route_found){
+                        if (num_of_algo == 1) errors[0].push_back("@ Travel: " + this->curr_travel_name + " already found a route file.");
+                        err_detected = true;
+                        continue;
+                    }
                     route_path = entry.path();
                     travel = std::make_unique<Route>(route_path, errs_in_ctor, successful_build);
-                    routeFound = true;
+                    route_found = true;
                 } else { // The rest of the files, may include some containers details.
                     travel_files.push_back(entry.path().filename());
                 }
             }
-            if (!planFound) {
+            if (!plan_found) {
                 if (num_of_algo == 1) errors[0].push_back("@ Travel: " + this->curr_travel_name + " has no Plan file.");
                 err_detected = true;
                 continue;
             }
-            if (!routeFound) {
+            if (!route_found) {
                 if (num_of_algo == 1) errors[0].push_back("@ Travel: " + this->curr_travel_name + " has no Route file.");
                 err_detected = true;
                 continue;
