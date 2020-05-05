@@ -154,7 +154,7 @@ public:
     /**
      * Receives an integer represting error codes and add them to the errors log accordingly.
      */
-    void Simulator::analyzeErrCode(int err_code, int num_of_algo);
+    void analyzeErrCode(int err_code, int num_of_algo);
 };
 
 #endif //STOWAGEPROJECT_SIMULATOR_H

@@ -38,6 +38,8 @@ bool printCSVFile(const string &file_path);
 
 bool dirExists(const string &p);
 
+bool endsWith(const std::string& str, const std::string& suffix);
+
 /*
  * The function returns a list of the indices of bits of the binary representation of num
  * that equals 1.

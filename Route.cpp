@@ -1,6 +1,6 @@
 #include "Route.h"
 
-Route::Route(const string &path, vector<string>& errVector, bool& fatalError) : currentPortNum(-1) {
+Route::Route(const string &path, vector<pair<int,string>>& errVector, bool& fatalError) : currentPortNum(-1) {
     initRouteFromFile(path, errVector, fatalError);
 }
 
