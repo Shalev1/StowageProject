@@ -40,13 +40,13 @@ int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_an
 
     for (auto & cont : waitingContainers) {
         if (cont.getDestPort() == route.getCurrentPort().getName()) {
-            instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1); // TODO: ex2 return error code
+            instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1);
             cout << "WARNING: Container: " << cont.getID()
                  << " will not be loaded, its destination is the current port." << endl;
             continue;
         }
         if (!route.isInRoute(cont.getDestPort())) {
-            instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1); // TODO: ex2 return error code
+            instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1);
             cout << "WARNING: Container: " << cont.getID()
                  << " will not be loaded, its destination is not a part of the remaining route." << endl;
             continue;

@@ -55,6 +55,18 @@ void Port::initWaitingContainers(const string &path, vector<pair<int,string>>& e
                 errVector.emplace_back(15,"Illegal ID for container: " + id);
                 continue;
             }
+            // Check that there isn't already container with the same ID in the port
+            bool unique = true;
+            for(auto& cont: waitingContainers){
+                if(id == cont.getID()){
+                    errVector.emplace_back(10,"Container with ID: " + id + " already exists in port: " + name);
+                    unique = false;
+                    break;
+                }
+            }
+            if(!unique){
+                continue; // ID isn't unique, skip this line
+            }
         }
         int weight = 0;
         if (tokens.size() < 2){
