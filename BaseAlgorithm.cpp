@@ -1,17 +1,35 @@
 #include "BaseAlgorithm.h"
 
 int BaseAlgorithm::readShipPlan(const std::string &full_path_and_file_name) {
+    // Init the errorCodeBits vector, consider moving to the constructor
+    errorCodeBits.push_back(1);
+    for(int i = 1; i < NUM_OF_ERROR_CODES; i++){
+        errorCodeBits.push_back(errorCodeBits[i-1]*2);
+    }
+
     bool valid = true;
     vector<pair<int,string>> err_msgs;
     ship.initShipPlanFromFile(full_path_and_file_name, err_msgs, valid);
-    return 0;
+
+    //Check for errors
+    int errorsFlags = 0;
+    for(auto& p : err_msgs){
+        errorsFlags += errorCodeBits[p.first];
+    }
+    return errorsFlags;
 }
 
 int BaseAlgorithm::readShipRoute(const std::string &full_path_and_file_name) {
     vector<pair<int,string>> errors;
     bool fatalError = false;
     route.initRouteFromFile(full_path_and_file_name, errors, fatalError);
-    return 0;
+
+    //Check for errors
+    int errorsFlags = 0;
+    for(auto& p : errors){
+        errorsFlags += errorCodeBits[p.first];
+    }
+    return errorsFlags;
 }
 
 int BaseAlgorithm::setWeightBalanceCalculator(WeightBalanceCalculator &calculator) {
@@ -23,7 +41,7 @@ int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_an
     route.moveToNextPortWithoutContInit();
 
     vector<pair<int,string>> errors;
-    route.getCurrentPort().initWaitingContainers(input_full_path_and_file_name, errors);
+    route.getCurrentPort().initWaitingContainers(input_full_path_and_file_name, errors, true);
     vector<Container>& waitingContainers = route.getCurrentPort().getWaitingContainers();
 
     vector<Container*> reloadContainers;
@@ -37,23 +55,31 @@ int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_an
 
     // Sort incoming containers by their destination
     route.sortContainersByDestination(waitingContainers);
+    if((int)waitingContainers.size() > ship.getNumOfFreeSpots()){
+        errors.emplace_back(18,"Ship is full, rejecting far containers");
+    }
 
     for (auto & cont : waitingContainers) {
         if (cont.getDestPort() == route.getCurrentPort().getName()) {
-            instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1); // TODO: ex2 return error code
-            cout << "WARNING: Container: " << cont.getID()
-                 << " will not be loaded, its destination is the current port." << endl;
+            // Destination is the current port, reject
+            instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1);
             continue;
         }
         if (!route.isInRoute(cont.getDestPort())) {
-            instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1); // TODO: ex2 return error code
-            cout << "WARNING: Container: " << cont.getID()
-                 << " will not be loaded, its destination is not a part of the remaining route." << endl;
+            // Destination is not in the route, reject
+            instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1);
             continue;
         }
         findLoadingSpot(&cont, instructionsFile);
     }
-    return 0;
+
+    //Check for errors
+    int errorsFlags = 0;
+    for(auto& p : errors){
+        errorsFlags += errorCodeBits[p.first];
+    }
+    cout << errorsFlags << endl;
+    return errorsFlags;
 }
 
 void BaseAlgorithm::getUnloadInstructions(const string &portName, vector<Container *> &reloadContainers,
@@ -103,7 +129,7 @@ void BaseAlgorithm::findLoadingSpot(Container *cont, FileHandler &instructionsFi
     int floorNum;
     Spot *empty_spot = getEmptySpot(floorNum);
     if (empty_spot == nullptr) {
-        cout << "WARNING: Ship is full, unable to load container: " << cont->getID() << endl;
+        //Ship is full, reject
         instructionsFile.writeInstruction("R", cont->getID(), -1, -1, -1);
         return;
     }

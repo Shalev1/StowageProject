@@ -2,12 +2,16 @@
 #include "Container.h"
 #include <locale>
 
-set<string> Container::ids;
+set<string> Container::simIds;
+set<string> Container::algoIds;
 
-Container::Container(int _weight, string _dest_port, const string _id) : spot_in_floor(nullptr), id(_id) {
-    setWeight(_weight);
-    setDestPort(_dest_port);
-    ids.insert(_id);
+Container::Container(int _weight, string _dest_port, const string _id, bool algoCont) :
+                     weight(_weight), dest_port(_dest_port), spot_in_floor(nullptr), id(_id) {
+    if (algoCont) {
+        algoIds.insert(_id);
+    } else {
+        simIds.insert(_id);
+    }
 }
 
 string Container::getDestPort() const {
@@ -31,21 +35,15 @@ ostream &operator<<(ostream &out, const Container &c) {
                << endl;
 }
 
-bool Container::validateID(const string &new_id, bool newOne) {
+bool Container::validateID(const string &id) {
     regex form("([A-Z]{3})([JUZ]{1})([0-9]{7})");
-    if (regex_match(new_id, form)) {
+    return regex_match(id, form);
+
+}
+
+bool Container::checkUnique(const string& id, bool algoCheck) {
+    if (!algoCheck && simIds.find(id) == simIds.end()) { // check if id wasn't enter before, simulator case
         return true;
-        //TODO: add new way to check unique ID
-//        if (!newOne) // Not a new container, just need to valid ID format so return true
-//            return true;
-//        if (ids.find(new_id) == ids.end()) { // check if id wasn't enter before
-//            return true;
-//        }
-//        if (newOne)
-//            cout << "WARNING: Container id: " << new_id << " already in use, container ignored" << endl;
-//        return false;
     }
-    if (newOne)
-        cout << "WARNING: Illegal container ID was given: " << new_id << endl;
-    return false;
+    return algoCheck && algoIds.find(id) == algoIds.end(); // check if id wasn't enter before, algorithm case
 }
