@@ -8,6 +8,8 @@
 #include "Utils.h"
 #include "algorithm"
 
+using std::pair;
+
 //---Defines---//
 #define PORT_NAME_LEN 5
 #define INVALID "Invalid"
@@ -44,7 +46,7 @@ public:
      * Read the file locate in @param path to initialize the waiting containers vector
      * @param errVector filled with errors that occurs
      */
-    void initWaitingContainers(const string &path, vector<string>& errVector);
+    void initWaitingContainers(const string &path, vector<pair<int,string>>& errVector);
 
     /**
      * Return the container with id equals to @param id or nullptr if there is not one like that

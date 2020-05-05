@@ -36,31 +36,50 @@ void Port::addContainer(int weight, const string &destPort, const string &id) {
     waitingContainers.emplace_back(weight, destPort, id);
 }
 
-void Port::initWaitingContainers(const string &path, vector<string>& errVector) {
+void Port::initWaitingContainers(const string &path, vector<pair<int,string>>& errVector) {
     FileHandler fh(path);
-    if(fh.isFailed())
-        errVector.emplace_back("Failed to open " + path + " considered as no containers waiting");
+    bool valid = true;
+    string id = "";
+    if (fh.isFailed()){
+        errVector.emplace_back(16,"Failed to open " + path + " considered as no containers waiting");
+        return;
+    }
     vector<string> tokens;
     while (fh.getNextLineAsTokens(tokens)) {
-        if (tokens.size() != 3) {
-            errVector.emplace_back("Line with wrong number of parameters in containers file - line ignored");
+        if (tokens.empty()) {
+            errVector.emplace_back(14,"bad line format: ID cannot be read");
             continue;
-        }
-        string id = tokens[0];
-        int weight;
-        if (isPositiveNumber(tokens[1])) {
-            weight = stoi(tokens[1]);
         } else {
-            errVector.emplace_back("Illegal weight given for container: " + tokens[1] + " Container ignored");
-            continue;
+            id = tokens[0];
+            if (!Container::validateID(id)) {
+                errVector.emplace_back(15,"Illegal ID for container: " + id);
+                continue;
+            }
         }
-        string dest = tokens[2];
-        if (!Port::validateName(dest)) {
-            errVector.emplace_back("Illegal destination given for container: " + dest + " Container ignored");
-            continue;
+        int weight = 0;
+        if (tokens.size() < 2){
+            errVector.emplace_back(12,"bad line format: missing weight - ID " + id + " rejected");
+            valid = false;
+        } else {
+            if (isPositiveNumber(tokens[1])) {
+                weight = stoi(tokens[1]);
+            } else {
+                errVector.emplace_back(12,"Illegal weight given for container: " + tokens[1] + " Container " + id + " rejected");
+                valid = false;
+            }
         }
-
-        if (Container::validateID(id)) {
+        string dest;
+        if (tokens.size() < 3) {
+            errVector.emplace_back(13,"bad line format: missing port destination - ID " + id + " rejected");
+            valid = false;
+        } else {
+            dest = tokens[2];
+            if (!Port::validateName(dest)) {
+                errVector.emplace_back(13,"Illegal destination given for container: " + (dest += " Container ") + (id += " rejected"));
+                valid = false;
+            }
+        }
+        if(valid){
             addContainer(weight, Port::nameToUppercase(dest), id);
         }
     }
