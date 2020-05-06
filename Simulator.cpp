@@ -385,7 +385,7 @@ bool
 Simulator::validateRejectOp(int num_of_algo, ShipPlan &ship, Route &travel, WeightBalanceCalculator &calc,
                             int floor_num, int x, int y, const string &cont_id, bool &has_potential_to_be_loaded) {
     Container *cont;
-    if (!Container::validateID(cont_id, false)) {
+    if (!Container::validateID(cont_id) || !Container::checkUnique(cont_id, false)) {
         return true; // Container got rejected cause of bad ID, which is legal!
     }
     cont = travel.getCurrentPort().getWaitingContainerByID(cont_id);
@@ -494,7 +494,7 @@ void Simulator::implementInstructions(WeightBalanceCalculator &calc, const strin
         }
         AbstractAlgorithm::Action command = actionDic.at(instruction[0]);
         if (command != AbstractAlgorithm::Action::REJECT) {
-            if (!Container::validateID(instruction[1], false)) {
+            if (!Container::validateID(instruction[1])) {
                 errors[num_of_algo].push_back(
                         "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
                         "- Instruction with invalid container ID detected.");

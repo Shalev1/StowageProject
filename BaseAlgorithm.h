@@ -8,6 +8,8 @@
 #include "../interface/AlgorithmRegistration.h"
 #include <map>
 
+#define NUM_OF_ERROR_CODES 19
+
 using std::map;
 
 // Base class of an algorithm, all the base functions for the algorithm have trivial implementations
@@ -17,6 +19,7 @@ protected:
     ShipPlan ship;
     Route route;
     WeightBalanceCalculator weightCal;
+    vector<int> errorCodeBits; // values for each error code bit
 
     /**
      * Unload all the containers that their destination is portName
