@@ -3,8 +3,9 @@
 
 #include "Route.h"
 #include "ShipPlan.h"
-#include "WeightBalanceCalculator.h"
-#include "AbstractAlgorithm.h"
+#include "../interface/WeightBalanceCalculator.h"
+#include "../interface/AbstractAlgorithm.h"
+#include "../interface/AlgorithmRegistration.h"
 #include <map>
 
 using std::map;

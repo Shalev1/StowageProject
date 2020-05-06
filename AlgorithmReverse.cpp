@@ -1,4 +1,5 @@
 #include "AlgorithmReverse.h"
+REGISTER_ALGORITHM(AlgorithmReverse)
 
 bool AlgorithmReverse::checkMoveContainer(Container *cont, Spot &spot, FileHandler &instructionsFile) {
     int floorNum;

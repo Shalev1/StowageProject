@@ -1,4 +1,5 @@
 #include "BaseAlgorithm.h"
+REGISTER_ALGORITHM(BaseAlgorithm)
 
 int BaseAlgorithm::readShipPlan(const std::string &full_path_and_file_name) {
     bool valid = true;

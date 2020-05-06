@@ -98,6 +98,32 @@ bool endsWith(const std::string &str, const std::string &suffix) {
     return str.size() >= suffix.size() && 0 == str.compare(str.size() - suffix.size(), suffix.size(), suffix);
 }
 
+/*
+ * Erase First Occurrence of given  substring from main string.
+ */
+string removeSubStr(std::string &str, const std::string &sub) {
+    // Search for the substring in string
+    size_t pos = str.find(sub);
+    if (pos != std::string::npos) {
+        // If found then erase it from string
+        str.erase(pos, sub.length());
+    }
+    return str;
+}
+
+vector<string> getSOFilesNames(const string &dir_path) {
+    vector<string> so_names;
+    string filename;
+    for (const auto &entry : std::filesystem::directory_iterator(dir_path)) {
+        if (endsWith(entry.path().filename(), ".so")) { // An .so file was found
+            filename = entry.path().filename().string();
+            so_names.emplace_back(removeSubStr(filename,".so"));
+        }
+    }
+    return so_names;
+}
+
+
 //---FileHandler Functions---//
 FileHandler::FileHandler(const string &path, bool truncFlag) : fs(), path(path) {
     if (truncFlag) {

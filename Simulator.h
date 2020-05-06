@@ -5,12 +5,12 @@
 #include <iostream>
 #include <map>
 #include <search.h>
+#include <filesystem>
 #include "ShipPlan.h"
 #include "Route.h"
-#include "AbstractAlgorithm.h"
-#include "BaseAlgorithm.h"
-#include "AlgorithmReverse.h"
+#include "../interface/AbstractAlgorithm.h"
 #include "Utils.h"
+#include "../interface/WeightBalanceCalculator.h"
 
 
 #define NUM_OF_ALGORITHMS 2
@@ -29,6 +29,8 @@ private:
     vector<vector<string>> errors;
     string curr_travel_name;
     string curr_port_name;
+    vector<std::function<std::unique_ptr<AbstractAlgorithm>()>> algo_funcs;
+
     inline static map<string, AbstractAlgorithm::Action> actionDic = {{"L", AbstractAlgorithm::Action::LOAD},
                                                                       {"U", AbstractAlgorithm::Action::UNLOAD},
                                                                       {"M", AbstractAlgorithm::Action::MOVE},
@@ -63,7 +65,7 @@ private:
     /**
      * Executing the travel simulation-
      */
-    void executeTravel(int num_of_algo, BaseAlgorithm *&algo, WeightBalanceCalculator &calc, vector<pair<int, string>> &errs_in_ctor, int &num_of_errors);
+    void executeTravel(int num_of_algo, std::unique_ptr<AbstractAlgorithm> &algo, WeightBalanceCalculator &calc, vector<pair<int, string>> &errs_in_ctor, int &num_of_errors);
 
     /**
      * Performs the instructions at the given instructions file while validating the algorithm decisions.
@@ -123,7 +125,7 @@ private:
     void extractGeneralErrors(vector<pair<int, string>> &err_strings);
 
     /**
-     * Updating algorithm and output path to be the curret folder if they are missing
+     * Updating algorithm and output path to be the curret folder if they are missing.
      */
     bool updateInput(string &algorithm_path);
 
@@ -148,12 +150,18 @@ private:
     void analyzeErrCode(int err_code, int num_of_algo);
 
 public:
+    static Simulator inst;
     //---Constructors and Destructors---//
-    explicit Simulator(const string &root);
+    Simulator(const string &root);
 
-    Simulator(const Simulator &other) = delete;
+    Simulator();
 
-    Simulator &operator=(const Simulator &other) = delete;
+    static Simulator& getInstance(){
+        return inst;
+    }
+    void registerAlgorithm(std::function<std::unique_ptr<AbstractAlgorithm>()> algorithm) {
+        algo_funcs.push_back(algorithm);
+    }
 
     /**
      * Main function that runs the simulation.

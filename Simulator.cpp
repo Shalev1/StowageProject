@@ -1,5 +1,9 @@
 #include "Simulator.h"
 
+Simulator Simulator::inst;
+
+Simulator::Simulator(){}
+
 Simulator::Simulator(const string &root) : output_dir_path(root), err_in_travel(false), err_detected(false),
                                            curr_travel_name("") {
     vector<string> first_res_row;
@@ -43,7 +47,8 @@ bool Simulator::updateInput(string &algorithm_path) {
     return true;
 }
 
-bool Simulator::scanTravelDir(int num_of_algo, string &plan_path, string &route_path, vector<string> &travel_files, const std::filesystem::path &travel_dir){
+bool Simulator::scanTravelDir(int num_of_algo, string &plan_path, string &route_path, vector<string> &travel_files,
+                              const std::filesystem::path &travel_dir) {
     bool success_build = true, route_found = false, plan_found = false;
     vector<pair<int, string>> errs_in_ctor;
 
@@ -96,7 +101,8 @@ bool Simulator::scanTravelDir(int num_of_algo, string &plan_path, string &route_
     return true;
 }
 
-void Simulator::executeTravel(int num_of_algo, BaseAlgorithm *&algo, WeightBalanceCalculator &calc, vector<pair<int, string>> &errs_in_ctor, int &num_of_errors){
+void Simulator::executeTravel(int num_of_algo, std::unique_ptr<AbstractAlgorithm> &algo, WeightBalanceCalculator &calc,
+                              vector<pair<int, string>> &errs_in_ctor, int &num_of_errors) {
     string instruction_file_path;
     string instruction_file;
     int num_of_operations = 0;
@@ -120,8 +126,6 @@ void Simulator::executeTravel(int num_of_algo, BaseAlgorithm *&algo, WeightBalan
         this->checkMissedContainers(travel.getCurrentPort().getName(), num_of_algo);
     }
     Container::clearIDs(); // TODO: For each port in travel, we need to delete all the containers that were left at the port
-    delete algo;
-    algo = nullptr;
     // Check if there was an error by the algorithm. if there was, number of operation is '-1'.
     if (this->err_in_travel) {
         err_detected = true;
@@ -134,6 +138,7 @@ void Simulator::executeTravel(int num_of_algo, BaseAlgorithm *&algo, WeightBalan
 
 bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
     int num_of_algo = 1;
+    string algo_name;
     if (!updateInput(algorithm_path)) {
         fillSimErrors();
         err_detected = true;
@@ -145,19 +150,24 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
         err_detected = true;
         return false;
     }
+    vector<string> algorithms = getSOFilesNames(algorithm_path);
     // TODO: Handle empty algorithm.so doesnt exists
-    while (num_of_algo <= NUM_OF_ALGORITHMS) {
+    for (auto &algo_ctor : algo_funcs) {
         vector<string> travel_files;
         string plan_path, route_path;
         WeightBalanceCalculator calc;
         int num_of_errors = 0;
-        BaseAlgorithm *algo;
         vector<string> new_res_row;
         statistics.push_back(new_res_row);
         statistics[num_of_algo].push_back("Algorithm ." + to_string(num_of_algo));
         vector<string> new_err_row;
         errors.push_back(new_err_row);
         errors[num_of_algo].push_back("Algorithm ." + to_string(num_of_algo));
+
+        std::unique_ptr<AbstractAlgorithm> algo = algo_ctor();
+        algo_name = typeid(*algo).name();
+        cout << algo_name << endl;
+        //TODO:Function that removes the algo class name from algorithms
 
         cout << "\nExecuting Algorithm no. " << num_of_algo << ":" << endl;
         for (const auto &travel_dir : std::filesystem::directory_iterator(
@@ -169,7 +179,7 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
             this->curr_travel_name = travel_dir.path().filename();
 
             //Iterate over the directory
-            if(!scanTravelDir(num_of_algo, plan_path, route_path, travel_files, travel_dir.path())){
+            if (!scanTravelDir(num_of_algo, plan_path, route_path, travel_files, travel_dir.path())) {
                 continue; // Fatal error detected. Skip to the next travel.
             }
 
@@ -177,17 +187,7 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
             travel.initPortsContainersFiles(travel_dir.path(), travel_files, errs_in_ctor);
 
             //SIMULATION
-            //Choosing algorithm
-            switch (num_of_algo) {
-                case 1:
-                    algo = new BaseAlgorithm();
-                    break;
-                case 2:
-                    algo = new AlgorithmReverse();
-                    break;
-                default:
-                    algo = new BaseAlgorithm(); // To be sure algo initialize (just to prevent warning...)
-            }
+
             algo->readShipPlan(plan_path);
             algo->readShipRoute(route_path);
             algo->setWeightBalanceCalculator(calc);

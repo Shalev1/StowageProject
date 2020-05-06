@@ -40,6 +40,11 @@ bool dirExists(const string &p);
 
 bool endsWith(const std::string& str, const std::string& suffix);
 
+/**
+ * Extract all .so file paths from the given folder.
+ */
+vector<string> getSOFilesNames(const string &dir_path);
+
 /*
  * The function returns a list of the indices of bits of the binary representation of num
  * that equals 1.
