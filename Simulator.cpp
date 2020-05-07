@@ -164,10 +164,10 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
         errors.push_back(new_err_row);
         errors[num_of_algo].push_back("Algorithm ." + to_string(num_of_algo));
 
-        std::unique_ptr<AbstractAlgorithm> algo = algo_ctor();
+        std::unique_ptr<AbstractAlgorithm> algo = algo_ctor.second();
         algo_name = typeid(*algo).name();
         cout << algo_name << endl;
-        //TODO:Function that removes the algo class name from algorithms
+        //TODO:Function Validate that the so was opened correctly and the algorithm really registered by the macro
 
         cout << "\nExecuting Algorithm no. " << num_of_algo << ":" << endl;
         for (const auto &travel_dir : std::filesystem::directory_iterator(

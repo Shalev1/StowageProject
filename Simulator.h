@@ -29,7 +29,7 @@ private:
     vector<vector<string>> errors;
     string curr_travel_name;
     string curr_port_name;
-    vector<std::function<std::unique_ptr<AbstractAlgorithm>()>> algo_funcs;
+    vector<pair<string, std::function<std::unique_ptr<AbstractAlgorithm>()>>> algo_funcs;
 
     inline static map<string, AbstractAlgorithm::Action> actionDic = {{"L", AbstractAlgorithm::Action::LOAD},
                                                                       {"U", AbstractAlgorithm::Action::UNLOAD},
@@ -160,7 +160,7 @@ public:
         return inst;
     }
     void registerAlgorithm(std::function<std::unique_ptr<AbstractAlgorithm>()> algorithm) {
-        algo_funcs.push_back(algorithm);
+        algo_funcs.emplace_back("",algorithm);
     }
 
     /**
