@@ -115,9 +115,9 @@ vector<string> getSOFilesNames(const string &dir_path) {
     vector<string> so_names;
     string filename;
     for (const auto &entry : std::filesystem::directory_iterator(dir_path)) {
-        if (endsWith(entry.path().filename(), ".so")) { // An .so file was found
-            filename = entry.path().filename().string();
-            so_names.emplace_back(removeSubStr(filename,".so"));
+        filename = entry.path().filename().string();
+        if (endsWith(filename, ".so")) { // An .so file was found
+            so_names.emplace_back(filename);
         }
     }
     return so_names;

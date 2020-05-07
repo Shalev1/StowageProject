@@ -2,6 +2,8 @@
 REGISTER_ALGORITHM(BaseAlgorithm)
 
 int BaseAlgorithm::readShipPlan(const std::string &full_path_and_file_name) {
+    ship.resetShipPlan();
+
     // Init the errorCodeBits vector, consider moving to the constructor
     errorCodeBits.push_back(1);
     for(int i = 1; i < NUM_OF_ERROR_CODES; i++){
@@ -40,11 +42,9 @@ int BaseAlgorithm::setWeightBalanceCalculator(WeightBalanceCalculator &calculato
 
 int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_and_file_name, const std::string &output_full_path_and_file_name) {
     route.moveToNextPortWithoutContInit();
-
     vector<pair<int,string>> errors;
     route.getCurrentPort().initWaitingContainers(input_full_path_and_file_name, errors, true);
     vector<Container>& waitingContainers = route.getCurrentPort().getWaitingContainers();
-
     vector<Container*> reloadContainers;
     FileHandler instructionsFile(output_full_path_and_file_name, true);
 
@@ -56,6 +56,7 @@ int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_an
 
     // Sort incoming containers by their destination
     route.sortContainersByDestination(waitingContainers);
+
     if((int)waitingContainers.size() > ship.getNumOfFreeSpots()){
         errors.emplace_back(18,"Ship is full, rejecting far containers");
     }

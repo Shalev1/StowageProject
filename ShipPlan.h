@@ -113,6 +113,12 @@ public:
      */
     int getUnavailableFloorsNum(int x, int y);
 
+    /**
+     * Clearing the ship members
+     */
+     void resetShipPlan();
+
+
 };
 
 #endif //STOWAGEPROJECT_SHIPPLAN_H

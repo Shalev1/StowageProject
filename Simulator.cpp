@@ -126,6 +126,7 @@ void Simulator::executeTravel(int num_of_algo, std::unique_ptr<AbstractAlgorithm
         this->checkMissedContainers(travel.getCurrentPort().getName(), num_of_algo);
     }
     Container::clearIDs(); // TODO: For each port in travel, we need to delete all the containers that were left at the port
+
     // Check if there was an error by the algorithm. if there was, number of operation is '-1'.
     if (this->err_in_travel) {
         err_detected = true;
@@ -152,7 +153,7 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
     }
     vector<string> algorithms = getSOFilesNames(algorithm_path);
     // TODO: Handle empty algorithm.so doesnt exists
-    for (auto &algo_ctor : algo_funcs) {
+    for (auto &algo_name : algorithms) {
         vector<string> travel_files;
         string plan_path, route_path;
         WeightBalanceCalculator calc;
@@ -164,16 +165,19 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
         errors.push_back(new_err_row);
         errors[num_of_algo].push_back("Algorithm ." + to_string(num_of_algo));
 
-        std::unique_ptr<AbstractAlgorithm> algo = algo_ctor.second();
-        algo_name = typeid(*algo).name();
-        cout << algo_name << endl;
+        void *hndl = dlopen((algorithm_path + std::filesystem::path::preferred_separator + algo_name).c_str(), RTLD_LAZY);
+        (void) hndl;
+
+        std::unique_ptr<AbstractAlgorithm> algo = inst.algo_funcs[num_of_algo-1].second();
+
         //TODO:Function Validate that the so was opened correctly and the algorithm really registered by the macro
 
-        cout << "\nExecuting Algorithm no. " << num_of_algo << ":" << endl;
+        cout << "\nExecuting Algorithm " << algo_name << "..." << endl;
         for (const auto &travel_dir : std::filesystem::directory_iterator(
                 travels_dir_path)) { // Foreach Travel, do the following:
             if (!validateTravelFolder(travel_dir))
                 continue;
+
             vector<pair<int, string>> errs_in_ctor;
             this->err_in_travel = false;
             this->curr_travel_name = travel_dir.path().filename();
@@ -199,6 +203,7 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
         if (num_of_algo == 1) statistics[0].push_back("Num Errors"); // creating a Num Errors column
         statistics[num_of_algo].push_back(to_string(num_of_errors));
         num_of_algo++;
+        //dlclose(hndl);
     } // Done algorithm
     if (err_detected) // Errors found, err_file should be created
         fillSimErrors();

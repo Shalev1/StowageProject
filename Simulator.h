@@ -5,6 +5,7 @@
 #include <iostream>
 #include <map>
 #include <search.h>
+#include <dlfcn.h>
 #include <filesystem>
 #include "ShipPlan.h"
 #include "Route.h"
@@ -29,6 +30,7 @@ private:
     vector<vector<string>> errors;
     string curr_travel_name;
     string curr_port_name;
+    static Simulator inst;
     vector<pair<string, std::function<std::unique_ptr<AbstractAlgorithm>()>>> algo_funcs;
 
     inline static map<string, AbstractAlgorithm::Action> actionDic = {{"L", AbstractAlgorithm::Action::LOAD},
@@ -150,7 +152,6 @@ private:
     void analyzeErrCode(int err_code, int num_of_algo);
 
 public:
-    static Simulator inst;
     //---Constructors and Destructors---//
     Simulator(const string &root);
 
@@ -159,8 +160,8 @@ public:
     static Simulator& getInstance(){
         return inst;
     }
-    void registerAlgorithm(std::function<std::unique_ptr<AbstractAlgorithm>()> algorithm) {
-        algo_funcs.emplace_back("",algorithm);
+    void registerAlgorithm(std::function<std::unique_ptr<AbstractAlgorithm>()> algo_ctor) {
+        algo_funcs.emplace_back("", algo_ctor);
     }
 
     /**

@@ -14,7 +14,7 @@ using std::map;
 
 // Base class of an algorithm, all the base functions for the algorithm have trivial implementations
 // and virtual to allow override them with other implementation of different algorithms
-class BaseAlgorithm : AbstractAlgorithm{
+class BaseAlgorithm : public AbstractAlgorithm{
 protected:
     ShipPlan ship;
     Route route;

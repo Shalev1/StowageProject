@@ -40,6 +40,7 @@ void ShipPlan::initShipPlanFromFile(const string &file_path, vector<pair<int,str
     vector<string> line;
     int x, y, unavailable_floors;
     string err;
+
     if(file.isFailed()){
         errs_msg.emplace_back(3, "Failed opening the ship plan file that was given.");
         success = false; // should skip to the next travel
@@ -173,4 +174,12 @@ vector<Container *> ShipPlan::getContainersForDest(const string &port_name) {
         }
     }
     return containers;
+}
+
+void ShipPlan::resetShipPlan(){
+    setNumOfDecks(0);
+    setShipRows(0);
+    setShipCols(0);
+    free_spots_num = 0;
+    getShipDecks().clear();
 }
