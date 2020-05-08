@@ -1,15 +1,15 @@
 COMP = g++-8.3.0
 
-SHARED_OBJS = BaseAlgorithm.so AlgorithmReverse.so
-OBJS = ShipPlan.o Floor.o Spot.o Container.o Port.o Route.o Utils.o  WeightBalanceCalculator.o BaseAlgorithm.o AlgorithmReverse.o
+SHARED_OBJS = _206223976_a.so _206223976_b.so
+OBJS = ShipPlan.o Floor.o Spot.o Container.o Port.o Route.o Utils.o  WeightBalanceCalculator.o _206223976_a.o _206223976_b.o
 CPP_COMP_FLAG = -std=c++2a -Wall -Wextra -Werror -pedantic-errors -DNDEBUG -fPIC -I../common
 CPP_LINK_FLAG = -shared
 
 all: $(SHARED_OBJS)
 
-BaseAlgorithm.so: $(OBJS)
+_206223976_a.so: $(OBJS)
 	$(COMP) $(CPP_LINK_FLAG) -o $@ $^
-AlgorithmReverse.so: $(OBJS)
+_206223976_b.so: $(OBJS)
 	$(COMP) $(CPP_LINK_FLAG) -o $@ $^
 
 ShipPlan.o: ../common/ShipPlan.cpp ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h
@@ -28,9 +28,9 @@ Utils.o: ../common/Utils.cpp ../common/Utils.h
 	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
 WeightBalanceCalculator.o: ../common/WeightBalanceCalculator.cpp ../interfaces/WeightBalanceCalculator.h ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h
 	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
-BaseAlgorithm.o: BaseAlgorithm.cpp BaseAlgorithm.h ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h ../common/Route.h ../common/Port.h ../common/Utils.h ../interfaces/WeightBalanceCalculator.h
+_206223976_a.o: _206223976_a.cpp _206223976_a.h ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h ../common/Route.h ../common/Port.h ../common/Utils.h ../interfaces/WeightBalanceCalculator.h
 	$(COMP) $(CPP_COMP_FLAG) -c $*.cpp
-AlgorithmReverse.o: AlgorithmReverse.cpp AlgorithmReverse.h BaseAlgorithm.h ../common/ShipPlan.h ../common/Route.h
+_206223976_b.o: _206223976_b.cpp _206223976_b.h _206223976_a.h ../common/ShipPlan.h ../common/Route.h
 	$(COMP) $(CPP_COMP_FLAG) -c $*.cpp
 
 clean:

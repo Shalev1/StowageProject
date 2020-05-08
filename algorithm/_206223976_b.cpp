@@ -1,7 +1,7 @@
-#include "AlgorithmReverse.h"
-REGISTER_ALGORITHM(AlgorithmReverse)
+#include "_206223976_b.h"
+REGISTER_ALGORITHM(_206223976_b)
 
-bool AlgorithmReverse::checkMoveContainer(Container *cont, Spot &spot, FileHandler &instructionsFile) {
+bool _206223976_b::checkMoveContainer(Container *cont, Spot &spot, FileHandler &instructionsFile) {
     int floorNum;
     Spot* emptySpot = getEmptySpot(floorNum);
     if(emptySpot != nullptr){

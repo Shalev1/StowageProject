@@ -1,7 +1,7 @@
-#include "BaseAlgorithm.h"
-REGISTER_ALGORITHM(BaseAlgorithm)
+#include "_206223976_a.h"
+REGISTER_ALGORITHM(_206223976_a)
 
-int BaseAlgorithm::readShipPlan(const std::string &full_path_and_file_name) {
+int _206223976_a::readShipPlan(const std::string &full_path_and_file_name) {
     ship.resetShipPlan();
 
     // Init the errorCodeBits vector, consider moving to the constructor
@@ -22,7 +22,7 @@ int BaseAlgorithm::readShipPlan(const std::string &full_path_and_file_name) {
     return errorsFlags;
 }
 
-int BaseAlgorithm::readShipRoute(const std::string &full_path_and_file_name) {
+int _206223976_a::readShipRoute(const std::string &full_path_and_file_name) {
     route = Route();
     vector<pair<int,string>> errors;
     bool fatalError = false;
@@ -36,12 +36,12 @@ int BaseAlgorithm::readShipRoute(const std::string &full_path_and_file_name) {
     return errorsFlags;
 }
 
-int BaseAlgorithm::setWeightBalanceCalculator(WeightBalanceCalculator &calculator) {
+int _206223976_a::setWeightBalanceCalculator(WeightBalanceCalculator &calculator) {
     weightCal = calculator;
     return 0;
 }
 
-int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_and_file_name, const std::string &output_full_path_and_file_name) {
+int _206223976_a::getInstructionsForCargo(const std::string &input_full_path_and_file_name, const std::string &output_full_path_and_file_name) {
     route.moveToNextPortWithoutContInit();
     vector<pair<int,string>> errors;
     route.getCurrentPort().initWaitingContainers(input_full_path_and_file_name, errors, true);
@@ -84,8 +84,8 @@ int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_an
     return errorsFlags;
 }
 
-void BaseAlgorithm::getUnloadInstructions(const string &portName, vector<Container *> &reloadContainers,
-                                      FileHandler &instructionsFile) {
+void _206223976_a::getUnloadInstructions(const string &portName, vector<Container *> &reloadContainers,
+                                         FileHandler &instructionsFile) {
     Container *container_to_unload;
     // Iterate ship from top to the bottom
     for (int floor_num = ship.getNumOfDecks() - 1; floor_num >= 0; --floor_num) {
@@ -104,13 +104,13 @@ void BaseAlgorithm::getUnloadInstructions(const string &portName, vector<Contain
     }
 }
 
-void BaseAlgorithm::getReloadInstructions(vector<Container*>& reload_containers, FileHandler& instructionsFile) {
+void _206223976_a::getReloadInstructions(vector<Container*>& reload_containers, FileHandler& instructionsFile) {
     for (auto & reload_container : reload_containers) {
         findLoadingSpot(reload_container, instructionsFile);
     }
 }
 
-Spot *BaseAlgorithm::getEmptySpot(int &returnFloorNum) {
+Spot *_206223976_a::getEmptySpot(int &returnFloorNum) {
     for (int floor_num = 0; floor_num < ship.getNumOfDecks(); ++floor_num) {
         //Iterate over the current floor's floor map
         for (int x = 0; x < ship.getShipRows(); ++x) {
@@ -127,7 +127,7 @@ Spot *BaseAlgorithm::getEmptySpot(int &returnFloorNum) {
     return nullptr;
 }
 
-void BaseAlgorithm::findLoadingSpot(Container *cont, FileHandler &instructionsFile) {
+void _206223976_a::findLoadingSpot(Container *cont, FileHandler &instructionsFile) {
     int floorNum;
     Spot *empty_spot = getEmptySpot(floorNum);
     if (empty_spot == nullptr) {
@@ -159,7 +159,7 @@ void BaseAlgorithm::findLoadingSpot(Container *cont, FileHandler &instructionsFi
     ship.insertContainer(empty_spot, *cont);
 }
 
-bool BaseAlgorithm::checkMoveContainer(Container* cont, Spot& spot, FileHandler& instructionsFile) {
+bool _206223976_a::checkMoveContainer(Container* cont, Spot& spot, FileHandler& instructionsFile) {
     // Prevent warnings
     (void)cont;
     (void)spot;
@@ -167,8 +167,8 @@ bool BaseAlgorithm::checkMoveContainer(Container* cont, Spot& spot, FileHandler&
     return false; // Naive implementation no move allowed
 }
 
-void BaseAlgorithm::markRemoveContainers(Container &cont, Spot &spot, vector<Container *> &reload_containers,
-                                     FileHandler &instructionsFile) {
+void _206223976_a::markRemoveContainers(Container &cont, Spot &spot, vector<Container *> &reload_containers,
+                                        FileHandler &instructionsFile) {
     int curr_floor_num = ship.getNumOfDecks() - 1;
     string curr_dest = cont.getDestPort();
     Spot *curr_spot;

@@ -1,5 +1,5 @@
-#ifndef SHIPPROJECT_BASEALGORITHM_H
-#define SHIPPROJECT_BASEALGORITHM_H
+#ifndef SHIPPROJECT__206223976_A_H
+#define SHIPPROJECT__206223976_A_H
 
 #include "../common/Route.h"
 #include "../common/ShipPlan.h"
@@ -14,7 +14,7 @@ using std::map;
 
 // Base class of an algorithm, all the base functions for the algorithm have trivial implementations
 // and virtual to allow override them with other implementation of different algorithms
-class BaseAlgorithm : public AbstractAlgorithm{
+class _206223976_a : public AbstractAlgorithm{
 protected:
     ShipPlan ship;
     Route route;
@@ -63,24 +63,22 @@ public:
      *  Fill the instructions file with the instructions that need to do in this port.
      *  Get the containers to be loaded in this port from the input file
      */
-    virtual int getInstructionsForCargo(const std::string &input_full_path_and_file_name, const std::string &output_full_path_and_file_name) override;
+    int getInstructionsForCargo(const std::string &input_full_path_and_file_name, const std::string &output_full_path_and_file_name) override;
 
     /**
      * Read the ship plan from the given file
      */
-    virtual int readShipPlan(const std::string &full_path_and_file_name) override;
+    int readShipPlan(const std::string &full_path_and_file_name) override;
 
     /**
      * Read the ship route from the given file
      */
-    virtual int readShipRoute(const std::string &full_path_and_file_name) override;
+    int readShipRoute(const std::string &full_path_and_file_name) override;
 
     /**
      * Set the weight balance calculator from the given one
      */
-    virtual int setWeightBalanceCalculator(WeightBalanceCalculator &calculator) override;
-
-    virtual ~BaseAlgorithm() = default;
+    int setWeightBalanceCalculator(WeightBalanceCalculator &calculator) override;
 };
 
-#endif //SHIPPROJECT_BASEALGORITHM_H
+#endif //SHIPPROJECT__206223976_A_H
