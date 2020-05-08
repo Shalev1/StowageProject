@@ -51,6 +51,11 @@ public:
     }
 
     /**
+     * Clear Containers that left on the current port
+     */
+    void leaveCurrentPort();
+
+    /**
      * Return the true if there is at least one more port in the route
      * Also load the waiting containers in this port
      */

@@ -96,6 +96,14 @@ bool Route::moveToNextPortWithoutContInit() {
     return true;
 }
 
+void Route::leaveCurrentPort() {
+    for(auto& cont : getCurrentPort().getWaitingContainers()){
+        if(cont.getSpotInFloor() == nullptr){ // Container stay in the port
+            cont.removeID(simSetIDs);
+        }
+    }
+}
+
 bool Route::moveToNextPort(vector<pair<int,string>>& errVector) {
     if(!hasNextPort())
         return false;

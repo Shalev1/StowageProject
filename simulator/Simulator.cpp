@@ -125,6 +125,7 @@ void Simulator::executeTravel(int num_of_algo, std::unique_ptr<AbstractAlgorithm
                        num_of_algo);
         this->implementInstructions(calc, instruction_file, num_of_operations, num_of_algo);
         this->checkMissedContainers(travel.getCurrentPort().getName(), num_of_algo);
+        travel.leaveCurrentPort();
     }
     Container::clearIDs(); // TODO: For each port in travel, we need to delete all the containers that were left at the port
 

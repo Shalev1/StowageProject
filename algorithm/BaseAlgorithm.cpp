@@ -132,7 +132,7 @@ void BaseAlgorithm::findLoadingSpot(Container *cont, FileHandler &instructionsFi
     Spot *empty_spot = getEmptySpot(floorNum);
     if (empty_spot == nullptr) {
         //Ship is full, reject
-        //cont->removeID(algoSetIDs);
+        cont->removeID(algoSetIDs);
         instructionsFile.writeInstruction("R", cont->getID(), -1, -1, -1);
         return;
     }
