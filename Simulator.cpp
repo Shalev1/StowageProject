@@ -101,6 +101,7 @@ bool Simulator::scanTravelDir(int num_of_algo, string &plan_path, string &route_
     return true;
 }
 
+//TODO: Make the function receive the reference of the algorithm and not the unique-ptr itself
 void Simulator::executeTravel(int num_of_algo, std::unique_ptr<AbstractAlgorithm> &algo, WeightBalanceCalculator &calc,
                               vector<pair<int, string>> &errs_in_ctor, int &num_of_errors) {
     string instruction_file_path;
