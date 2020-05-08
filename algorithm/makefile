@@ -26,9 +26,9 @@ Route.o: ../common/Route.cpp ../common/Route.h ../common/Port.h ../common/Contai
 	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
 Utils.o: ../common/Utils.cpp ../common/Utils.h
 	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
-WeightBalanceCalculator.o: ../interface/WeightBalanceCalculator.cpp ../interface/WeightBalanceCalculator.h ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h
-	$(COMP) $(CPP_COMP_FLAG) -c ../interface/$*.cpp
-BaseAlgorithm.o: BaseAlgorithm.cpp BaseAlgorithm.h ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h ../common/Route.h ../common/Port.h ../common/Utils.h ../interface/WeightBalanceCalculator.h
+WeightBalanceCalculator.o: ../common/WeightBalanceCalculator.cpp ../interfaces/WeightBalanceCalculator.h ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h
+	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
+BaseAlgorithm.o: BaseAlgorithm.cpp BaseAlgorithm.h ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h ../common/Route.h ../common/Port.h ../common/Utils.h ../interfaces/WeightBalanceCalculator.h
 	$(COMP) $(CPP_COMP_FLAG) -c $*.cpp
 AlgorithmReverse.o: AlgorithmReverse.cpp AlgorithmReverse.h BaseAlgorithm.h ../common/ShipPlan.h ../common/Route.h
 	$(COMP) $(CPP_COMP_FLAG) -c $*.cpp

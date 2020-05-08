@@ -6,11 +6,11 @@ CPP_LINK_FLAG = -lstdc++fs -ldl -export-dynamic #(-rdynamic)
 
 $(EXEC): $(OBJS)
 	$(COMP) $(OBJS) $(CPP_LINK_FLAG) -o $@
-AlgorithmRegistration.o: AlgorithmRegistration.cpp ../interface/AlgorithmRegistration.h Simulator.h ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h
+AlgorithmRegistration.o: AlgorithmRegistration.cpp ../interfaces/AlgorithmRegistration.h Simulator.h ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h
 	$(COMP) $(CPP_COMP_FLAG) -c $*.cpp
 main.o: main.cpp ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h
 	$(COMP) $(CPP_COMP_FLAG) -c $*.cpp
-Simulator.o: Simulator.cpp Simulator.h ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h ../common/Route.h ../common/Port.h ../common/Utils.h ../interface/WeightBalanceCalculator.h ../interface/AbstractAlgorithm.h
+Simulator.o: Simulator.cpp Simulator.h ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h ../common/Route.h ../common/Port.h ../common/Utils.h ../interfaces/WeightBalanceCalculator.h ../interfaces/AbstractAlgorithm.h
 	$(COMP) $(CPP_COMP_FLAG) -c $*.cpp
 ShipPlan.o: ../common/ShipPlan.cpp ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h
 	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
@@ -26,7 +26,7 @@ Route.o: ../common/Route.cpp ../common/Route.h ../common/Port.h ../common/Contai
 	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
 Utils.o: ../common/Utils.cpp ../common/Utils.h
 	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
-WeightBalanceCalculator.o: ../interface/WeightBalanceCalculator.cpp ../interface/WeightBalanceCalculator.h ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h
-	$(COMP) $(CPP_COMP_FLAG) -c ../interface/$*.cpp
+WeightBalanceCalculator.o: ../common/WeightBalanceCalculator.cpp ../interfaces/WeightBalanceCalculator.h ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h
+	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
 clean:
 	rm -f $(OBJS) $(EXEC)
