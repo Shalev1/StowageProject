@@ -35,6 +35,15 @@ ostream &operator<<(ostream &out, const Container &c) {
                << endl;
 }
 
+void Container::removeID(int setNum) {
+    if(setNum == 0 || setNum == simSetIDs){
+        simIds.erase(id);
+    }
+    if(setNum == 0 || setNum == algoSetIDs) {
+        algoIds.erase(id);
+    }
+}
+
 bool Container::validateID(const string &id) {
     regex form("([A-Z]{3})([JUZ]{1})([0-9]{7})");
     return regex_match(id, form);

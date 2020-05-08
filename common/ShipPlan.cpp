@@ -138,15 +138,14 @@ void ShipPlan::insertContainer(int floor_num, int x, int y, Container &cont) {
 }
 
 void ShipPlan::removeContainer(Spot *pos) {
+    pos->getContainer()->removeID();
     pos->getContainer()->setPlace(nullptr);
     pos->setContainer(nullptr); // clearing spot with null.
     this->free_spots_num++;
 }
 
 void ShipPlan::removeContainer(int floor_num, int x, int y) {
-    this->getSpotAt(floor_num, x, y).getContainer()->setPlace(nullptr);
-    this->getSpotAt(floor_num, x, y).setContainer(nullptr); // clearing spot with null.
-    this->free_spots_num++;
+    removeContainer(&getSpotAt(floor_num, x, y));
 }
 
 void

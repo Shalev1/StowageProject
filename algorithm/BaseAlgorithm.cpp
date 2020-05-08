@@ -23,6 +23,7 @@ int BaseAlgorithm::readShipPlan(const std::string &full_path_and_file_name) {
 }
 
 int BaseAlgorithm::readShipRoute(const std::string &full_path_and_file_name) {
+    route = Route();
     vector<pair<int,string>> errors;
     bool fatalError = false;
     route.initRouteFromFile(full_path_and_file_name, errors, fatalError);
@@ -131,6 +132,7 @@ void BaseAlgorithm::findLoadingSpot(Container *cont, FileHandler &instructionsFi
     Spot *empty_spot = getEmptySpot(floorNum);
     if (empty_spot == nullptr) {
         //Ship is full, reject
+        //cont->removeID(algoSetIDs);
         instructionsFile.writeInstruction("R", cont->getID(), -1, -1, -1);
         return;
     }

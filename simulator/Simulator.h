@@ -7,11 +7,11 @@
 #include <search.h>
 #include <dlfcn.h>
 #include <filesystem>
-#include "ShipPlan.h"
-#include "Route.h"
-#include "../interface/AbstractAlgorithm.h"
-#include "Utils.h"
-#include "../interface/WeightBalanceCalculator.h"
+#include "../common/ShipPlan.h"
+#include "../common/Route.h"
+#include "../interfaces/AbstractAlgorithm.h"
+#include "../common/Utils.h"
+#include "../interfaces/WeightBalanceCalculator.h"
 
 
 #define NUM_OF_ALGORITHMS 2

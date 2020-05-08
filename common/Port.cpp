@@ -37,6 +37,7 @@ void Port::initWaitingContainers(const string &path, vector<pair<int,string>>& e
     bool valid = true;
     string id = "";
     if (fh.isFailed()){
+        cout << "HERE: " << path << endl;
         errVector.emplace_back(16,"Failed to open " + path + " considered as no containers waiting");
         return;
     }

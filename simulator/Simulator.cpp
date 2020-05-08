@@ -15,7 +15,7 @@ Simulator::Simulator(const string &root) : output_dir_path(root), err_in_travel(
     errors[0].push_back("General");
 }
 
-bool travelName(const string &name) {
+bool travelName(const string &name) { // TODO: why??
     regex form("(travel)([0-9]+)");
     return regex_match(name, form);
 }
@@ -190,7 +190,6 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
 
             if (num_of_algo == 1) statistics[0].push_back(travel_dir.path().filename()); // creating a travel column
             travel.initPortsContainersFiles(travel_dir.path(), travel_files, errs_in_ctor);
-
             //SIMULATION
 
             algo->readShipPlan(plan_path);
@@ -580,7 +579,7 @@ void Simulator::implementInstructions(WeightBalanceCalculator &calc, const strin
 }
 
 void Simulator::checkMissedContainers(const string &port_name, int num_of_algo) {
-    vector<Container *> conts = ship.getContainersForDest(port_name);
+    vector<Container*> conts = ship.getContainersForDest(port_name);
     if ((int) conts.size() > 0) {
         errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name +
                                       "- There are some containers that were not unloaded at their destination port: " +

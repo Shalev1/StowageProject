@@ -7,6 +7,9 @@
 #include <set>
 #include <regex>
 
+#define simSetIDs 1
+#define algoSetIDs 2
+
 using std::cout;
 using std::string;
 using std::set;
@@ -48,19 +51,17 @@ public:
         return this->spot_in_floor;
     }
 
-    void setWeight(int weight) {
-        this->weight = weight;
-    }
-
-    void setDestPort(const string dest_port) {
-        this->dest_port = dest_port;
-    }
-
     void setPlace(Spot *spot_in_floor) {
         this->spot_in_floor = spot_in_floor;
     }
 
     //---Class Functions---//
+
+    /**
+     * Remove this container's ID from the ids sets
+     * @param setNum: 0 to remove fromm both sets, 1 remove just from simIds, 2 remove just from algoIds
+     */
+    void removeID(int setNum = 0);
 
     friend ostream &operator<<(ostream &out, const Container &c);
 

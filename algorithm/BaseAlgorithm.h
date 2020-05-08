@@ -1,11 +1,11 @@
 #ifndef SHIPPROJECT_BASEALGORITHM_H
 #define SHIPPROJECT_BASEALGORITHM_H
 
-#include "Route.h"
-#include "ShipPlan.h"
-#include "../interface/WeightBalanceCalculator.h"
-#include "../interface/AbstractAlgorithm.h"
-#include "../interface/AlgorithmRegistration.h"
+#include "../common/Route.h"
+#include "../common/ShipPlan.h"
+#include "../interfaces/WeightBalanceCalculator.h"
+#include "../interfaces/AbstractAlgorithm.h"
+#include "../interfaces/AlgorithmRegistration.h"
 #include <map>
 
 #define NUM_OF_ERROR_CODES 19

@@ -3,7 +3,7 @@
 //
 
 #include "Simulator.h"
-#include "../interface/AlgorithmRegistration.h"
+#include "../interfaces/AlgorithmRegistration.h"
 
 AlgorithmRegistration::AlgorithmRegistration(std::function<std::unique_ptr<AbstractAlgorithm>()> algo_func){
     Simulator::getInstance().registerAlgorithm(algo_func);

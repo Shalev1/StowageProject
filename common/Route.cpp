@@ -29,7 +29,7 @@ void Route::initRouteFromFile(const string& path, vector<pair<int,string>>& errV
         errVector.emplace_back(8,"Illegal Route file given - less then two valid ports in route - can't run this travel");
         success = false;
     }
-    empty_file = string("Files") + std::filesystem::path::preferred_separator + string("empty_file.csv");
+    empty_file = string("../Files") + std::filesystem::path::preferred_separator + string("empty_file.csv");
 }
 
 /**
