@@ -131,7 +131,6 @@ void Simulator::executeTravel(int num_of_algo, std::unique_ptr<AbstractAlgorithm
 
 bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
     int num_of_algo = 1;
-    string algo_name;
     if (!updateInput(algorithm_path)) {
         fillSimErrors();
         err_detected = true;
@@ -145,19 +144,20 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
     }
     vector<string> algorithms = getSOFilesNames(algorithm_path);
     // TODO: Handle empty algorithm.so doesnt exists
-    for (auto &algo_name : algorithms) {
+    for (auto &algo_name_so : algorithms) {
+        string algo_name = algo_name_so.substr(0, (int)algo_name_so.length() - 3);
         vector<string> travel_files;
         string plan_path, route_path;
         WeightBalanceCalculator calc;
         int num_of_errors = 0;
         vector<string> new_res_row;
         statistics.push_back(new_res_row);
-        statistics[num_of_algo].push_back("Algorithm ." + to_string(num_of_algo));
+        statistics[num_of_algo].push_back(algo_name );
         vector<string> new_err_row;
         errors.push_back(new_err_row);
-        errors[num_of_algo].push_back("Algorithm ." + to_string(num_of_algo));
+        errors[num_of_algo].push_back(algo_name);
 
-        void *hndl = dlopen((algorithm_path + std::filesystem::path::preferred_separator + algo_name).c_str(), RTLD_LAZY);
+        void *hndl = dlopen((algorithm_path + std::filesystem::path::preferred_separator + algo_name_so).c_str(), RTLD_LAZY);
         (void) hndl;
 
         std::unique_ptr<AbstractAlgorithm> algo = inst.algo_funcs[num_of_algo-1].second();
