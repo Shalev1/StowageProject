@@ -22,7 +22,7 @@ def makeTest(name, num_travels, num_ports, num_containers):
     for travel in travels:
         path = os.path.join(root_path, travel)
         os.mkdir(path)
-        plan = open(os.path.join(path, 'Plan.ship_plan.csv'), 'w')
+        plan = open(os.path.join(path, 'Plan.ship_plan'), 'w')
         floors = random.randint(2, 6)
         row = random.randint(2, 5)
         col = random.randint(2, 5)
@@ -37,7 +37,7 @@ def makeTest(name, num_travels, num_ports, num_containers):
         ports = []
         for i in range(num_ports):
             ports.append(random.choice(L))
-        route = open(os.path.join(path, 'Route.route.csv'), 'w')
+        route = open(os.path.join(path, 'Route.route'), 'w')
         for i in range(num_ports):
             route.write(ports[i] + '\n')
         route.close()
@@ -46,8 +46,8 @@ def makeTest(name, num_travels, num_ports, num_containers):
         for i in range(num_ports - 1):
             ports_num_visits[ports[i]] = 1
         for i in range(num_ports - 1):
-            t = open(os.path.join(path, ports[i]) + '_' + str(ports_num_visits[ports[i]]) + '.cargo_data.csv', 'w')
-            portsFiles.append(os.path.join(path, ports[i]) + '_' + str(ports_num_visits[ports[i]]) + '.cargo_data.csv')
+            t = open(os.path.join(path, ports[i]) + '_' + str(ports_num_visits[ports[i]]) + '.cargo_data', 'w')
+            portsFiles.append(os.path.join(path, ports[i]) + '_' + str(ports_num_visits[ports[i]]) + '.cargo_data')
             ports_num_visits[ports[i]] += 1
             t.close()
         for i in range(num_containers):

@@ -43,7 +43,7 @@ bool Simulator::scanTravelDir(int num_of_algo, string &plan_path, string &route_
     vector<pair<int, string>> errs_in_ctor;
 
     for (const auto &entry : std::filesystem::directory_iterator(travel_dir)) {
-        if (endsWith(entry.path().filename(), ".ship_plan.csv")) { // A ship plan file was found
+        if (endsWith(entry.path().filename(), ".ship_plan")) { // A ship plan file was found
             if (plan_found) {
                 if (num_of_algo == 1)
                     errors[0].push_back(
@@ -55,7 +55,7 @@ bool Simulator::scanTravelDir(int num_of_algo, string &plan_path, string &route_
             ship = ShipPlan(); // Reset the ship before initialization
             ship.initShipPlanFromFile(plan_path, errs_in_ctor, success_build);
             plan_found = true;
-        } else if (endsWith(entry.path().filename(), ".route.csv")) { // A route file was found
+        } else if (endsWith(entry.path().filename(), ".route")) { // A route file was found
             if (route_found) {
                 if (num_of_algo == 1)
                     errors[0].push_back("@ Travel: " + this->curr_travel_name + " already found a route file.");
@@ -110,7 +110,7 @@ void Simulator::executeTravel(int num_of_algo, std::unique_ptr<AbstractAlgorithm
         curr_port_name = travel.getCurrentPort().getName();
         instruction_file =
                 instruction_file_path + std::filesystem::path::preferred_separator + curr_port_name + "_" +
-                to_string(travel.getNumOfVisitsInPort(curr_port_name)) + ".crane_instructions.csv";
+                to_string(travel.getNumOfVisitsInPort(curr_port_name)) + ".crane_instructions";
         analyzeErrCode(algo->getInstructionsForCargo(travel.getCurrentPortPath(), instruction_file),
                        num_of_algo);
         this->implementInstructions(calc, instruction_file, num_of_operations, num_of_algo);
@@ -594,7 +594,7 @@ void Simulator::addSumColumn() {
 }
 
 void Simulator::createResultsFile() {
-    FileHandler res_file(this->output_dir_path + std::filesystem::path::preferred_separator + "simulation.results.csv",
+    FileHandler res_file(this->output_dir_path + std::filesystem::path::preferred_separator + "simulation.results",
                          true);
     if (res_file.isFailed()) {
         return;
@@ -614,7 +614,7 @@ void Simulator::createResultsFile() {
 }
 
 void Simulator::fillSimErrors() {
-    FileHandler err_file(this->output_dir_path + std::filesystem::path::preferred_separator + "simulation.errors.csv",
+    FileHandler err_file(this->output_dir_path + std::filesystem::path::preferred_separator + "simulation.errors",
                          true);
     if (err_file.isFailed()) {
         return;
@@ -636,13 +636,13 @@ void Simulator::fillSimErrors() {
 
 void Simulator::printSimulationResults() {
     cout << "Results File:" << endl;
-    printCSVFile(this->output_dir_path + std::filesystem::path::preferred_separator + "simulation.results.csv");
+    printCSVFile(this->output_dir_path + std::filesystem::path::preferred_separator + "simulation.results");
 }
 
 void Simulator::printSimulationErrors() {
     if (!err_detected) return; // No errors were found
     cout << "Errors File:" << endl;
-    if (!printCSVFile(this->output_dir_path + std::filesystem::path::preferred_separator + "simulation.errors.csv"))
+    if (!printCSVFile(this->output_dir_path + std::filesystem::path::preferred_separator + "simulation.errors"))
         cout << "Couldn't open errors file." << endl;
 }
 
