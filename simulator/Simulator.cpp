@@ -2,8 +2,6 @@
 
 Simulator Simulator::inst;
 
-Simulator::Simulator(){}
-
 Simulator::Simulator(const string &root) : output_dir_path(root), err_in_travel(false), err_detected(false),
                                            curr_travel_name("") {
     vector<string> first_res_row;
@@ -15,17 +13,9 @@ Simulator::Simulator(const string &root) : output_dir_path(root), err_in_travel(
     errors[0].push_back("General");
 }
 
-bool travelName(const string &name) { // TODO: why??
-    regex form("(travel)([0-9]+)");
-    return regex_match(name, form);
-}
-
-// Checks if the file name is "travel*"
+// Checks that entry is folder
 bool validateTravelFolder(std::filesystem::directory_entry entry) {
-    if (std::filesystem::is_directory(entry.path()) && travelName(entry.path().filename())) {
-        return true;
-    }
-    return false;
+    return std::filesystem::is_directory(entry.path());
 }
 
 bool Simulator::updateInput(string &algorithm_path) {
@@ -177,7 +167,7 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
         cout << "\nExecuting Algorithm " << algo_name << "..." << endl;
         for (const auto &travel_dir : std::filesystem::directory_iterator(
                 travels_dir_path)) { // Foreach Travel, do the following:
-            if (!validateTravelFolder(travel_dir))
+            if(!std::filesystem::is_directory(travel_dir))
                 continue;
 
             vector<pair<int, string>> errs_in_ctor;
@@ -486,7 +476,7 @@ void Simulator::implementInstructions(WeightBalanceCalculator &calc, const strin
                                       int &num_of_operations, int num_of_algo) {
     FileHandler file(instruction_file);
     vector<string> instruction;
-    Container *cont_to_load;
+    Container *cont_to_load; //TODO: Shalev - need to initialize?
     Port *current_port = &(travel.getCurrentPort());
     map<string, Container *> rejected_containers;
     map<string, Container *> unloaded_containers;
@@ -508,8 +498,7 @@ void Simulator::implementInstructions(WeightBalanceCalculator &calc, const strin
                 continue; // Bad id for container
             }
             cont_to_load = current_port->getWaitingContainerByID(instruction[1]);
-            if (cont_to_load ==
-                nullptr) // didn't find the container on the waiting containers list, search in the reload list
+            if (cont_to_load == nullptr) // didn't find the container on the waiting containers list, search in the reload list
                 cont_to_load = (unloaded_containers.find(instruction[1]) != unloaded_containers.end())
                                ? unloaded_containers.at(instruction[1]) : nullptr;
         }
@@ -661,6 +650,6 @@ void Simulator::analyzeErrCode(int err_code, int num_of_algo) {
     vector<unsigned int> one_indexes = getOneIndexes(err_code);
     for (const unsigned int index : one_indexes) {
         if (index > 18) return; // No error code is defined for indexes above 18.
-        errors[num_of_algo].push_back("@ Algorithm reported: " + errCodes.at(index));
+        errors[num_of_algo].push_back("@ Algorithm reported in travel " + curr_travel_name + ": " + errCodes.at(index));
     }
 }

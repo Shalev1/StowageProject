@@ -147,15 +147,15 @@ private:
     void fillSimErrors();
 
     /**
-     * Receives an integer represting error codes and add them to the errors log accordingly.
+     * Receives an integer representing error codes and add them to the errors log accordingly.
      */
     void analyzeErrCode(int err_code, int num_of_algo);
 
 public:
     //---Constructors and Destructors---//
-    Simulator(const string &root);
+    explicit Simulator(const string &root);
 
-    Simulator();
+    Simulator() = default;
 
     static Simulator& getInstance(){
         return inst;
