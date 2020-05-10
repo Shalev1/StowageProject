@@ -11,29 +11,35 @@ BaseAlgorithm::BaseAlgorithm(){
 int BaseAlgorithm::readShipPlan(const std::string &full_path_and_file_name) {
     ship.resetShipPlan();
 
-    bool valid = true;
+    shipValid = true;
     vector<pair<int,string>> err_msgs;
-    ship.initShipPlanFromFile(full_path_and_file_name, err_msgs, valid);
+    ship.initShipPlanFromFile(full_path_and_file_name, err_msgs, shipValid);
 
     //Check for errors
     int errorsFlags = 0;
     for(auto& p : err_msgs){
-        errorsFlags += errorCodeBits[p.first];
+        errorsFlags |= errorCodeBits[p.first];
     }
+    shipErrorCode = 0;
+    if(!shipValid)
+        shipErrorCode = errorsFlags;
     return errorsFlags;
 }
 
 int BaseAlgorithm::readShipRoute(const std::string &full_path_and_file_name) {
     route = Route();
     vector<pair<int,string>> errors;
-    bool fatalError = false;
-    route.initRouteFromFile(full_path_and_file_name, errors, fatalError);
+    routeValid = true;
+    route.initRouteFromFile(full_path_and_file_name, errors, routeValid);
 
     //Check for errors
     int errorsFlags = 0;
     for(auto& p : errors){
-        errorsFlags += errorCodeBits[p.first];
+        errorsFlags |= errorCodeBits[p.first];
     }
+    routeErrorCode = 0;
+    if(!routeValid)
+        routeErrorCode = errorsFlags;
     return errorsFlags;
 }
 
@@ -43,6 +49,14 @@ int BaseAlgorithm::setWeightBalanceCalculator(WeightBalanceCalculator &calculato
 }
 
 int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_and_file_name, const std::string &output_full_path_and_file_name) {
+    if(!shipValid){
+        FileHandler emptyFile(output_full_path_and_file_name, true); // Create empty instructions file
+        return shipErrorCode;
+    }
+    if(!routeValid){
+        FileHandler emptyFile(output_full_path_and_file_name, true); // Create empty instructions file
+        return routeErrorCode;
+    }
     vector<pair<int,string>> errors;
     route.moveToNextPortWithoutContInit();
     if(!route.hasNextPort() &route.checkLastPortContainers(input_full_path_and_file_name, false)) { // This is the last port and it has waiting containers
@@ -85,7 +99,7 @@ int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_an
     //Check for errors
     int errorsFlags = 0;
     for(auto& p : errors){
-        errorsFlags += errorCodeBits[p.first];
+        errorsFlags |= errorCodeBits[p.first];
     }
     return errorsFlags;
 }

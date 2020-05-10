@@ -20,7 +20,11 @@ using std::map;
 class BaseAlgorithm : public AbstractAlgorithm{
 protected:
     ShipPlan ship;
+    bool shipValid = true; // Is ship created successfully
+    int shipErrorCode = 0; // last fatal error code in ship init, 0 if there wasn't any
     Route route;
+    bool routeValid = true; // Is route created successfully
+    int routeErrorCode = 0; // last fatal error code in route init, 0 if there wasn't any
     WeightBalanceCalculator weightCal;
     vector<int> errorCodeBits; // values for each error code bit
 
