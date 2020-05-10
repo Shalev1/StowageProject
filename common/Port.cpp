@@ -44,16 +44,12 @@ void Port::initWaitingContainers(const string &path, vector<pair<int,string>>& e
     vector<string> tokens;
     while (fh.getNextLineAsTokens(tokens)) {
         if (tokens.empty()) {
-            errVector.emplace_back(14,"bad line format: ID cannot be read");
+            errVector.emplace_back(14,"ID cannot be read");
             continue;
         } else {
             id = tokens[0];
             if (!Container::validateID(id)) {
                 errVector.emplace_back(15,"Illegal ID for container: " + id);
-                continue;
-            }
-            if(!Container::checkUnique(id, algoCase)){
-                errVector.emplace_back(11,"Container with ID " + id + " already loaded on the ship");
                 continue;
             }
             // Check that there isn't already container with the same ID in the port
@@ -68,10 +64,14 @@ void Port::initWaitingContainers(const string &path, vector<pair<int,string>>& e
             if(!unique){
                 continue; // ID isn't unique, skip this line
             }
+            if(!Container::checkUnique(id, algoCase)){
+                errVector.emplace_back(11,"Container with ID " + id + " already loaded on the ship");
+                continue;
+            }
         }
         int weight = 0;
         if (tokens.size() < 2){
-            errVector.emplace_back(12,"bad line format: missing weight - ID " + id + " rejected");
+            errVector.emplace_back(12,"No weight given for container: " + id + " - container rejected");
             valid = false;
         } else {
             if (isPositiveNumber(tokens[1])) {
@@ -83,7 +83,7 @@ void Port::initWaitingContainers(const string &path, vector<pair<int,string>>& e
         }
         string dest;
         if (tokens.size() < 3) {
-            errVector.emplace_back(13,"bad line format: missing port destination - ID " + id + " rejected");
+            errVector.emplace_back(13,"No destination port given for container: " + id + " - container rejected");
             valid = false;
         } else {
             dest = tokens[2];

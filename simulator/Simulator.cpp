@@ -177,9 +177,9 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
             travel.initPortsContainersFiles(travel_dir.path(), travel_files, errs_in_ctor);
             //SIMULATION
 
-            algo->readShipPlan(plan_path);
-            algo->readShipRoute(route_path);
-            algo->setWeightBalanceCalculator(calc);
+            analyzeErrCode(algo->readShipPlan(plan_path), num_of_algo);
+            analyzeErrCode(algo->readShipRoute(route_path), num_of_algo);
+            analyzeErrCode(algo->setWeightBalanceCalculator(calc),num_of_algo);
             executeTravel(num_of_algo, algo_name, algo, calc, errs_in_ctor, num_of_errors);
             if (num_of_algo == 1)
                 extractGeneralErrors(errs_in_ctor); // Update the errors with general errors found during the travel.
@@ -193,7 +193,7 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
             statistics[0].push_back("Num Errors"); // creating a Num Errors column
         statistics[num_of_algo].push_back(to_string(num_of_errors));
         num_of_algo++;
-        //dlclose(hndl);
+        //dlclose(hndl); //TODO: close, before close all references to the so object
     } // Done algorithm
     if (err_detected) // Errors found, err_file should be created
         fillSimErrors();

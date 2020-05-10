@@ -25,7 +25,10 @@ void Route::initRouteFromFile(const string& path, vector<pair<int,string>>& errV
         }
         prevName = name;
     }
-    if((int)ports.size() < 2){
+    if((int)ports.size() < 1){
+        errVector.emplace_back(8,"Illegal Route file given - empty file - can't run this travel");
+        success = false;
+    } else if((int)ports.size() < 2){
         errVector.emplace_back(8,"Illegal Route file given - less then two valid ports in route - can't run this travel");
         success = false;
     }
