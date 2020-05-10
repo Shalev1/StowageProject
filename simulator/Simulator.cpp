@@ -13,11 +13,6 @@ Simulator::Simulator(const string &root) : output_dir_path(root), err_in_travel(
     errors[0].push_back("General");
 }
 
-// Checks that entry is folder
-bool validateTravelFolder(std::filesystem::directory_entry entry) {
-    return std::filesystem::is_directory(entry.path());
-}
-
 bool Simulator::updateInput(string &algorithm_path) {
     if (!algorithm_path.empty() && !dirExists(algorithm_path)) {
         errors[0].push_back("@ FATAL ERROR: Algorithm path that was given is invalid.");
@@ -92,14 +87,13 @@ bool Simulator::scanTravelDir(int num_of_algo, string &plan_path, string &route_
 }
 
 //TODO: Make the function receive the reference of the algorithm and not the unique-ptr itself
-void Simulator::executeTravel(int num_of_algo, std::unique_ptr<AbstractAlgorithm> &algo, WeightBalanceCalculator &calc,
+void Simulator::executeTravel(int num_of_algo, const string& algo_name, std::unique_ptr<AbstractAlgorithm> &algo, WeightBalanceCalculator &calc,
                               vector<pair<int, string>> &errs_in_ctor, int &num_of_errors) {
     string instruction_file_path;
     string instruction_file;
     int num_of_operations = 0;
     //Creating instructions directory for the algorithm
-    instruction_file_path = createInstructionDir(output_dir_path, "algorithm " + to_string(num_of_algo),
-                                                 this->curr_travel_name); //TODO: Hard-corded algorithm name, should make dynamic with algorithm.so
+    instruction_file_path = createInstructionDir(output_dir_path, algo_name, curr_travel_name);
     if (instruction_file_path.empty()) {
         cout
                 << "ERROR: Failed creating instruction files directory; creates everything inside the output folder."
@@ -117,7 +111,7 @@ void Simulator::executeTravel(int num_of_algo, std::unique_ptr<AbstractAlgorithm
         this->checkMissedContainers(travel.getCurrentPort().getName(), num_of_algo);
         travel.leaveCurrentPort();
     }
-    Container::clearIDs(); // TODO: For each port in travel, we need to delete all the containers that were left at the port
+    Container::clearIDs();
 
     // Check if there was an error by the algorithm. if there was, number of operation is '-1'.
     if (this->err_in_travel) {
@@ -152,16 +146,14 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
         int num_of_errors = 0;
         vector<string> new_res_row;
         statistics.push_back(new_res_row);
-        statistics[num_of_algo].push_back(algo_name );
+        statistics[num_of_algo].push_back(algo_name);
         vector<string> new_err_row;
         errors.push_back(new_err_row);
         errors[num_of_algo].push_back(algo_name);
 
         void *hndl = dlopen((algorithm_path + std::filesystem::path::preferred_separator + algo_name_so).c_str(), RTLD_LAZY);
         (void) hndl;
-
         std::unique_ptr<AbstractAlgorithm> algo = inst.algo_funcs[num_of_algo-1].second();
-
         //TODO:Function Validate that the so was opened correctly and the algorithm really registered by the macro
 
         cout << "\nExecuting Algorithm " << algo_name << "..." << endl;
@@ -179,19 +171,21 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
                 continue; // Fatal error detected. Skip to the next travel.
             }
 
-            if (num_of_algo == 1) statistics[0].push_back(travel_dir.path().filename()); // creating a travel column
+            if (num_of_algo == 1)
+                statistics[0].push_back(travel_dir.path().filename()); // creating a travel column
             travel.initPortsContainersFiles(travel_dir.path(), travel_files, errs_in_ctor);
             //SIMULATION
 
             algo->readShipPlan(plan_path);
             algo->readShipRoute(route_path);
             algo->setWeightBalanceCalculator(calc);
-            executeTravel(num_of_algo, algo, calc, errs_in_ctor, num_of_errors);
+            executeTravel(num_of_algo, algo_name, algo, calc, errs_in_ctor, num_of_errors);
             if (num_of_algo == 1)
                 extractGeneralErrors(errs_in_ctor); // Update the errors with general errors found during the travel.
             travel_files.clear();
         } // Done traveling
-        if (num_of_algo == 1) statistics[0].push_back("Num Errors"); // creating a Num Errors column
+        if (num_of_algo == 1)
+            statistics[0].push_back("Num Errors"); // creating a Num Errors column
         statistics[num_of_algo].push_back(to_string(num_of_errors));
         num_of_algo++;
         //dlclose(hndl);
