@@ -1,3 +1,9 @@
+/**
+ * Created by Tomer Yoeli
+ * Class to represent a port in the travel
+ * In charge of init and handle the containers that wait in this port
+ */
+
 #ifndef SHIPPROJECT_PORT_H
 #define SHIPPROJECT_PORT_H
 

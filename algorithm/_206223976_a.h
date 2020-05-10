@@ -1,4 +1,5 @@
 /**
+ * Created by Tomer Yoeli
  * class of Algorithm that use all aff the default implementation, without override any of them
  */
 

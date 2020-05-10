@@ -1,3 +1,9 @@
+/**
+ * Created by Tomer Yoeli
+ * Class to represent the route of the ship
+ * include all of the ports in the route and in charge of moving between them and handle their container's files
+ */
+
 #ifndef SHIPPROJECT_ROUTE_H
 #define SHIPPROJECT_ROUTE_H
 
@@ -84,10 +90,6 @@ public:
 
     int getNumOfVisitsInPort(string& portName){
         return portVisits[portName];
-    }
-
-    const string& getEmptyFilePath(){
-        return empty_file;
     }
 
     /**

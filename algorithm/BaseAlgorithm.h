@@ -1,4 +1,5 @@
 /**
+ * Created by Tomer Yoeli
  * An abstract class, implement all of the algorithm function with trivial implementations,
  * allow other algorithms to override some off the functions with different algorithms
  */
