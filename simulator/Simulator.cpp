@@ -592,6 +592,21 @@ void Simulator::addSumColumn() {
     }
 }
 
+void Simulator::sortResults() {
+    sort(statistics.begin(), statistics.end(), [](vector<string>& v1, vector<string>& v2){
+        if(v1[0] == "RESULTS") // Title row, always first
+            return true;
+        if(v2[0] == "RESULTS") // Title row, always first
+            return false;
+        int v1_errors = stoi(v1[(int)v1.size() - 1]);
+        int v2_errors = stoi(v2[(int)v2.size() - 1]);
+        if(v1_errors != v2_errors) // Sort by number of errors, if there is difference
+            return v1_errors < v2_errors;
+        // Sort by sum of actions in case of errors tie
+        return stoi(v1[(int)v1.size() - 2]) < stoi(v2[(int)v2.size() - 2]);
+    });
+}
+
 void Simulator::createResultsFile() {
     FileHandler res_file(this->output_dir_path + std::filesystem::path::preferred_separator + "simulation.results",
                          true);
@@ -599,6 +614,7 @@ void Simulator::createResultsFile() {
         return;
     }
     addSumColumn();
+    sortResults();
     auto rows = (int) statistics.size();
     auto cols = (int) statistics[0].size();
     for (int i = 0; i < rows; ++i) {

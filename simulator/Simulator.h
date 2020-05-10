@@ -132,6 +132,12 @@ private:
     bool updateInput(string &algorithm_path);
 
     /**
+     * Sort the results, first appears algorithms with lowest number of errors, and in case errors number
+     * is even sort by sum of actions that the algorithm done
+     */
+    void sortResults();
+
+    /**
      * Creating a results file containing the number of operations performed in each travel for each algorithm.
      */
     void createResultsFile();
