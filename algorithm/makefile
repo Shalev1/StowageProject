@@ -1,7 +1,7 @@
 COMP = g++-8.3.0
 
 SHARED_OBJS = _206223976_a.so _206223976_b.so
-OBJS = ShipPlan.o Floor.o Spot.o Container.o Port.o Route.o Utils.o  WeightBalanceCalculator.o _206223976_a.o _206223976_b.o
+OBJS = ShipPlan.o Floor.o Spot.o Container.o Port.o Route.o Utils.o  WeightBalanceCalculator.o BaseAlgorithm.o _206223976_a.o _206223976_b.o
 CPP_COMP_FLAG = -std=c++2a -Wall -Wextra -Werror -pedantic-errors -DNDEBUG -fPIC -I../common
 CPP_LINK_FLAG = -shared
 
@@ -28,9 +28,11 @@ Utils.o: ../common/Utils.cpp ../common/Utils.h
 	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
 WeightBalanceCalculator.o: ../common/WeightBalanceCalculator.cpp ../interfaces/WeightBalanceCalculator.h ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h
 	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
-_206223976_a.o: _206223976_a.cpp _206223976_a.h ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h ../common/Route.h ../common/Port.h ../common/Utils.h ../interfaces/WeightBalanceCalculator.h
+BaseAlgorithm.o: BaseAlgorithm.cpp BaseAlgorithm.h ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h ../common/Route.h ../common/Port.h ../common/Utils.h ../interfaces/WeightBalanceCalculator.h
 	$(COMP) $(CPP_COMP_FLAG) -c $*.cpp
-_206223976_b.o: _206223976_b.cpp _206223976_b.h _206223976_a.h ../common/ShipPlan.h ../common/Route.h
+_206223976_a.o: _206223976_a.cpp _206223976_a.h BaseAlgorithm.h
+	$(COMP) $(CPP_COMP_FLAG) -c $*.cpp
+_206223976_b.o: _206223976_b.cpp _206223976_b.h BaseAlgorithm.h
 	$(COMP) $(CPP_COMP_FLAG) -c $*.cpp
 
 clean:
