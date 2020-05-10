@@ -67,7 +67,7 @@ void Route::initPortsContainersFiles(const string& dir, vector<string>& paths, v
         }
         string restString = (*it).substr(indexOfFirst_InPath + 1);
         regex r("[0-9]+\\.cargo_data");
-        if(!regex_match(restString, r)){
+        if(restString[0] == '0' || !regex_match(restString, r)){
             paths.erase(it);
             continue;
         } else {
