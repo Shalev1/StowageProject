@@ -61,6 +61,7 @@ protected:
                                       FileHandler &instructionsFile);
 
 public:
+    BaseAlgorithm();
     /**
      *  Fill the instructions file with the instructions that need to do in this port.
      *  Get the containers to be loaded in this port from the input file

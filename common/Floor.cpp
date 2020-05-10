@@ -1,37 +1,21 @@
 #include "Floor.h"
 
-Floor::Floor(int floor_num, int rows, int cols)
-{
-    setFloorNum(floor_num);
-    setFloorRow(rows);
-    setFloorCol(cols);
+Floor::Floor(int floor_num, int rows, int cols) : floor_num(floor_num), rows(rows), cols(cols){
     initializeFloor();
 }
 
-Floor::Floor(const Floor &f)
-{
-    setFloorNum(f.floor_num);
-    setFloorRow(f.rows);
-    setFloorCol(f.cols);
-    initializeFloor(f.getUnavailableSpots());
-}
-
-void Floor::initializeFloor()
-{
+void Floor::initializeFloor(){
     // Initialize all spots
     vector<Spot> line;
-    for (int i = 0; i < rows; ++i)
-    {
+    for (int i = 0; i < rows; ++i) {
         this->floor_map.push_back(line);
-        for (int j = 0; j < cols; ++j)
-        {
+        for (int j = 0; j < cols; ++j) {
             this->floor_map[i].emplace_back(i, j, true, this->floor_num);
         }
     }
 }
 
-void Floor::initializeFloor(const set<pair<int, int>> &unavailable_spots)
-{
+void Floor::initializeFloor(const set<pair<int, int>> &unavailable_spots){
     // Initialize all spots
     vector<Spot> line;
     for (int i = 0; i < rows; ++i)

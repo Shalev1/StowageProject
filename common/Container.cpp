@@ -20,7 +20,7 @@ string Container::getDestPort() const {
     return temp_dest;
 }
 
-void printDestPort(const string dest) {
+void printDestPort(const string& dest) {
     cout << "Destination Port: ";
     for (int i = 0; i < (int) (dest.length()); i++) {
         cout << dest[i];

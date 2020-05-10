@@ -19,7 +19,6 @@ private:
 public:
     //---Constructors and Destructors---//
     Floor(int floor_num, int row, int col); // C'tor
-    Floor(const Floor &f);
 
     //---Setters and Getters---//
     int getFloorNum() const {

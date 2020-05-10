@@ -56,6 +56,13 @@ public:
     void leaveCurrentPort();
 
     /**
+     * Check if the last port has waiting containers
+     * @param errVector: the errors vector
+     * @return true if there are
+     */
+    bool checkLastPortContainers(const string& lastPortPath, bool addDir);
+
+    /**
      * Return the true if there is at least one more port in the route
      * Also load the waiting containers in this port
      */
@@ -77,6 +84,10 @@ public:
 
     int getNumOfVisitsInPort(string& portName){
         return portVisits[portName];
+    }
+
+    const string& getEmptyFilePath(){
+        return empty_file;
     }
 
     /**

@@ -104,11 +104,18 @@ void Route::leaveCurrentPort() {
     }
 }
 
+bool Route::checkLastPortContainers(const string& lastPortPath, bool addDir) {
+    string path = addDir ? dir + std::filesystem::path::preferred_separator : "";
+    path.append(lastPortPath);
+    FileHandler lastPortFile(path);
+    vector<string> tokens;
+    return lastPortFile.getNextLineAsTokens(tokens);
+}
+
 bool Route::moveToNextPort(vector<pair<int,string>>& errVector) {
     if(!hasNextPort())
         return false;
     currentPortNum++;
-    //cout << "-----------------Entering Port: " << getCurrentPort().getName()  << " --------------------" << endl;
     portVisits[getCurrentPort().getName()]++;
     // Search for the containers file for the current port and current visit number
     for (auto it = portsContainersPaths.begin(); it != portsContainersPaths.end(); ++it) {
@@ -118,13 +125,10 @@ bool Route::moveToNextPort(vector<pair<int,string>>& errVector) {
             int portNum = stoi(portNumS);
             if (portNum == portVisits[getCurrentPort().getName()]) {
                 if (currentPortNum == (int) ports.size() - 1) { // last port
-                    FileHandler lastPortFile(dir + std::filesystem::path::preferred_separator + (*it));
-                    vector<string> tokens;
-                    if(lastPortFile.getNextLineAsTokens(tokens)){
-
+                    if(checkLastPortContainers(*it, true)){
+                        errVector.emplace_back(17,"Last port shouldn't has waiting containers");
                     }
-                    errVector.emplace_back(17,"Last port shouldn't has waiting containers");//TODO: move to port
-                    currentPortPath = empty_file;
+                    currentPortPath = dir + std::filesystem::path::preferred_separator + (*it);
                 } else {
                     currentPortPath = dir + std::filesystem::path::preferred_separator + (*it);
                     ports[currentPortNum].initWaitingContainers(currentPortPath, errVector, false);

@@ -1,13 +1,15 @@
 #include "BaseAlgorithm.h"
 
-int BaseAlgorithm::readShipPlan(const std::string &full_path_and_file_name) {
-    ship.resetShipPlan();
-
+BaseAlgorithm::BaseAlgorithm(){
     // Init the errorCodeBits vector, consider moving to the constructor
     errorCodeBits.push_back(1);
     for(int i = 1; i < NUM_OF_ERROR_CODES; i++){
         errorCodeBits.push_back(errorCodeBits[i-1]*2);
     }
+}
+
+int BaseAlgorithm::readShipPlan(const std::string &full_path_and_file_name) {
+    ship.resetShipPlan();
 
     bool valid = true;
     vector<pair<int,string>> err_msgs;
@@ -41,9 +43,14 @@ int BaseAlgorithm::setWeightBalanceCalculator(WeightBalanceCalculator &calculato
 }
 
 int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_and_file_name, const std::string &output_full_path_and_file_name) {
-    route.moveToNextPortWithoutContInit();
     vector<pair<int,string>> errors;
-    route.getCurrentPort().initWaitingContainers(input_full_path_and_file_name, errors, true);
+    route.moveToNextPortWithoutContInit();
+    if(!route.hasNextPort() &route.checkLastPortContainers(input_full_path_and_file_name, false)) { // This is the last port and it has waiting containers
+        errors.emplace_back(17, "Last port shouldn't has waiting containers");
+        route.getCurrentPort().initWaitingContainers("../Files/empty_file.csv", errors, true);
+    } else {
+        route.getCurrentPort().initWaitingContainers(input_full_path_and_file_name, errors, true);
+    }
     vector<Container>& waitingContainers = route.getCurrentPort().getWaitingContainers();
     vector<Container*> reloadContainers;
     FileHandler instructionsFile(output_full_path_and_file_name, true);
