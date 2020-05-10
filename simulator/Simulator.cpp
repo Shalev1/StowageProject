@@ -157,11 +157,12 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
         //TODO:Function Validate that the so was opened correctly and the algorithm really registered by the macro
 
         cout << "\nExecuting Algorithm " << algo_name << "..." << endl;
+        bool empty_travel_dir = true; // Will become false once at least one folder found inside travels folder
         for (const auto &travel_dir : std::filesystem::directory_iterator(
                 travels_dir_path)) { // Foreach Travel, do the following:
             if(!std::filesystem::is_directory(travel_dir))
                 continue;
-
+            empty_travel_dir = false;
             vector<pair<int, string>> errs_in_ctor;
             this->err_in_travel = false;
             this->curr_travel_name = travel_dir.path().filename();
@@ -184,6 +185,10 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
                 extractGeneralErrors(errs_in_ctor); // Update the errors with general errors found during the travel.
             travel_files.clear();
         } // Done traveling
+        if(empty_travel_dir){ // No travel dir found
+            cout << "@ FATAL ERROR: the given travels folder has no sub folders" << endl;
+            return false;
+        }
         if (num_of_algo == 1)
             statistics[0].push_back("Num Errors"); // creating a Num Errors column
         statistics[num_of_algo].push_back(to_string(num_of_errors));

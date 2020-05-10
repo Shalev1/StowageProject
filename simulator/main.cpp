@@ -39,12 +39,9 @@ bool initializeParameters(string &travel_path, string &algorithm_path, string &o
                 output_path = argv[i + 1]; // i+1 must exists because of the way we iterate through the words
                 break;
             }
-            case None:{
-                break;
-            }
         }
     }
-    return true;
+    return !travel_path.empty(); // return false if there was not -travel_path param
 }
 
 int main(int argc, char *argv[]) {
@@ -56,9 +53,11 @@ int main(int argc, char *argv[]) {
         cout << "ERROR: Too many agruments given." << endl;
         return EXIT_FAILURE;
     }
-
     if (!initializeParameters(travel_path, algorithm_path, output_path, argc, argv)) {
-        cout << "ERROR: Invalid parameters given." << endl;
+        if(travel_path.empty())
+            cout << "@ FATAL ERROR: No -travel_path parameter given" << endl;
+        else
+            cout << "@ FATAL ERROR: Invalid parameters given." << endl;
         return EXIT_FAILURE;
     }
 
