@@ -166,7 +166,7 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
         if(!validateAlgoLoad(handler, algo_name, prev_size)){
             continue; // Algorithm loading failed, continue to the next algorithm.
         }
-        std::unique_ptr<AbstractAlgorithm> algo = inst.algo_funcs[num_of_algo-1]();
+        std::unique_ptr<AbstractAlgorithm> algo = inst.algo_funcs[num_of_algo-1].second();
 
         vector<string> new_res_row;
         statistics.push_back(new_res_row);
