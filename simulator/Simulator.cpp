@@ -186,7 +186,9 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
             travel_files.clear();
         } // Done traveling
         if(empty_travel_dir){ // No travel dir found
-            cout << "@ FATAL ERROR: the given travels folder has no sub folders" << endl;
+            errors[0].push_back("@ FATAL ERROR: the given travels folder has no sub folders.");
+            fillSimErrors();
+            err_detected = true;
             return false;
         }
         if (num_of_algo == 1)
