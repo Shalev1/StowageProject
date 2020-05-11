@@ -14,9 +14,14 @@
 #include "../interfaces/WeightBalanceCalculator.h"
 
 
-#define NUM_OF_ALGORITHMS 2
-
 using std::to_string;
+
+//struct DLCloser{
+//    void operator()(void *dlhandle) const noexcept{
+//        //dlclose(dlhandle);
+//        (void) dlhandle;
+//    }
+//};
 
 //---Main class---//
 class Simulator {
@@ -31,7 +36,7 @@ private:
     string curr_travel_name;
     string curr_port_name;
     static Simulator inst;
-    vector<pair<string, std::function<std::unique_ptr<AbstractAlgorithm>()>>> algo_funcs;
+    vector<std::function<std::unique_ptr<AbstractAlgorithm>()>> algo_funcs;
 
     inline static map<string, AbstractAlgorithm::Action> actionDic = {{"L", AbstractAlgorithm::Action::LOAD},
                                                                       {"U", AbstractAlgorithm::Action::UNLOAD},
@@ -58,7 +63,6 @@ private:
                                                {17, "containers at port: last port has waiting containers (ignored)"},
                                                {18, "containers at port: total containers amount exceeds ship capacity (rejecting far containers)"}};
 
-
     /**
      * Iterates over the given travel folder and initializes the ship plan and the route.
      */
@@ -67,7 +71,7 @@ private:
     /**
      * Executing the travel simulation-
      */
-    void executeTravel(int num_of_algo, const string& algo_name, std::unique_ptr<AbstractAlgorithm> &algo, WeightBalanceCalculator &calc, vector<pair<int, string>> &errs_in_ctor, int &num_of_errors);
+    void executeTravel(int num_of_algo, const string& algo_name, AbstractAlgorithm &algo, WeightBalanceCalculator &calc, vector<pair<int, string>> &errs_in_ctor, int &num_of_errors);
 
     /**
      * Performs the instructions at the given instructions file while validating the algorithm decisions.
@@ -157,6 +161,11 @@ private:
      */
     void analyzeErrCode(int err_code, int num_of_algo);
 
+    /**
+     * Loads the algorithm constructor function dynamically.
+     */
+    bool validateAlgoLoad(void *handler, string &algo_name, int prev_size);
+
 public:
     //---Constructors and Destructors---//
     explicit Simulator(const string &root);
@@ -167,7 +176,8 @@ public:
         return inst;
     }
     void registerAlgorithm(std::function<std::unique_ptr<AbstractAlgorithm>()> algo_ctor) {
-        algo_funcs.emplace_back("", algo_ctor);
+        cout << "Adding algo_funcs!" << endl;
+        algo_funcs.emplace_back(algo_ctor);
     }
 
     /**

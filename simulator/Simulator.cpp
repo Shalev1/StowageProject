@@ -87,7 +87,7 @@ bool Simulator::scanTravelDir(int num_of_algo, string &plan_path, string &route_
 }
 
 //TODO: Make the function receive the reference of the algorithm and not the unique-ptr itself
-void Simulator::executeTravel(int num_of_algo, const string& algo_name, std::unique_ptr<AbstractAlgorithm> &algo, WeightBalanceCalculator &calc,
+void Simulator::executeTravel(int num_of_algo, const string& algo_name, AbstractAlgorithm &algo, WeightBalanceCalculator &calc,
                               vector<pair<int, string>> &errs_in_ctor, int &num_of_errors) {
     string instruction_file_path;
     string instruction_file;
@@ -105,7 +105,7 @@ void Simulator::executeTravel(int num_of_algo, const string& algo_name, std::uni
         instruction_file =
                 instruction_file_path + std::filesystem::path::preferred_separator + curr_port_name + "_" +
                 to_string(travel.getNumOfVisitsInPort(curr_port_name)) + ".crane_instructions";
-        analyzeErrCode(algo->getInstructionsForCargo(travel.getCurrentPortPath(), instruction_file),
+        analyzeErrCode(algo.getInstructionsForCargo(travel.getCurrentPortPath(), instruction_file),
                        num_of_algo);
         this->implementInstructions(calc, instruction_file, num_of_operations, num_of_algo);
         this->checkMissedContainers(travel.getCurrentPort().getName(), num_of_algo);
@@ -121,6 +121,21 @@ void Simulator::executeTravel(int num_of_algo, const string& algo_name, std::uni
     } else {
         statistics[num_of_algo].push_back(to_string(num_of_operations));
     }
+}
+
+bool Simulator::validateAlgoLoad(void *handler, string &algo_name, int prev_size){
+    if(!handler) {
+        errors[0].push_back("@ FATAL ERROR: Dynamic load of algorithm: " + algo_name + " failed:" + dlerror());
+        err_detected = true;
+        return false;
+    }
+    cout << "after_size = " << to_string((int)inst.algo_funcs.size());
+    if(prev_size + 2 != (int)inst.algo_funcs.size()){
+        errors[0].push_back("@ FATAL ERROR: Algorithm: " + algo_name + " did not register successfully.");
+        err_detected = true;
+        return false; //The algorithm did not register successfully.
+    }
+    return true;
 }
 
 bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
@@ -144,17 +159,21 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
         string plan_path, route_path;
         WeightBalanceCalculator calc;
         int num_of_errors = 0;
+        int prev_size = (int)inst.algo_funcs.size();
+        cout << "prev_size = " << prev_size << endl;
+        //std::unique_ptr<void, DLCloser> handler(dlopen((algorithm_path + std::filesystem::path::preferred_separator + algo_name_so).c_str(), RTLD_LAZY));
+        void *handler = dlopen((algorithm_path + std::filesystem::path::preferred_separator + algo_name_so).c_str(), RTLD_LAZY);
+        if(!validateAlgoLoad(handler, algo_name, prev_size)){
+            continue; // Algorithm loading failed, continue to the next algorithm.
+        }
+        std::unique_ptr<AbstractAlgorithm> algo = inst.algo_funcs[num_of_algo-1]();
+
         vector<string> new_res_row;
         statistics.push_back(new_res_row);
         statistics[num_of_algo].push_back(algo_name);
         vector<string> new_err_row;
         errors.push_back(new_err_row);
         errors[num_of_algo].push_back(algo_name);
-
-        void *hndl = dlopen((algorithm_path + std::filesystem::path::preferred_separator + algo_name_so).c_str(), RTLD_LAZY);
-        (void) hndl;
-        std::unique_ptr<AbstractAlgorithm> algo = inst.algo_funcs[num_of_algo-1].second();
-        //TODO:Function Validate that the so was opened correctly and the algorithm really registered by the macro
 
         cout << "\nExecuting Algorithm " << algo_name << "..." << endl;
         bool empty_travel_dir = true; // Will become false once at least one folder found inside travels folder
@@ -180,7 +199,7 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
             analyzeErrCode(algo->readShipPlan(plan_path), num_of_algo);
             analyzeErrCode(algo->readShipRoute(route_path), num_of_algo);
             analyzeErrCode(algo->setWeightBalanceCalculator(calc),num_of_algo);
-            executeTravel(num_of_algo, algo_name, algo, calc, errs_in_ctor, num_of_errors);
+            executeTravel(num_of_algo, algo_name, *algo, calc, errs_in_ctor, num_of_errors);
             if (num_of_algo == 1)
                 extractGeneralErrors(errs_in_ctor); // Update the errors with general errors found during the travel.
             travel_files.clear();
@@ -195,7 +214,7 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
             statistics[0].push_back("Num Errors"); // creating a Num Errors column
         statistics[num_of_algo].push_back(to_string(num_of_errors));
         num_of_algo++;
-        //dlclose(hndl); //TODO: close, before close all references to the so object
+        //algo.release(); //TODO: close, before close all references to the so object
     } // Done algorithm
     if (err_detected) // Errors found, err_file should be created
         fillSimErrors();
