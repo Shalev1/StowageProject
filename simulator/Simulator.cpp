@@ -87,7 +87,7 @@ bool Simulator::scanTravelDir(int num_of_algo, string &plan_path, string &route_
 }
 
 //TODO: Make the function receive the reference of the algorithm and not the unique-ptr itself
-void Simulator::executeTravel(int num_of_algo, const string& algo_name, std::unique_ptr<AbstractAlgorithm> &algo, WeightBalanceCalculator &calc,
+void Simulator::executeTravel(int num_of_algo, const string& algo_name, AbstractAlgorithm &algo, WeightBalanceCalculator &calc,
                               vector<pair<int, string>> &errs_in_ctor, int &num_of_errors) {
     string instruction_file_path;
     string instruction_file;
@@ -105,7 +105,7 @@ void Simulator::executeTravel(int num_of_algo, const string& algo_name, std::uni
         instruction_file =
                 instruction_file_path + std::filesystem::path::preferred_separator + curr_port_name + "_" +
                 to_string(travel.getNumOfVisitsInPort(curr_port_name)) + ".crane_instructions";
-        analyzeErrCode(algo->getInstructionsForCargo(travel.getCurrentPortPath(), instruction_file),
+        analyzeErrCode(algo.getInstructionsForCargo(travel.getCurrentPortPath(), instruction_file),
                        num_of_algo);
         this->implementInstructions(calc, instruction_file, num_of_operations, num_of_algo);
         this->checkMissedContainers(travel.getCurrentPort().getName(), num_of_algo);
@@ -180,7 +180,7 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
             analyzeErrCode(algo->readShipPlan(plan_path), num_of_algo);
             analyzeErrCode(algo->readShipRoute(route_path), num_of_algo);
             analyzeErrCode(algo->setWeightBalanceCalculator(calc),num_of_algo);
-            executeTravel(num_of_algo, algo_name, algo, calc, errs_in_ctor, num_of_errors);
+            executeTravel(num_of_algo, algo_name, *algo, calc, errs_in_ctor, num_of_errors);
             if (num_of_algo == 1)
                 extractGeneralErrors(errs_in_ctor); // Update the errors with general errors found during the travel.
             travel_files.clear();

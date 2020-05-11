@@ -67,7 +67,7 @@ private:
     /**
      * Executing the travel simulation-
      */
-    void executeTravel(int num_of_algo, const string& algo_name, std::unique_ptr<AbstractAlgorithm> &algo, WeightBalanceCalculator &calc, vector<pair<int, string>> &errs_in_ctor, int &num_of_errors);
+    void executeTravel(int num_of_algo, const string& algo_name, AbstractAlgorithm &algo, WeightBalanceCalculator &calc, vector<pair<int, string>> &errs_in_ctor, int &num_of_errors);
 
     /**
      * Performs the instructions at the given instructions file while validating the algorithm decisions.
