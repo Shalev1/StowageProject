@@ -20,9 +20,6 @@ bool initializeParameters(string &travel_path, string &algorithm_path, string &o
     }
     for (int i = 1; i < num_of_params; i += 2) {
         PathType file_type = getTypeOfPath(string(argv[i]));
-        if (file_type == None) {
-            return false;
-        }
         switch (file_type) {
             case Travel: {
                 if (!travel_path.empty()) return false; //travel_path was already initialized
@@ -39,6 +36,9 @@ bool initializeParameters(string &travel_path, string &algorithm_path, string &o
                 output_path = argv[i + 1]; // i+1 must exists because of the way we iterate through the words
                 break;
             }
+            case None: {
+                return false;
+            }
         }
     }
     return !travel_path.empty(); // return false if there was not -travel_path param
@@ -50,14 +50,14 @@ int main(int argc, char *argv[]) {
     string output_path = "";
     bool clean_run;
     if (argc > 7) {
-        cout << "ERROR: Too many agruments given." << endl;
+        cout << "@ FATAL ERROR: Too many agruments given." << endl;
         return EXIT_FAILURE;
     }
     if (!initializeParameters(travel_path, algorithm_path, output_path, argc, argv)) {
         if(travel_path.empty())
-            cout << "@ FATAL ERROR: No -travel_path parameter given" << endl;
+            cout << "@ FATAL ERROR: No -travel_path parameter was given." << endl;
         else
-            cout << "@ FATAL ERROR: Invalid parameters given." << endl;
+            cout << "@ FATAL ERROR: Invalid parameters was given." << endl;
         return EXIT_FAILURE;
     }
 
