@@ -14,9 +14,14 @@
 #include "../interfaces/WeightBalanceCalculator.h"
 
 
-#define NUM_OF_ALGORITHMS 2
-
 using std::to_string;
+
+//struct DLCloser{
+//    void operator()(void *dlhandle) const noexcept{
+//        //dlclose(dlhandle);
+//        (void) dlhandle;
+//    }
+//};
 
 //---Main class---//
 class Simulator {
@@ -57,7 +62,6 @@ private:
                                                {16, "containers at port: file cannot be read altogether (assuming no cargo to be loaded at this port)"},
                                                {17, "containers at port: last port has waiting containers (ignored)"},
                                                {18, "containers at port: total containers amount exceeds ship capacity (rejecting far containers)"}};
-
 
     /**
      * Iterates over the given travel folder and initializes the ship plan and the route.
@@ -156,6 +160,11 @@ private:
      * Receives an integer representing error codes and add them to the errors log accordingly.
      */
     void analyzeErrCode(int err_code, int num_of_algo);
+
+    /**
+     * Loads the algorithm constructor function dynamically.
+     */
+    bool validateAlgoLoad(void *handler, string &algo_name, int prev_size);
 
 public:
     //---Constructors and Destructors---//
