@@ -176,7 +176,6 @@ public:
         return inst;
     }
     void registerAlgorithm(std::function<std::unique_ptr<AbstractAlgorithm>()> algo_ctor) {
-        cout << "Adding algo_funcs!" << endl;
         algo_funcs.emplace_back("", algo_ctor);
     }
 

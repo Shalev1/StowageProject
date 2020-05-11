@@ -1,15 +1,16 @@
 COMP = g++-8.3.0
 
 SHARED_OBJS = _206223976_a.so _206223976_b.so
-OBJS = ShipPlan.o Floor.o Spot.o Container.o Port.o Route.o Utils.o  WeightBalanceCalculator.o BaseAlgorithm.o _206223976_a.o _206223976_b.o
+OBJS1 = ShipPlan.o Floor.o Spot.o Container.o Port.o Route.o Utils.o  WeightBalanceCalculator.o BaseAlgorithm.o _206223976_a.o
+OBJS2 = ShipPlan.o Floor.o Spot.o Container.o Port.o Route.o Utils.o  WeightBalanceCalculator.o BaseAlgorithm.o _206223976_b.o
 CPP_COMP_FLAG = -std=c++2a -Wall -Wextra -Werror -pedantic-errors -DNDEBUG -fPIC -I../common
 CPP_LINK_FLAG = -shared
 
 all: $(SHARED_OBJS)
 
-_206223976_a.so: $(OBJS)
+_206223976_a.so: $(OBJS1)
 	$(COMP) $(CPP_LINK_FLAG) -o $@ $^
-_206223976_b.so: $(OBJS)
+_206223976_b.so: $(OBJS2)
 	$(COMP) $(CPP_LINK_FLAG) -o $@ $^
 
 ShipPlan.o: ../common/ShipPlan.cpp ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h
@@ -36,4 +37,4 @@ _206223976_b.o: _206223976_b.cpp _206223976_b.h BaseAlgorithm.h
 	$(COMP) $(CPP_COMP_FLAG) -c $*.cpp
 
 clean:
-	rm -f $(OBJS) $(SHARED_OBJS)
+	rm -f $(OBJS1) $(OBJS2) $(SHARED_OBJS)

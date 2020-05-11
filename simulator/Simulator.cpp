@@ -86,7 +86,6 @@ bool Simulator::scanTravelDir(int num_of_algo, string &plan_path, string &route_
     return true;
 }
 
-//TODO: Make the function receive the reference of the algorithm and not the unique-ptr itself
 void Simulator::executeTravel(int num_of_algo, const string& algo_name, AbstractAlgorithm &algo, WeightBalanceCalculator &calc,
                               vector<pair<int, string>> &errs_in_ctor, int &num_of_errors) {
     string instruction_file_path;
@@ -129,8 +128,7 @@ bool Simulator::validateAlgoLoad(void *handler, string &algo_name, int prev_size
         err_detected = true;
         return false;
     }
-    cout << "after_size = " << to_string((int)inst.algo_funcs.size());
-    if(prev_size + 2 != (int)inst.algo_funcs.size()){
+    if(prev_size + 1 != (int)inst.algo_funcs.size()){
         errors[0].push_back("@ FATAL ERROR: Algorithm: " + algo_name + " did not register successfully.");
         err_detected = true;
         return false; //The algorithm did not register successfully.
@@ -152,7 +150,6 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
         return false;
     }
     vector<string> algorithms = getSOFilesNames(algorithm_path);
-    // TODO: Handle empty algorithm.so doesnt exists
     for (auto &algo_name_so : algorithms) {
         string algo_name = algo_name_so.substr(0, (int)algo_name_so.length() - 3);
         vector<string> travel_files;
@@ -160,8 +157,6 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
         WeightBalanceCalculator calc;
         int num_of_errors = 0;
         int prev_size = (int)inst.algo_funcs.size();
-        cout << "prev_size = " << prev_size << endl;
-        //std::unique_ptr<void, DLCloser> handler(dlopen((algorithm_path + std::filesystem::path::preferred_separator + algo_name_so).c_str(), RTLD_LAZY));
         void *handler = dlopen((algorithm_path + std::filesystem::path::preferred_separator + algo_name_so).c_str(), RTLD_LAZY);
         if(!validateAlgoLoad(handler, algo_name, prev_size)){
             continue; // Algorithm loading failed, continue to the next algorithm.
@@ -231,7 +226,6 @@ void Simulator::extractGeneralErrors(vector<pair<int, string>> &err_strings) {
     err_strings.clear(); // Clearing the errors list for future re-use.
 }
 
-// TODO: Check if this counts as an algorithm error
 bool Simulator::validateInstruction(const vector<string> &instructions) { // Check if the text line is legal
     if (instructions.size() == 5) { // May be 'L' 'U' or 'R' instruction
         if (instructions[0] != "L" && instructions[0] != "U" && instructions[0] != "R")
@@ -496,7 +490,7 @@ void Simulator::implementInstructions(WeightBalanceCalculator &calc, const strin
                                       int &num_of_operations, int num_of_algo) {
     FileHandler file(instruction_file);
     vector<string> instruction;
-    Container *cont_to_load; //TODO: Shalev - need to initialize?
+    Container *cont_to_load = nullptr;
     Port *current_port = &(travel.getCurrentPort());
     map<string, Container *> rejected_containers;
     map<string, Container *> unloaded_containers;
