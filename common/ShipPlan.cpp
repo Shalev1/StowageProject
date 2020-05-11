@@ -138,7 +138,7 @@ void ShipPlan::insertContainer(int floor_num, int x, int y, Container &cont) {
 }
 
 void ShipPlan::removeContainer(Spot *pos) {
-    pos->getContainer()->removeID();
+    pos->getContainer()->removeID(); // TODO: Yoeli needs to explain me the motivation for removing the ID here. notice that I need this container in the future for checks.
     pos->getContainer()->setPlace(nullptr);
     pos->setContainer(nullptr); // clearing spot with null.
     this->free_spots_num++;

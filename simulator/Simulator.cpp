@@ -86,7 +86,8 @@ bool Simulator::scanTravelDir(int num_of_algo, string &plan_path, string &route_
     return true;
 }
 
-void Simulator::executeTravel(int num_of_algo, const string& algo_name, AbstractAlgorithm &algo, WeightBalanceCalculator &calc,
+void Simulator::executeTravel(int num_of_algo, const string &algo_name, AbstractAlgorithm &algo,
+                              WeightBalanceCalculator &calc,
                               vector<pair<int, string>> &errs_in_ctor, int &num_of_errors) {
     string instruction_file_path;
     string instruction_file;
@@ -122,13 +123,13 @@ void Simulator::executeTravel(int num_of_algo, const string& algo_name, Abstract
     }
 }
 
-bool Simulator::validateAlgoLoad(void *handler, string &algo_name, int prev_size){
-    if(!handler) {
+bool Simulator::validateAlgoLoad(void *handler, string &algo_name, int prev_size) {
+    if (!handler) {
         errors[0].push_back("@ FATAL ERROR: Dynamic load of algorithm: " + algo_name + " failed:" + dlerror());
         err_detected = true;
         return false;
     }
-    if(prev_size + 1 != (int)inst.algo_funcs.size()){
+    if (prev_size + 1 != (int) inst.algo_funcs.size()) {
         errors[0].push_back("@ FATAL ERROR: Algorithm: " + algo_name + " did not register successfully.");
         err_detected = true;
         return false; //The algorithm did not register successfully.
@@ -151,17 +152,18 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
     }
     vector<string> algorithms = getSOFilesNames(algorithm_path);
     for (auto &algo_name_so : algorithms) {
-        string algo_name = algo_name_so.substr(0, (int)algo_name_so.length() - 3);
+        string algo_name = algo_name_so.substr(0, (int) algo_name_so.length() - 3);
         vector<string> travel_files;
         string plan_path, route_path;
         WeightBalanceCalculator calc;
         int num_of_errors = 0;
-        int prev_size = (int)inst.algo_funcs.size();
-        void *handler = dlopen((algorithm_path + std::filesystem::path::preferred_separator + algo_name_so).c_str(), RTLD_LAZY);
-        if(!validateAlgoLoad(handler, algo_name, prev_size)){
+        int prev_size = (int) inst.algo_funcs.size();
+        void *handler = dlopen((algorithm_path + std::filesystem::path::preferred_separator + algo_name_so).c_str(),
+                               RTLD_LAZY);
+        if (!validateAlgoLoad(handler, algo_name, prev_size)) {
             continue; // Algorithm loading failed, continue to the next algorithm.
         }
-        std::unique_ptr<AbstractAlgorithm> algo = inst.algo_funcs[num_of_algo-1].second();
+        std::unique_ptr<AbstractAlgorithm> algo = inst.algo_funcs[num_of_algo - 1].second();
 
         vector<string> new_res_row;
         statistics.push_back(new_res_row);
@@ -174,7 +176,7 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
         bool empty_travel_dir = true; // Will become false once at least one folder found inside travels folder
         for (const auto &travel_dir : std::filesystem::directory_iterator(
                 travels_dir_path)) { // Foreach Travel, do the following:
-            if(!std::filesystem::is_directory(travel_dir))
+            if (!std::filesystem::is_directory(travel_dir))
                 continue;
             empty_travel_dir = false;
             vector<pair<int, string>> errs_in_ctor;
@@ -193,13 +195,13 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
 
             analyzeErrCode(algo->readShipPlan(plan_path), num_of_algo);
             analyzeErrCode(algo->readShipRoute(route_path), num_of_algo);
-            analyzeErrCode(algo->setWeightBalanceCalculator(calc),num_of_algo);
+            analyzeErrCode(algo->setWeightBalanceCalculator(calc), num_of_algo);
             executeTravel(num_of_algo, algo_name, *algo, calc, errs_in_ctor, num_of_errors);
             if (num_of_algo == 1)
                 extractGeneralErrors(errs_in_ctor); // Update the errors with general errors found during the travel.
             travel_files.clear();
         } // Done traveling
-        if(empty_travel_dir){ // No travel dir found
+        if (empty_travel_dir) { // No travel dir found
             errors[0].push_back("@ FATAL ERROR: the given travels folder has no sub folders.");
             fillSimErrors();
             err_detected = true;
@@ -454,6 +456,7 @@ bool checkSortedContainers(vector<Container> &conts, Route &travel, const string
     return true;
 }
 
+// Validates all the containers that were left at the port at the end of travel.
 void Simulator::checkRemainingContainers(map<string, Container *> &unloaded_containers,
                                          map<string, Container *> &rejected_containers, Port &curr_port, Route &travel,
                                          int num_of_algo, int num_free_spots) {
@@ -461,18 +464,20 @@ void Simulator::checkRemainingContainers(map<string, Container *> &unloaded_cont
         if (curr_port.getWaitingContainerByID(entry.first) != nullptr) {
             // In case the container was from the port
             if (rejected_containers.find(entry.first) !=
-                rejected_containers.end()) { // check if the container was also rejected
+                rejected_containers.end()) { // check if the container was also rejected. if so, the container had a potential to be loaded on the ship.
                 if (num_free_spots != 0) {
                     errors[num_of_algo].push_back(
                             "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
                             "- Rejected a container with ID: " + entry.second->getID() +
                             "- although it can be loaded correctly.");
+                    this->err_in_travel = true;
                 } else if (!checkSortedContainers(curr_port.getWaitingContainers(), travel,
                                                   entry.first)) { // check if the container was rejected mistakenly
                     errors[num_of_algo].push_back(
                             "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
                             "- Rejected a container with ID: " + entry.second->getID() +
                             "- while another container was loaded and it's destination port is further.");
+                    this->err_in_travel = true;
                 }
             } // <<< it is not possible to reach the else statement of that if
         } else { // In case the container was from the ship
@@ -481,6 +486,24 @@ void Simulator::checkRemainingContainers(map<string, Container *> &unloaded_cont
                         "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
                         "- A container with ID: " + entry.second->getID() +
                         "- was left in a port that's different from container's destination.");
+                this->err_in_travel = true;
+            }
+        }
+    }
+}
+
+void Simulator::checkPortContainers(
+        map<string, Container *> &rejected_containers, Port &curr_port,
+        int num_of_algo) {
+    for (auto &container : curr_port.getWaitingContainers()) { // for each container that came from this port.
+        if (container.getSpotInFloor() == nullptr) { // check if the container were not loaded on the ship.
+            if (rejected_containers.find(container.getID()) ==
+                rejected_containers.end()) { // check if the container wasn't rejected.
+                errors[num_of_algo].push_back(
+                        "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                        "- A container with ID: " + container.getID() +
+                        "- was left at the port without getting rejected.");
+                this->err_in_travel = true;
             }
         }
     }
@@ -512,7 +535,8 @@ void Simulator::implementInstructions(WeightBalanceCalculator &calc, const strin
                 continue; // Bad id for container
             }
             cont_to_load = current_port->getWaitingContainerByID(instruction[1]);
-            if (cont_to_load == nullptr) // didn't find the container on the waiting containers list, search in the reload list
+            if (cont_to_load ==
+                nullptr) // didn't find the container on the waiting containers list, search in the reload list
                 cont_to_load = (unloaded_containers.find(instruction[1]) != unloaded_containers.end())
                                ? unloaded_containers.at(instruction[1]) : nullptr;
         }
@@ -580,10 +604,12 @@ void Simulator::implementInstructions(WeightBalanceCalculator &calc, const strin
     }
     checkRemainingContainers(unloaded_containers, rejected_containers, *current_port, travel, num_of_algo,
                              ship.getNumOfFreeSpots());
+    // TODO: add a check that checks if all containers of the port were: rejected or loaded on the ship
+    checkPortContainers(rejected_containers, *current_port, num_of_algo);
 }
 
 void Simulator::checkMissedContainers(const string &port_name, int num_of_algo) {
-    vector<Container*> conts = ship.getContainersForDest(port_name);
+    vector<Container *> conts = ship.getContainersForDest(port_name);
     if ((int) conts.size() > 0) {
         errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name +
                                       "- There are some containers that were not unloaded at their destination port: " +
@@ -608,17 +634,17 @@ void Simulator::addSumColumn() {
 }
 
 void Simulator::sortResults() {
-    sort(statistics.begin(), statistics.end(), [](vector<string>& v1, vector<string>& v2){
-        if(v1[0] == "RESULTS") // Title row, always first
+    sort(statistics.begin(), statistics.end(), [](vector<string> &v1, vector<string> &v2) {
+        if (v1[0] == "RESULTS") // Title row, always first
             return true;
-        if(v2[0] == "RESULTS") // Title row, always first
+        if (v2[0] == "RESULTS") // Title row, always first
             return false;
-        int v1_errors = stoi(v1[(int)v1.size() - 1]);
-        int v2_errors = stoi(v2[(int)v2.size() - 1]);
-        if(v1_errors != v2_errors) // Sort by number of errors, if there is difference
+        int v1_errors = stoi(v1[(int) v1.size() - 1]);
+        int v2_errors = stoi(v2[(int) v2.size() - 1]);
+        if (v1_errors != v2_errors) // Sort by number of errors, if there is difference
             return v1_errors < v2_errors;
         // Sort by sum of actions in case of errors tie
-        return stoi(v1[(int)v1.size() - 2]) < stoi(v2[(int)v2.size() - 2]);
+        return stoi(v1[(int) v1.size() - 2]) < stoi(v2[(int) v2.size() - 2]);
     });
 }
 

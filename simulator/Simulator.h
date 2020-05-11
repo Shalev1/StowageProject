@@ -66,12 +66,14 @@ private:
     /**
      * Iterates over the given travel folder and initializes the ship plan and the route.
      */
-    bool scanTravelDir(int num_of_algo, string &plan_path, string &route_path, vector<string> &travel_files, const std::filesystem::path &travel_dir);
+    bool scanTravelDir(int num_of_algo, string &plan_path, string &route_path, vector<string> &travel_files,
+                       const std::filesystem::path &travel_dir);
 
     /**
      * Executing the travel simulation-
      */
-    void executeTravel(int num_of_algo, const string& algo_name, AbstractAlgorithm &algo, WeightBalanceCalculator &calc, vector<pair<int, string>> &errs_in_ctor, int &num_of_errors);
+    void executeTravel(int num_of_algo, const string &algo_name, AbstractAlgorithm &algo, WeightBalanceCalculator &calc,
+                       vector<pair<int, string>> &errs_in_ctor, int &num_of_errors);
 
     /**
      * Performs the instructions at the given instructions file while validating the algorithm decisions.
@@ -142,6 +144,13 @@ private:
     void sortResults();
 
     /**
+     * Check if all the port containers were loaded on the ship or got rejected.
+     */
+    void checkPortContainers(
+            map<string, Container *> &rejected_containers, Port &curr_port,
+            int num_of_algo);
+
+    /**
      * Creating a results file containing the number of operations performed in each travel for each algorithm.
      */
     void createResultsFile();
@@ -172,9 +181,10 @@ public:
 
     Simulator() = default;
 
-    static Simulator& getInstance(){
+    static Simulator &getInstance() {
         return inst;
     }
+
     void registerAlgorithm(std::function<std::unique_ptr<AbstractAlgorithm>()> algo_ctor) {
         algo_funcs.emplace_back("", algo_ctor);
     }
