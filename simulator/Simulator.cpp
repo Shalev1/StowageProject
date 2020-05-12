@@ -163,7 +163,7 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
         if (!validateAlgoLoad(handler, algo_name, prev_size)) {
             continue; // Algorithm loading failed, continue to the next algorithm.
         }
-        std::unique_ptr<AbstractAlgorithm> algo = inst.algo_funcs[num_of_algo - 1].second();
+        std::unique_ptr<AbstractAlgorithm> algo = inst.algo_funcs[0].second();
 
         vector<string> new_res_row;
         statistics.push_back(new_res_row);
@@ -211,7 +211,9 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
             statistics[0].push_back("Num Errors"); // creating a Num Errors column
         statistics[num_of_algo].push_back(to_string(num_of_errors));
         num_of_algo++;
-        //algo.release(); //TODO: close, before close all references to the so object
+        inst.algo_funcs.clear();
+        algo.release();
+        dlclose(handler);
     } // Done algorithm
     if (err_detected) // Errors found, err_file should be created
         fillSimErrors();
@@ -276,7 +278,7 @@ Simulator::validateLoadOp(int num_of_algo, ShipPlan &ship, WeightBalanceCalculat
         errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
                                       "- Load an unavailable container.");
         return false;
-    }
+    } // TODO: add a check that we're trying to load a container with destination that isn't exists at the rest of the port
     // Balance validation
     if (calc.tryOperation('L', cont->getWeight(), x, y) != WeightBalanceCalculator::APPROVED) {
         errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
