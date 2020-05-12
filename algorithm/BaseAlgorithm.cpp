@@ -61,7 +61,6 @@ int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_an
     route.moveToNextPortWithoutContInit();
     if(!route.hasNextPort() &route.checkLastPortContainers(input_full_path_and_file_name, false)) { // This is the last port and it has waiting containers
         errors.emplace_back(17, "Last port shouldn't has waiting containers");
-        route.getCurrentPort().initWaitingContainers("../Files/empty_file", errors, true);
     } else {
         route.getCurrentPort().initWaitingContainers(input_full_path_and_file_name, errors, true);
     }
