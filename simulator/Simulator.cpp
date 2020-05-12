@@ -212,7 +212,7 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
         statistics[num_of_algo].push_back(to_string(num_of_errors));
         num_of_algo++;
         inst.algo_funcs.clear();
-        algo.release();
+        algo.release(); // release in order to dlclose the handler
         dlclose(handler);
     } // Done algorithm
     if (err_detected) // Errors found, err_file should be created
