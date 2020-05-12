@@ -170,6 +170,8 @@ void Route::sortContainersByDestination(vector<Container>& containers){
     sort(containers.begin(), containers.end(),[this](Container& c1, Container& c2){
         string dest1 = c1.getDestPort();
         string dest2 = c2.getDestPort();
+        if(dest1 == dest2)
+            return false;
         string closeDest = this->getCloserDestination(dest1, dest2);
         return dest1 == closeDest;
     });
