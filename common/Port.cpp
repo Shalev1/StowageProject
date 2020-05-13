@@ -34,7 +34,6 @@ string Port::nameToUppercase(const string &name) {
 
 void Port::initWaitingContainers(const string &path, vector<pair<int,string>>& errVector, bool algoCase) {
     FileHandler fh(path);
-    bool valid = true;
     string id = "";
     if (fh.isFailed()){
         errVector.emplace_back(16,"Failed to open " + path + " considered as no containers waiting");
@@ -42,6 +41,7 @@ void Port::initWaitingContainers(const string &path, vector<pair<int,string>>& e
     }
     vector<string> tokens;
     while (fh.getNextLineAsTokens(tokens)) {
+        bool valid = true;
         if (tokens.empty()) {
             errVector.emplace_back(14,"ID cannot be read");
             continue;
