@@ -21,9 +21,9 @@ Spot.o: ../common/Spot.cpp ../common/Spot.h ../common/Container.h
 	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
 Container.o: ../common/Container.cpp ../common/Container.h
 	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
-Port.o: ../common/Port.cpp ../common/Port.h ../common/Container.h ../common/Utils.h
+Port.o: ../common/Port.cpp ../common/Port.h ../common/Container.h ../common/Utils.h ../common/ShipPlan.h
 	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
-Route.o: ../common/Route.cpp ../common/Route.h ../common/Port.h ../common/Container.h ../common/Utils.h
+Route.o: ../common/Route.cpp ../common/Route.h ../common/Port.h ../common/Container.h ../common/Utils.h ../common/ShipPlan.h
 	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
 Utils.o: ../common/Utils.cpp ../common/Utils.h
 	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp

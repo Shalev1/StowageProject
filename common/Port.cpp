@@ -32,7 +32,7 @@ string Port::nameToUppercase(const string &name) {
     return upperName;
 }
 
-void Port::initWaitingContainers(const string &path, vector<pair<int,string>>& errVector, bool algoCase) {
+void Port::initWaitingContainers(const string &path, vector<pair<int,string>>& errVector, const ShipPlan& ship) {
     FileHandler fh(path);
     string id = "";
     if (fh.isFailed()){
@@ -63,7 +63,7 @@ void Port::initWaitingContainers(const string &path, vector<pair<int,string>>& e
             if(!unique){
                 continue; // ID isn't unique, skip this line
             }
-            if(!Container::checkUnique(id, algoCase)){
+            if(ship.isContOnShip(id)){
                 errVector.emplace_back(11,"Container with ID " + id + " already loaded on the ship");
                 continue;
             }
@@ -92,7 +92,7 @@ void Port::initWaitingContainers(const string &path, vector<pair<int,string>>& e
             }
         }
         if(valid){ // Valid, add the container to the port
-            waitingContainers.emplace_back(weight, Port::nameToUppercase(dest), id, algoCase);
+            waitingContainers.emplace_back(weight, Port::nameToUppercase(dest), id);
         }
     }
 }

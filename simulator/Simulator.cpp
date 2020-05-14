@@ -100,7 +100,7 @@ void Simulator::executeTravel(int num_of_algo, const string &algo_name, Abstract
                 << endl;
         instruction_file_path = output_dir_path;
     }
-    while (travel.moveToNextPort(errs_in_ctor)) { // For each port in travel
+    while (travel.moveToNextPort(errs_in_ctor, ship)) { // For each port in travel
         curr_port_name = travel.getCurrentPort().getName();
         instruction_file =
                 instruction_file_path + std::filesystem::path::preferred_separator + curr_port_name + "_" +
@@ -110,9 +110,7 @@ void Simulator::executeTravel(int num_of_algo, const string &algo_name, Abstract
         (void) algo;
         this->implementInstructions(calc, instruction_file, num_of_operations, num_of_algo);
         this->checkMissedContainers(travel.getCurrentPort().getName(), num_of_algo);
-        travel.leaveCurrentPort();
     }
-    Container::clearIDs();
 
     // Check if there was an error by the algorithm. if there was, number of operation is '-1'.
     if (this->err_in_travel) {
@@ -405,7 +403,7 @@ bool
 Simulator::validateRejectOp(int num_of_algo, ShipPlan &ship, Route &travel,
                             int floor_num, int x, int y, const string &cont_id, bool &has_potential_to_be_loaded) {
     Container *cont;
-    if (!Container::validateID(cont_id) || !Container::checkUnique(cont_id, false)) {
+    if (!Container::validateID(cont_id) || ship.isContOnShip(cont_id)) {
         return true; // Container got rejected cause of bad ID, which is legal!
     }
     cont = travel.getCurrentPort().getWaitingContainerByID(cont_id);

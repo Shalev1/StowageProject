@@ -2,16 +2,8 @@
 #include "Container.h"
 #include <locale>
 
-set<string> Container::simIds;
-set<string> Container::algoIds;
-
-Container::Container(int _weight, string _dest_port, const string _id, bool algoCont) :
+Container::Container(int _weight, string _dest_port, const string _id) :
                      weight(_weight), dest_port(_dest_port), spot_in_floor(nullptr), id(_id) {
-    if (algoCont) {
-        algoIds.insert(_id);
-    } else {
-        simIds.insert(_id);
-    }
 }
 
 string Container::getDestPort() const {
@@ -35,24 +27,8 @@ ostream &operator<<(ostream &out, const Container &c) {
                << endl;
 }
 
-void Container::removeID(int setNum) {
-    if(setNum == 0 || setNum == simSetIDs){
-        simIds.erase(id);
-    }
-    if(setNum == 0 || setNum == algoSetIDs) {
-        algoIds.erase(id);
-    }
-}
-
 bool Container::validateID(const string &id) {
     regex form("([A-Z]{3})([JUZ]{1})([0-9]{7})");
     return regex_match(id, form);
 
-}
-
-bool Container::checkUnique(const string& id, bool algoCheck) {
-    if (!algoCheck && simIds.find(id) == simIds.end()) { // check if id wasn't enter before, simulator case
-        return true;
-    }
-    return algoCheck && algoIds.find(id) == algoIds.end(); // check if id wasn't enter before, algorithm case
 }
