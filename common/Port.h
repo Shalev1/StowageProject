@@ -13,6 +13,7 @@
 #include "Container.h"
 #include "Utils.h"
 #include "algorithm"
+#include "ShipPlan.h"
 
 using std::pair;
 
@@ -46,9 +47,8 @@ public:
     /**
      * Read the file locate in @param path to initialize the waiting containers vector
      * @param errVector filled with errors that occurs
-     * @param algoCase: is called from algorithm
      */
-    void initWaitingContainers(const string &path, vector<pair<int,string>>& errVector, bool algoCase);
+    void initWaitingContainers(const string &path, vector<pair<int,string>>& errVector, const ShipPlan& ship);
 
     /**
      * Return the container with id equals to @param id or nullptr if there is not one like that

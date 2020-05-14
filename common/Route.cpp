@@ -99,14 +99,6 @@ bool Route::moveToNextPortWithoutContInit() {
     return true;
 }
 
-void Route::leaveCurrentPort() {
-    for(auto& cont : getCurrentPort().getWaitingContainers()){
-        if(cont.getSpotInFloor() == nullptr){ // Container stay in the port
-            cont.removeID(simSetIDs);
-        }
-    }
-}
-
 bool Route::checkLastPortContainers(const string& lastPortPath, bool addDir) {
     string path = addDir ? dir + std::filesystem::path::preferred_separator : "";
     path.append(lastPortPath);
@@ -115,7 +107,7 @@ bool Route::checkLastPortContainers(const string& lastPortPath, bool addDir) {
     return lastPortFile.getNextLineAsTokens(tokens);
 }
 
-bool Route::moveToNextPort(vector<pair<int,string>>& errVector) {
+bool Route::moveToNextPort(vector<pair<int,string>>& errVector, const ShipPlan& ship) {
     if(!hasNextPort())
         return false;
     currentPortNum++;
@@ -134,7 +126,7 @@ bool Route::moveToNextPort(vector<pair<int,string>>& errVector) {
                     currentPortPath = dir + std::filesystem::path::preferred_separator + (*it);
                 } else {
                     currentPortPath = dir + std::filesystem::path::preferred_separator + (*it);
-                    ports[currentPortNum].initWaitingContainers(currentPortPath, errVector, false);
+                    ports[currentPortNum].initWaitingContainers(currentPortPath, errVector, ship);
                 }
                 portsContainersPaths.erase(it);
                 return true;

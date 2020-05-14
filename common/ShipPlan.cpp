@@ -126,19 +126,18 @@ bool ShipPlan::validateShipSize(int x, int y, int z) const {
 }
 
 void ShipPlan::insertContainer(Spot *pos, Container &cont) {
+    containers_ids.insert(cont.getID());
     pos->setContainer(&cont);
     cont.setPlace(pos);
     this->free_spots_num--;
 }
 
 void ShipPlan::insertContainer(int floor_num, int x, int y, Container &cont) {
-    cont.setPlace(&getSpotAt(floor_num, x, y));
-    this->getSpotAt(floor_num, x, y).setContainer(&cont);
-    this->free_spots_num--;
+    insertContainer(&getSpotAt(floor_num, x, y), cont);
 }
 
 void ShipPlan::removeContainer(Spot *pos) {
-    pos->getContainer()->removeID(); // TODO: Yoeli needs to explain me the motivation for removing the ID here. notice that I need this container in the future for checks.
+    containers_ids.erase(pos->getContainer()->getID()); // TODO: Yoeli needs to explain me the motivation for removing the ID here. notice that I need this container in the future for checks.
     pos->getContainer()->setPlace(nullptr);
     pos->setContainer(nullptr); // clearing spot with null.
     this->free_spots_num++;
@@ -175,10 +174,15 @@ vector<Container *> ShipPlan::getContainersForDest(const string &port_name) {
     return containers;
 }
 
+bool ShipPlan::isContOnShip(const string &id) const {
+    return containers_ids.find(id) != containers_ids.end();
+}
+
 void ShipPlan::resetShipPlan(){
     setNumOfDecks(0);
     setShipRows(0);
     setShipCols(0);
     free_spots_num = 0;
     getShipDecks().clear();
+    containers_ids.clear();
 }

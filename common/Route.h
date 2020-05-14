@@ -57,11 +57,6 @@ public:
     }
 
     /**
-     * Clear Containers that left on the current port
-     */
-    void leaveCurrentPort();
-
-    /**
      * Check if the last port has waiting containers
      * @param errVector: the errors vector
      * @return true if there are
@@ -72,7 +67,7 @@ public:
      * Return the true if there is at least one more port in the route
      * Also load the waiting containers in this port
      */
-    bool moveToNextPort(vector<pair<int,string>>& errVector);
+    bool moveToNextPort(vector<pair<int,string>>& errVector, const ShipPlan& ship);
 
     /**
      * Return the true if there is at least one more port in the route

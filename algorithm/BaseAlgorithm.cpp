@@ -62,7 +62,7 @@ int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_an
     if(!route.hasNextPort() &route.checkLastPortContainers(input_full_path_and_file_name, false)) { // This is the last port and it has waiting containers
         errors.emplace_back(17, "Last port shouldn't has waiting containers");
     } else {
-        route.getCurrentPort().initWaitingContainers(input_full_path_and_file_name, errors, true);
+        route.getCurrentPort().initWaitingContainers(input_full_path_and_file_name, errors, ship);
     }
     vector<Container>& waitingContainers = route.getCurrentPort().getWaitingContainers();
     vector<Container*> reloadContainers;
@@ -151,7 +151,6 @@ void BaseAlgorithm::findLoadingSpot(Container *cont, FileHandler &instructionsFi
     Spot *empty_spot = getEmptySpot(floorNum);
     if (empty_spot == nullptr) {
         //Ship is full, reject
-        cont->removeID(algoSetIDs);
         instructionsFile.writeInstruction("R", cont->getID(), -1, -1, -1);
         return;
     }

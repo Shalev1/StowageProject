@@ -7,6 +7,9 @@
 #include <iostream>
 #include <vector>
 #include <sstream>
+#include <set>
+
+using std::set;
 
 //---Main class---//
 class ShipPlan {
@@ -16,6 +19,7 @@ private:
     int rows;
     int cols;
     vector<Floor> decks;
+    set<string> containers_ids; // Set of all the containe's IDS that on the ship
 
 public:
     //---Constructors and Destructors---//
@@ -114,11 +118,14 @@ public:
     int getUnavailableFloorsNum(int x, int y);
 
     /**
+     * Check if container with id = @param id is on the ship
+     */
+    bool isContOnShip(const string& id) const;
+
+    /**
      * Clearing the ship members
      */
      void resetShipPlan();
-
-
 };
 
 #endif //STOWAGEPROJECT_SHIPPLAN_H

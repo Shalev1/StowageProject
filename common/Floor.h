@@ -7,6 +7,7 @@
 
 using std::pair;
 using std::vector;
+using std::set;
 
 //---Main class---//
 class Floor {
