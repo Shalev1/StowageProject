@@ -61,6 +61,11 @@ public:
     static Container* getContainerByIDFrom(vector<Container>& containers, const string& id);
 
     /**
+     * Return a set of IDs waiting at the port.
+     */
+    set<string> getContainersIDFromPort();
+
+    /**
      * return @param name is uppercase format
      */
     string nameToUppercase(const string &name);

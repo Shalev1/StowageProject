@@ -110,6 +110,14 @@ Container* Port::getContainerByIDFrom(vector<Container>& containers, const strin
     return nullptr; // didn't find the container
 }
 
+set<string> Port::getContainersIDFromPort(){
+    set<string> ids;
+    for(auto &cont : waitingContainers){
+        ids.insert(cont.getID());
+    }
+    return ids;
+}
+
 ostream &operator<<(ostream &os, const Port &p) {
     os << "Port's name: " << p.name << endl;
     for (auto& c : p.waitingContainers) {

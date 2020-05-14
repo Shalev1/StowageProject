@@ -111,7 +111,7 @@ private:
     /**
      * Validates a reject instruction.
      */
-    bool validateRejectOp(int num_of_algo, ShipPlan &ship, Route &travel, WeightBalanceCalculator &calc,
+    bool validateRejectOp(int num_of_algo, ShipPlan &ship, Route &travel,
                           int floor_num, int x, int y, const string &cont_id, bool &has_potential_to_be_loaded);
 
     /**
@@ -146,9 +146,7 @@ private:
     /**
      * Check if all the port containers were loaded on the ship or got rejected.
      */
-    void checkPortContainers(
-            map<string, Container *> &rejected_containers, Port &curr_port,
-            int num_of_algo);
+    void checkPortContainers(set<string> &ignored_containers, int num_of_algo);
 
     /**
      * Creating a results file containing the number of operations performed in each travel for each algorithm.
