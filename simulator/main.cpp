@@ -58,6 +58,7 @@ int main(int argc, char *argv[]) {
             cout << "@ FATAL ERROR: No -travel_path parameter was given." << endl;
         else
             cout << "@ FATAL ERROR: Invalid parameters was given." << endl;
+        // README: if any flag is declared and the path given is empty, an error will be printed and the simulation will not start.
         return EXIT_FAILURE;
     }
 

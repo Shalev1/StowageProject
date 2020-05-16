@@ -173,6 +173,11 @@ private:
      */
     bool validateAlgoLoad(void *handler, string &algo_name, int prev_size);
 
+    /**
+     * Validates the instruction format and initializes parameters for the verification of instruction.
+     */
+     bool validateCargoInstruction(vector<string> &instruction, int num_of_algo, set<string> &ignoredContainers, Container **cont_to_load, Port &current_port, AbstractAlgorithm::Action &command, const map<string, Container *> &unloaded_containers);
+
 public:
     //---Constructors and Destructors---//
     explicit Simulator(const string &root);

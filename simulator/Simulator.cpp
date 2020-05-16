@@ -191,7 +191,6 @@ bool Simulator::runSimulation(string algorithm_path, string travels_dir_path) {
                 statistics[0].push_back(travel_dir.path().filename()); // creating a travel column
             travel.initPortsContainersFiles(travel_dir.path(), travel_files, errs_in_ctor);
             //SIMULATION
-
             analyzeErrCode(algo->readShipPlan(plan_path), num_of_algo);
             analyzeErrCode(algo->readShipRoute(route_path), num_of_algo);
             analyzeErrCode(algo->setWeightBalanceCalculator(calc), num_of_algo);
@@ -507,6 +506,35 @@ void Simulator::checkPortContainers(set<string> &ignored_containers, int num_of_
     }
 }
 
+bool Simulator::validateCargoInstruction(vector<string> &instruction, int num_of_algo, set<string> &ignoredContainers, Container **cont_to_load, Port &current_port, AbstractAlgorithm::Action &command, const map<string, Container *> &unloaded_containers) {
+    if (!validateInstruction(instruction)) {
+        errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                                      "- Invalid instruction detected.");
+        this->err_in_travel = true;
+        return false;
+    }
+    if (ignoredContainers.find(instruction[1]) !=
+        ignoredContainers.end()) { // Check if the container ID is from the port
+        ignoredContainers.erase(instruction[1]);
+    }
+    command = actionDic.at(instruction[0]);
+    if (command != AbstractAlgorithm::Action::REJECT) {
+        if (!Container::validateID(instruction[1])) {
+            errors[num_of_algo].push_back(
+                    "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                    "- Instruction with invalid container ID detected.");
+            this->err_in_travel = true;
+            return false; // Bad id for container
+        }
+        *cont_to_load = current_port.getWaitingContainerByID(instruction[1]);
+        if (*cont_to_load ==
+            nullptr) // didn't find the container on the waiting containers list, search in the reload list
+            *cont_to_load = (unloaded_containers.find(instruction[1]) != unloaded_containers.end())
+                           ? unloaded_containers.at(instruction[1]) : nullptr;
+    }
+    return true;
+}
+
 void Simulator::implementInstructions(WeightBalanceCalculator &calc, const string &instruction_file,
                                       int &num_of_operations, int num_of_algo) {
     FileHandler file(instruction_file);
@@ -516,33 +544,11 @@ void Simulator::implementInstructions(WeightBalanceCalculator &calc, const strin
     map<string, Container *> rejected_containers;
     map<string, Container *> unloaded_containers;
     set<string> ignoredContainers = current_port.getContainersIDFromPort();
+    AbstractAlgorithm::Action command;
     int x, y, floor_num;
     while (file.getNextLineAsTokens(instruction)) {
-        if (!validateInstruction(instruction)) {
-            errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                          "- Invalid instruction detected.");
-            this->err_in_travel = true;
+        if(!validateCargoInstruction(instruction, num_of_algo, ignoredContainers, &cont_to_load, current_port, command, unloaded_containers))
             continue;
-        }
-        if (ignoredContainers.find(instruction[1]) !=
-            ignoredContainers.end()) { // Check if the container ID is from the port
-            ignoredContainers.erase(instruction[1]);
-        }
-        AbstractAlgorithm::Action command = actionDic.at(instruction[0]);
-        if (command != AbstractAlgorithm::Action::REJECT) {
-            if (!Container::validateID(instruction[1])) {
-                errors[num_of_algo].push_back(
-                        "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                        "- Instruction with invalid container ID detected.");
-                this->err_in_travel = true;
-                continue; // Bad id for container
-            }
-            cont_to_load = current_port.getWaitingContainerByID(instruction[1]);
-            if (cont_to_load ==
-                nullptr) // didn't find the container on the waiting containers list, search in the reload list
-                cont_to_load = (unloaded_containers.find(instruction[1]) != unloaded_containers.end())
-                               ? unloaded_containers.at(instruction[1]) : nullptr;
-        }
         floor_num = string2int(instruction[2]);
         x = string2int(instruction[3]);
         y = string2int(instruction[4]);
