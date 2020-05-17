@@ -47,9 +47,9 @@ protected:
     virtual Spot *getEmptySpot(int &returnFloorNum);
 
     /**
-     * Load container to the ship
+     * Load container to the ship, return false if ship is full
      */
-    virtual void findLoadingSpot(Container *cont, FileHandler &instructionsFile);
+    virtual bool findLoadingSpot(Container *cont, FileHandler &instructionsFile);
 
     /**
      * Check it's possible to use move instruction for @param cont from the ship (places in @param spot)

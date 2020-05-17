@@ -3,7 +3,7 @@ COMP = g++-8.3.0
 SHARED_OBJS = _206223976_a.so _206223976_b.so
 OBJS1 = ShipPlan.o Floor.o Spot.o Container.o Port.o Route.o Utils.o  WeightBalanceCalculator.o BaseAlgorithm.o _206223976_a.o
 OBJS2 = ShipPlan.o Floor.o Spot.o Container.o Port.o Route.o Utils.o  WeightBalanceCalculator.o BaseAlgorithm.o _206223976_b.o
-CPP_COMP_FLAG = -std=c++2a -Wall -Wextra -Werror -pedantic-errors -DNDEBUG -fPIC -I../common
+CPP_COMP_FLAG = -std=c++2a -Wall -Wextra -Werror -pedantic-errors -DNDEBUG -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -I../common
 CPP_LINK_FLAG = -shared
 
 all: $(SHARED_OBJS)

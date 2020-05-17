@@ -577,11 +577,10 @@ bool Simulator::validateCargoInstruction(vector<string> &instruction, int num_of
             this->err_in_travel = true;
             return false; // Bad id for container
         }
-        *cont_to_load = current_port.getWaitingContainerByID(instruction[1], false); //Get the container from the port
-        if (*cont_to_load ==
-            nullptr) // didn't find the container on the waiting containers list, search in the reload list
-            *cont_to_load = (unloaded_containers.find(instruction[1]) != unloaded_containers.end())
-                            ? unloaded_containers.at(instruction[1]) : nullptr;
+        *cont_to_load = (unloaded_containers.find(instruction[1]) != unloaded_containers.end())
+                        ? unloaded_containers.at(instruction[1]) : nullptr;
+        if (*cont_to_load == nullptr) // didn't find the container on the waiting containers list, search in the reload list
+            *cont_to_load = current_port.getWaitingContainerByID(instruction[1], false); //Get the container from the port
     }
     return true;
 }
@@ -622,8 +621,7 @@ void Simulator::implementInstructions(WeightBalanceCalculator &calc, const strin
                     break;
                 }
                 // Unload container from the ship
-                Container *temp_cont = ship.getContainerAt(floor_num, x,
-                                                           y); // save pointer since removeContainer deletes it
+                Container *temp_cont = ship.getContainerAt(floor_num, x, y); // save pointer since removeContainer deletes it
                 ship.removeContainer(floor_num, x, y);
                 unloaded_containers.insert({temp_cont->getID(), temp_cont});
                 num_of_operations++;
@@ -669,12 +667,11 @@ void Simulator::implementInstructions(WeightBalanceCalculator &calc, const strin
 }
 
 void Simulator::checkMissedContainers(const string &port_name, int num_of_algo) {
-    vector<Container *> conts = ship.getContainersForDest(port_name);
-    if ((int) conts.size() > 0) {
+    if ((int) ship.getContainersForDest(port_name).size() > 0) {
         errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name +
                                       "- There are some containers that were not unloaded at their destination port: " +
                                       port_name);
-        this->err_detected = true;
+        this->err_in_travel = true;
     }
 }
 

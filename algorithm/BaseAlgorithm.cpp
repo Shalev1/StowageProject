@@ -68,19 +68,20 @@ int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_an
     vector<Container*> reloadContainers;
     FileHandler instructionsFile(output_full_path_and_file_name, true);
 
+    // Sort incoming containers by their destination
+    route.sortContainersByDestination(waitingContainers);
+
     // Get Unload instructions for containers with destination equals to this port
     getUnloadInstructions(route.getCurrentPort().getName(), reloadContainers, instructionsFile);
 
     // Get reload instructions for the reload containers
     getReloadInstructions(reloadContainers, instructionsFile);
 
-    // Sort incoming containers by their destination
-    route.sortContainersByDestination(waitingContainers);
-
     if((int)waitingContainers.size() > ship.getNumOfFreeSpots()){
         errors.emplace_back(18,"Ship is full, rejecting far containers");
     }
 
+    bool fullError = false;
     for (auto & cont : waitingContainers) {
         if(!cont.isValid()){
             // Illegal container, reject
@@ -97,7 +98,11 @@ int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_an
             instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1);
             continue;
         }
-        findLoadingSpot(&cont, instructionsFile);
+        bool notFull = findLoadingSpot(&cont, instructionsFile);
+        if(!notFull && !fullError){
+            fullError = true;
+            errors.emplace_back(18,"Ship is full, rejecting far containers");
+        }
     }
 
     //Check for errors
@@ -151,13 +156,13 @@ Spot *BaseAlgorithm::getEmptySpot(int &returnFloorNum) {
     return nullptr;
 }
 
-void BaseAlgorithm::findLoadingSpot(Container *cont, FileHandler &instructionsFile) {
+bool BaseAlgorithm::findLoadingSpot(Container *cont, FileHandler &instructionsFile) {
     int floorNum;
     Spot *empty_spot = getEmptySpot(floorNum);
     if (empty_spot == nullptr) {
         //Ship is full, reject
         instructionsFile.writeInstruction("R", cont->getID(), -1, -1, -1);
-        return;
+        return false;
     }
     vector<Spot *> failedSpots; // All spots that returned form getEmptySpot but put the container will make the ship unbalance
     // validate that ship will be balance. If not, find another spot.
@@ -171,7 +176,7 @@ void BaseAlgorithm::findLoadingSpot(Container *cont, FileHandler &instructionsFi
             instructionsFile.writeInstruction("R", cont->getID(), -1, -1, -1);
             for (auto &spot : failedSpots)
                 spot->setAvailable(true);
-            return;
+            return true;
         }
     }
     // Spot found, return all failed spots to be available
@@ -180,6 +185,7 @@ void BaseAlgorithm::findLoadingSpot(Container *cont, FileHandler &instructionsFi
     // Write loading instruction
     instructionsFile.writeInstruction("L", cont->getID(), floorNum, empty_spot->getPlaceX(), empty_spot->getPlaceY());
     ship.insertContainer(empty_spot, *cont);
+    return true;
 }
 
 bool BaseAlgorithm::checkMoveContainer(Container* cont, Spot& spot, FileHandler& instructionsFile) {
