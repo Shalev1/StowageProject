@@ -82,6 +82,11 @@ int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_an
     }
 
     for (auto & cont : waitingContainers) {
+        if(!cont.isValid()){
+            // Illegal container, reject
+            instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1);
+            continue;
+        }
         if (cont.getDestPort() == route.getCurrentPort().getName()) {
             // Destination is the current port, reject
             instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1);
