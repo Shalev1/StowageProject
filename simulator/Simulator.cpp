@@ -2,8 +2,9 @@
 
 Simulator Simulator::inst;
 
-Simulator::Simulator(const string &output_path) : output_dir_path(output_path), err_in_travel(false), err_detected(false),
-                                           curr_travel_name("") {
+Simulator::Simulator(const string &output_path) : output_dir_path(output_path), err_in_travel(false),
+                                                  err_detected(false),
+                                                  curr_travel_name("") {
     vector<string> first_res_row;
     vector<string> first_err_row;
 
@@ -15,11 +16,10 @@ Simulator::Simulator(const string &output_path) : output_dir_path(output_path), 
 
 bool Simulator::updateInput(string &algorithm_path) {
     // Output_path update
-    // TODO: If in between directories does not exists need to create them
     if (!this->output_dir_path.empty() && !dirExists(this->output_dir_path)) { // Detected a path that doesnt exist
         errors[0].push_back("@ ERROR: Output path that was given does not exist.");
         // Creating the directory
-        if (!std::filesystem::create_directory(this->output_dir_path)) { // Couldn't create the directory successfully
+        if (!std::filesystem::create_directories(this->output_dir_path)) { // Couldn't create the directory successfully
             this->output_dir_path = std::filesystem::current_path();
             errors[0].push_back("@ FATAL ERROR: Output folder has not been created successfully.");
             return false; // Directory did not open correctly.
@@ -117,7 +117,6 @@ void Simulator::executeTravel(int num_of_algo, const string &algo_name, Abstract
         implementInstructions(calc, instruction_file, num_of_operations, num_of_algo);
         checkMissedContainers(travel.getCurrentPort().getName(), num_of_algo);
     }
-    //TODO: Check if the ship is empty and if not, print an error. check if this is not implemented by checkMissedContainers
     // Check if there was an error by the algorithm. if there was, number of operation is '-1'.
     if (this->err_in_travel) {
         err_detected = true;
@@ -255,8 +254,18 @@ bool Simulator::validateInstruction(const vector<string> &instructions) { // Che
     return true;
 }
 
+void Simulator::reportInvalidContainer(const Container *cont, int num_of_algo){
+    // Containers ID is validated earlier.
+    if (cont->getWeight() <= 0) {
+        errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name + "- Trying to load an unavailable container.");
+    } else if(){
+
+    }
+}
+
 bool
-Simulator::validateLoadOp(int num_of_algo, ShipPlan &ship, WeightBalanceCalculator &calc, int floor_num,
+Simulator::validateLoadOp(int num_of_algo, ShipPlan &ship, Port &curr_port, WeightBalanceCalculator &calc,
+                          int floor_num,
                           int x, int y, const Container *cont) {
     Spot *pos, *pos_below;
     // Spot validation
@@ -277,10 +286,18 @@ Simulator::validateLoadOp(int num_of_algo, ShipPlan &ship, WeightBalanceCalculat
         return false;
     }
     //Container validation
-    if (cont == nullptr || cont->getSpotInFloor() !=
-                           nullptr) {
+    if (cont == nullptr) {
         errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Load an unavailable container.");
+                                      "- Trying to load an unavailable container.");
+        return false; // Given id_cont is not in the waiting list
+    }
+    if(!cont->isValid()){ // Check if the container is not valid
+        reportInvalidContainer(cont, num_of_algo);
+        return false;
+    }
+    if (cont->getSpotInFloor() != nullptr) {
+        errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                                      "- Trying to load a container that is already on the ship.");
         return false;
     }
     if (!travel.isInRoute(cont->getDestPort())) {
@@ -413,7 +430,7 @@ Simulator::validateRejectOp(int num_of_algo, ShipPlan &ship, Route &travel,
     }
     cont = travel.getCurrentPort().getWaitingContainerByID(cont_id);
     //Container validation
-    if (cont == nullptr) {
+    if (cont == nullptr || !ship.isContOnShip(cont_id)) {
         errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
                                       "- Reject a container with ID: " + cont_id +
                                       "- that wasn't provided by the port.");
@@ -423,7 +440,7 @@ Simulator::validateRejectOp(int num_of_algo, ShipPlan &ship, Route &travel,
         errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
                                       "- Reject a container with ID: " + cont_id + "- that was already loaded.");
         return false;
-    } else if (travel.isInRoute(cont->getDestPort()) && travel.getCurrentPort().getName() != cont->getDestPort()) {
+    } else if (cont->isValid()) { // Check if the container's weight and destination are valid.
         if (ship.getNumOfFreeSpots() > 0) {
             errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
                                           "- Reject a container with ID: " + cont_id +
@@ -447,7 +464,8 @@ void removeUnloadedContainer(map<string, Container *> &unloaded_containers, Cont
 int getFarthestDestOfContainerIndex(vector<Container> &conts) {
     int max_ind = -1;
     for (int i = 0; i < (int) conts.size(); ++i) {
-        if (conts[i].getSpotInFloor() != nullptr) {                // find a container that was loaded on the ship
+        if (conts[i].getSpotInFloor() !=
+            nullptr) { // find a container that was loaded on the ship, note that the container must be valid.
             max_ind = i; // i is always being raised
         }
     }
@@ -472,7 +490,7 @@ void Simulator::checkRemainingContainers(map<string, Container *> &unloaded_cont
                                          int num_of_algo, int num_free_spots) {
     for (const auto &entry : unloaded_containers) {
         if (curr_port.getWaitingContainerByID(entry.first) != nullptr) {
-            // In case the container was from the port
+            // In case the container was from the port, note that the container.isValid() is true
             if (rejected_containers.find(entry.first) !=
                 rejected_containers.end()) { // check if the container was also rejected. if so, the container had a potential to be loaded on the ship.
                 if (num_free_spots != 0) {
@@ -512,7 +530,10 @@ void Simulator::checkPortContainers(set<string> &ignored_containers, int num_of_
     }
 }
 
-bool Simulator::validateCargoInstruction(vector<string> &instruction, int num_of_algo, set<string> &ignoredContainers, Container **cont_to_load, Port &current_port, AbstractAlgorithm::Action &command, const map<string, Container *> &unloaded_containers) {
+bool Simulator::validateCargoInstruction(vector<string> &instruction, int num_of_algo, set<string> &ignoredContainers,
+                                         Container **cont_to_load, Port &current_port,
+                                         AbstractAlgorithm::Action &command,
+                                         const map<string, Container *> &unloaded_containers) {
     if (!validateInstruction(instruction)) {
         errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
                                       "- Invalid instruction detected.");
@@ -532,11 +553,11 @@ bool Simulator::validateCargoInstruction(vector<string> &instruction, int num_of
             this->err_in_travel = true;
             return false; // Bad id for container
         }
-        *cont_to_load = current_port.getWaitingContainerByID(instruction[1]); //Should get the container from the clean list
+        *cont_to_load = current_port.getWaitingContainerByID(instruction[1], false); //Get the container from the port
         if (*cont_to_load ==
             nullptr) // didn't find the container on the waiting containers list, search in the reload list
             *cont_to_load = (unloaded_containers.find(instruction[1]) != unloaded_containers.end())
-                           ? unloaded_containers.at(instruction[1]) : nullptr;
+                            ? unloaded_containers.at(instruction[1]) : nullptr;
     }
     return true;
 }
@@ -553,14 +574,15 @@ void Simulator::implementInstructions(WeightBalanceCalculator &calc, const strin
     AbstractAlgorithm::Action command;
     int x, y, floor_num;
     while (file.getNextLineAsTokens(instruction)) {
-        if(!validateCargoInstruction(instruction, num_of_algo, ignoredContainers, &cont_to_load, current_port, command, unloaded_containers))
+        if (!validateCargoInstruction(instruction, num_of_algo, ignoredContainers, &cont_to_load, current_port, command,
+                                      unloaded_containers))
             continue;
         floor_num = string2int(instruction[2]);
         x = string2int(instruction[3]);
         y = string2int(instruction[4]);
         switch (command) {
             case AbstractAlgorithm::Action::LOAD: {
-                if (!validateLoadOp(num_of_algo, ship, calc, floor_num, x, y, cont_to_load)) {
+                if (!validateLoadOp(num_of_algo, ship, current_port, calc, floor_num, x, y, cont_to_load)) {
                     this->err_in_travel = true;
                     break;
                 }

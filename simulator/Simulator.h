@@ -91,7 +91,7 @@ private:
      * Validates a load instruction.
      */
     bool
-    validateLoadOp(int num_of_algo, ShipPlan &ship, WeightBalanceCalculator &calc, int floor_num, int x,
+    validateLoadOp(int num_of_algo, ShipPlan &ship, Port &curr_port, WeightBalanceCalculator &calc, int floor_num, int x,
                    int y, const Container *cont);
 
     /**
@@ -177,6 +177,11 @@ private:
      * Validates the instruction format and initializes parameters for the verification of instruction.
      */
      bool validateCargoInstruction(vector<string> &instruction, int num_of_algo, set<string> &ignoredContainers, Container **cont_to_load, Port &current_port, AbstractAlgorithm::Action &command, const map<string, Container *> &unloaded_containers);
+
+     /**
+      * Add an error according to the invalid container's details.
+      */
+     void reportInvalidContainer(const Container *cont, int num_of_algo);
 
 public:
     //---Constructors and Destructors---//
