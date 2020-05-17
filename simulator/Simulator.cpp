@@ -494,7 +494,7 @@ int getFarthestDestOfContainerIndex(vector<Container> &conts) {
     return max_ind;
 }
 
-bool Simulator::checkSortedContainers(vector<Container> &conts, Route &travel, const string &cont_id) {
+bool checkSortedContainers(vector<Container> &conts, Route &travel, const string &cont_id) {
     int farthest_port_num;
     vector<Container> temp_containers = conts;
     travel.sortContainersByDestination(temp_containers);

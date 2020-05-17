@@ -183,7 +183,6 @@ private:
       */
      void reportInvalidContainer(Container *cont, int num_of_algo, Port &curr_port);
 
-     bool checkSortedContainers(vector<Container> &conts, Route &travel, const string &cont_id);
 public:
     //---Constructors and Destructors---//
     explicit Simulator(const string &output_path);
