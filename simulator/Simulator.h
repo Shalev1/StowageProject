@@ -92,7 +92,7 @@ private:
      */
     bool
     validateLoadOp(int num_of_algo, ShipPlan &ship, Port &curr_port, WeightBalanceCalculator &calc, int floor_num, int x,
-                   int y, const Container *cont);
+                   int y, Container *cont);
 
     /**
      * Validates a unload instruction.
@@ -181,7 +181,7 @@ private:
      /**
       * Add an error according to the invalid container's details.
       */
-     void reportInvalidContainer(const Container *cont, int num_of_algo);
+     void reportInvalidContainer(Container *cont, int num_of_algo, Port &curr_port);
 
 public:
     //---Constructors and Destructors---//

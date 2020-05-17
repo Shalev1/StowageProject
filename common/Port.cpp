@@ -96,7 +96,7 @@ void Port::initWaitingContainers(const string &path, vector<pair<int,string>>& e
 }
 
 Container* Port::getWaitingContainerByID(const string &id, bool skipInvalid) {
-    return Port::getContainerByIDFrom(waitingContainers, id);
+    return Port::getContainerByIDFrom(waitingContainers, id, skipInvalid);
 }
 
 Container* Port::getContainerByIDFrom(vector<Container>& containers, const string &id, bool skipInvalid) {
@@ -126,7 +126,7 @@ ostream &operator<<(ostream &os, const Port &p) {
     return os;
 }
 
-bool Port::isDuplicateOnPort(Container &cont) {
+bool Port::isDuplicateOnPort(Container &cont){
     if(cont.isValid())
         return false;
     for(auto& c : waitingContainers){
