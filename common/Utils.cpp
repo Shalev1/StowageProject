@@ -138,7 +138,7 @@ FileHandler::FileHandler(const string &path, bool truncFlag) : fs(), path(path) 
 bool FileHandler::getNextLine(string &line) {
     while (getline(this->fs, line)) {
         line = trimWhitespaces(line);
-        if (line[0] == '#' || (int)line.size() == 0)
+        if (line[0] == '#')
             continue;
         return true;
     }
