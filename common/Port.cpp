@@ -87,7 +87,7 @@ void Port::initWaitingContainers(const string &path, vector<pair<int,string>>& e
         } else {
             dest = tokens[2];
             if (!Port::validateName(dest)) {
-                errVector.emplace_back(13,"Illegal destination given for container: " + (dest += " Container ") + (id += " rejected"));
+                errVector.emplace_back(13,"Illegal destination given for container: " + dest + " Container " + id + " rejected");
                 valid = false;
             }
         }
@@ -124,4 +124,15 @@ ostream &operator<<(ostream &os, const Port &p) {
         os << "---" << c;
     }
     return os;
+}
+
+bool Port::isDuplicateOnPort(Container &cont) {
+    if(cont.isValid())
+        return false;
+    for(auto& c : waitingContainers){
+        if(cont.getID() == c.getID() && c.isValid()){
+            return true;
+        }
+    }
+    return false;
 }

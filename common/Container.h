@@ -26,7 +26,7 @@ private:
     string dest_port;
     Spot *spot_in_floor;
     string id;
-    bool valid; // Is ID, weight and destination legal
+    bool valid; // will become invalid if ID, weight or dest is illegal or if the ID already exists on port or ship
 
 public:
     //---Constructors and Destructors---//

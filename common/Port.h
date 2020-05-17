@@ -70,6 +70,12 @@ public:
      */
     string nameToUppercase(const string &name);
 
+    /**
+     * Is cont's ID already appear on the port
+     * @param cont should be invalid, in case valid container is given return false (not duplicate)
+     */
+    bool isDuplicateOnPort(Container& cont);
+
     friend ostream &operator<<(ostream &os, const Port &p);
 };
 
