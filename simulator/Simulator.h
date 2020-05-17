@@ -180,7 +180,7 @@ private:
 
 public:
     //---Constructors and Destructors---//
-    explicit Simulator(const string &root);
+    explicit Simulator(const string &output_path);
 
     Simulator() = default;
 

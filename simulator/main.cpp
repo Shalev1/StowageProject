@@ -16,6 +16,7 @@ PathType getTypeOfPath(const string &input) {
 bool initializeParameters(string &travel_path, string &algorithm_path, string &output_path, int num_of_params,
                           char *argv[]) {
     if (num_of_params < 2 || num_of_params % 2 == 0) {
+        cout << "@ FATAL ERROR: Wrong number of arguments was given." << endl;
         return false;
     }
     for (int i = 1; i < num_of_params; i += 2) {
@@ -37,11 +38,16 @@ bool initializeParameters(string &travel_path, string &algorithm_path, string &o
                 break;
             }
             case None: {
+                cout << "@ FATAL ERROR: Invalid parameters was given." << endl;
                 return false;
             }
         }
     }
-    return !travel_path.empty(); // return false if there was not -travel_path param
+    if(travel_path.empty()){
+        cout << "@ FATAL ERROR: No travel_path was given." << endl;
+        return false; // return false if there was not -travel_path param
+    }
+    return true;
 }
 
 int main(int argc, char *argv[]) {
@@ -54,10 +60,6 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
     if (!initializeParameters(travel_path, algorithm_path, output_path, argc, argv)) {
-        if(travel_path.empty())
-            cout << "@ FATAL ERROR: No -travel_path parameter was given." << endl;
-        else
-            cout << "@ FATAL ERROR: Invalid parameters was given." << endl;
         // README: if any flag is declared and the path given is empty, an error will be printed and the simulation will not start.
         return EXIT_FAILURE;
     }

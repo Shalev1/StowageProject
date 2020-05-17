@@ -2,7 +2,7 @@
 
 Simulator Simulator::inst;
 
-Simulator::Simulator(const string &root) : output_dir_path(root), err_in_travel(false), err_detected(false),
+Simulator::Simulator(const string &output_path) : output_dir_path(output_path), err_in_travel(false), err_detected(false),
                                            curr_travel_name("") {
     vector<string> first_res_row;
     vector<string> first_err_row;
@@ -14,18 +14,24 @@ Simulator::Simulator(const string &root) : output_dir_path(root), err_in_travel(
 }
 
 bool Simulator::updateInput(string &algorithm_path) {
+    // Output_path update
+    // TODO: If in between directories does not exists need to create them
+    if (!this->output_dir_path.empty() && !dirExists(this->output_dir_path)) { // Detected a path that doesnt exist
+        errors[0].push_back("@ ERROR: Output path that was given does not exist.");
+        // Creating the directory
+        if (!std::filesystem::create_directory(this->output_dir_path)) { // Couldn't create the directory successfully
+            this->output_dir_path = std::filesystem::current_path();
+            errors[0].push_back("@ FATAL ERROR: Output folder has not been created successfully.");
+            return false; // Directory did not open correctly.
+        }
+    }
+    if (this->output_dir_path.empty()) {
+        this->output_dir_path = std::filesystem::current_path();
+    }
+    // Algorithm_path update
     if (!algorithm_path.empty() && !dirExists(algorithm_path)) {
         errors[0].push_back("@ FATAL ERROR: Algorithm path that was given is invalid.");
         return false;
-    }
-    if (!this->output_dir_path.empty() && !dirExists(this->output_dir_path)) {
-        errors[0].push_back("@ FATAL ERROR: Output path that was given is invalid.");
-        this->output_dir_path = std::filesystem::current_path();
-        return false;
-    }
-
-    if (this->output_dir_path.empty()) {
-        this->output_dir_path = std::filesystem::current_path();
     }
     if (algorithm_path.empty())
         algorithm_path = std::filesystem::current_path();
@@ -108,10 +114,10 @@ void Simulator::executeTravel(int num_of_algo, const string &algo_name, Abstract
         analyzeErrCode(algo.getInstructionsForCargo(travel.getCurrentPortPath(), instruction_file),
                        num_of_algo);
         (void) algo;
-        this->implementInstructions(calc, instruction_file, num_of_operations, num_of_algo);
-        this->checkMissedContainers(travel.getCurrentPort().getName(), num_of_algo);
+        implementInstructions(calc, instruction_file, num_of_operations, num_of_algo);
+        checkMissedContainers(travel.getCurrentPort().getName(), num_of_algo);
     }
-
+    //TODO: Check if the ship is empty and if not, print an error. check if this is not implemented by checkMissedContainers
     // Check if there was an error by the algorithm. if there was, number of operation is '-1'.
     if (this->err_in_travel) {
         err_detected = true;
@@ -526,7 +532,7 @@ bool Simulator::validateCargoInstruction(vector<string> &instruction, int num_of
             this->err_in_travel = true;
             return false; // Bad id for container
         }
-        *cont_to_load = current_port.getWaitingContainerByID(instruction[1]);
+        *cont_to_load = current_port.getWaitingContainerByID(instruction[1]); //Should get the container from the clean list
         if (*cont_to_load ==
             nullptr) // didn't find the container on the waiting containers list, search in the reload list
             *cont_to_load = (unloaded_containers.find(instruction[1]) != unloaded_containers.end())
