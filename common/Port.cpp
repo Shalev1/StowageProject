@@ -95,16 +95,16 @@ void Port::initWaitingContainers(const string &path, vector<pair<int,string>>& e
     }
 }
 
-Container* Port::getWaitingContainerByID(const string &id) {
+Container* Port::getWaitingContainerByID(const string &id, bool skipInvalid) {
     return Port::getContainerByIDFrom(waitingContainers, id);
 }
 
-Container* Port::getContainerByIDFrom(vector<Container>& containers, const string &id) {
-    for(int i = 0; i < (int)containers.size(); i++){
-        if (containers[i].getID() == id) {
-            if(!containers[i].isValid())
+Container* Port::getContainerByIDFrom(vector<Container>& containers, const string &id, bool skipInvalid) {
+    for(auto & container : containers){
+        if (container.getID() == id) {
+            if(skipInvalid && !container.isValid())
                 continue;
-            return &containers[i]; // found the container
+            return &container; // found the container
         }
     }
     return nullptr; // didn't find the container

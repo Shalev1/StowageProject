@@ -51,14 +51,16 @@ public:
     void initWaitingContainers(const string &path, vector<pair<int,string>>& errVector, const ShipPlan& ship);
 
     /**
+     * @param skipInvalid: true if the search is among valid containers only
      * Return the container with id equals to @param id or nullptr if there is not one like that
      */
-    Container* getWaitingContainerByID(const string &id);
+    Container* getWaitingContainerByID(const string &id, bool skipInvalid = true);
 
     /**
     * Return the container with id equals to @param id or nullptr if there is not one like that
+    * @param skipInvalid: true if the search is among valid containers only
     */
-    static Container* getContainerByIDFrom(vector<Container>& containers, const string& id);
+    static Container* getContainerByIDFrom(vector<Container>& containers, const string& id, bool skipInvalid = true);
 
     /**
      * Return a set of IDs waiting at the port.
