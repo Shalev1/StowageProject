@@ -11,6 +11,9 @@ Simulator::Simulator(const string &root) : output_dir_path(root), err_in_travel(
     statistics[0].push_back("RESULTS");
     errors.push_back(first_err_row);
     errors[0].push_back("General");
+
+    // Create empty file, will be used for port without containers
+    FileHandler emptyFile(string(".") + std::filesystem::path::preferred_separator + string("empty_file"), true);
 }
 
 bool Simulator::updateInput(string &algorithm_path) {
