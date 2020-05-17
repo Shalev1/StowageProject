@@ -40,6 +40,7 @@ void ShipPlan::initShipPlanFromFile(const string &file_path, vector<pair<int,str
     vector<string> line;
     int x, y, unavailable_floors;
     string err;
+    bool eof_missing;
 
     if(file.isFailed()){
         errs_msg.emplace_back(3, "Failed opening the ship plan file that was given.");
@@ -47,10 +48,12 @@ void ShipPlan::initShipPlanFromFile(const string &file_path, vector<pair<int,str
         return;
     }
     // Initialize ship dimensions
-    if (!file.getNextLineAsTokens(line)) {
-        errs_msg.emplace_back(3, "Empty ship plan file was given.");
-        success = false; // should skip to the next travel
-        return;
+    while (!(eof_missing = file.getNextLineAsTokens(line)) || (line.begin()->empty() && (int)line.size() == 1)) {
+        if(!eof_missing) {
+            errs_msg.emplace_back(3, "Empty ship plan file was given.");
+            success = false; // should skip to the next travel
+            return;
+        }
     }
     if (!validateShipPlanLine(line, err)) {
         errs_msg.emplace_back(3, err);

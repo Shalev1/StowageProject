@@ -114,8 +114,11 @@ void Simulator::executeTravel(int num_of_algo, const string &algo_name, Abstract
         instruction_file =
                 instruction_file_path + std::filesystem::path::preferred_separator + curr_port_name + "_" +
                 to_string(travel.getNumOfVisitsInPort(curr_port_name)) + ".crane_instructions";
+        //cout << "before travel: " << curr_travel_name << "port: " << curr_port_name << endl;
         analyzeErrCode(algo.getInstructionsForCargo(travel.getCurrentPortPath(), instruction_file),
                        num_of_algo);
+        //cout << "after travel: " << curr_travel_name << "port: " << curr_port_name << endl;
+
         (void) algo;
         implementInstructions(calc, instruction_file, num_of_operations, num_of_algo);
         checkMissedContainers(travel.getCurrentPort().getName(), num_of_algo);
@@ -272,7 +275,7 @@ void Simulator::reportInvalidContainer(Container *cont, int num_of_algo, Port &c
         errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
                                       "- Trying to load a container which it's ID already exists on the ship: " + cont->getID());
     }
-    // Should never reach here.
+    // DEBUG:Should never reach here.
     errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
                                   "- Trying to load an invalid container.");
 }
@@ -491,12 +494,14 @@ int getFarthestDestOfContainerIndex(vector<Container> &conts) {
     return max_ind;
 }
 
-bool checkSortedContainers(vector<Container> &conts, Route &travel, const string &cont_id) {
+bool Simulator::checkSortedContainers(vector<Container> &conts, Route &travel, const string &cont_id) {
     int farthest_port_num;
-    travel.sortContainersByDestination(conts);
+    vector<Container> temp_containers = conts;
+    travel.sortContainersByDestination(temp_containers);
     farthest_port_num = getFarthestDestOfContainerIndex(
-            conts); // get the maximal index of a container that was load to the ship.
-    if (distance(conts.begin(), find(conts.begin(), conts.end(), *(Port::getContainerByIDFrom(conts, cont_id)))) <
+            temp_containers); // get the maximal index of a container that was load to the ship.
+    if (distance(temp_containers.begin(), find(temp_containers.begin(), temp_containers.end(),
+                                               *(Port::getContainerByIDFrom(temp_containers, cont_id)))) <
         farthest_port_num) { // The left side of the statement is just to find cont_id's index in conts
         return false;
     }
