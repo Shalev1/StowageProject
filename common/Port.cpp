@@ -48,35 +48,35 @@ void Port::initWaitingContainers(const string &path, vector<pair<int,string>>& e
         } else {
             id = tokens[0];
             if (!Container::validateID(id)) {
-                errVector.emplace_back(15,"Illegal ID for container: " + id);
-                continue;
-            }
-            // Check that there isn't already container with the same ID in the port
-            bool unique = true;
-            for(auto& cont: waitingContainers){
-                if(id == cont.getID()){
-                    errVector.emplace_back(10,"Container with ID: " + id + " already exists in port: " + name);
-                    unique = false;
-                    break;
+                errVector.emplace_back(15, "Illegal ID for container: " + id);
+                valid = false;
+            } else {
+                if (ship.isContOnShip(id)) { // Check that there isn't already container with the same ID on the ship
+                    errVector.emplace_back(11, "Container with ID " + id + " already loaded on the ship");
+                    valid = false;
+                } else {
+                    // Check that there isn't already container with the same ID in the port
+                    for (auto &cont: waitingContainers) {
+                        if (id == cont.getID()) {
+                            errVector.emplace_back(10, "Container with ID: " + id + " already exists in port: " + name);
+                            valid = false;
+                            break;
+                        }
+                    }
                 }
-            }
-            if(!unique){
-                continue; // ID isn't unique, skip this line
-            }
-            if(ship.isContOnShip(id)){
-                errVector.emplace_back(11,"Container with ID " + id + " already loaded on the ship");
-                continue;
             }
         }
         int weight = 0;
         if (tokens.size() < 2){
             errVector.emplace_back(12,"No weight given for container: " + id + " - container rejected");
+            weight = NO_WEIGHT;
             valid = false;
         } else {
             if (isPositiveNumber(tokens[1])) {
                 weight = stoi(tokens[1]);
             } else {
                 errVector.emplace_back(12,"Illegal weight given for container: " + tokens[1] + " Container " + id + " rejected");
+                weight = ILLEGAL_WEIGHT;
                 valid = false;
             }
         }
@@ -91,9 +91,7 @@ void Port::initWaitingContainers(const string &path, vector<pair<int,string>>& e
                 valid = false;
             }
         }
-        if(valid){ // Valid, add the container to the port
-            waitingContainers.emplace_back(weight, Port::nameToUppercase(dest), id);
-        }
+        waitingContainers.emplace_back(weight, Port::nameToUppercase(dest), id, valid);
     }
 }
 
@@ -104,6 +102,8 @@ Container* Port::getWaitingContainerByID(const string &id) {
 Container* Port::getContainerByIDFrom(vector<Container>& containers, const string &id) {
     for(int i = 0; i < (int)containers.size(); i++){
         if (containers[i].getID() == id) {
+            if(!containers[i].isValid())
+                continue;
             return &containers[i]; // found the container
         }
     }

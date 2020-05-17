@@ -2,8 +2,8 @@
 #include "Container.h"
 #include <locale>
 
-Container::Container(int _weight, string _dest_port, const string _id) :
-                     weight(_weight), dest_port(_dest_port), spot_in_floor(nullptr), id(_id) {
+Container::Container(int _weight, string _dest_port, const string _id, bool valid) :
+                     weight(_weight), dest_port(_dest_port), spot_in_floor(nullptr), id(_id), valid(valid) {
 }
 
 string Container::getDestPort() const {
