@@ -76,12 +76,18 @@ private:
                        vector<pair<int, string>> &errs_in_ctor, int &num_of_errors);
 
     /**
-     * Performs the instructions at the given instructions file while validating the algorithm decisions.
+     * Iterate over the instructions file and implementing only it's legal instructions.
      */
     void
-    implementInstructions(WeightBalanceCalculator &calc,
+    iterateInstructions(WeightBalanceCalculator &calc,
                           const string &instruction_file, int &num_of_operations, int num_of_algo);
 
+    /**
+     * Performs the instructions at the given instruction while validating the algorithm decisions.
+     */
+    void implementInstruction(vector<string> &instruction, AbstractAlgorithm::Action command, int &num_of_operations, int num_of_algo, Port &current_port, WeightBalanceCalculator &calc,
+                                         map<string, Container *> &rejected_containers, map<string, Container *> &unloaded_containers,
+                                         int floor_num,int x, int y, Container *cont_to_load);
     /**
      * Validates the instruction format.
      */
@@ -91,27 +97,27 @@ private:
      * Validates a load instruction.
      */
     bool
-    validateLoadOp(int num_of_algo, ShipPlan &ship, Port &curr_port, WeightBalanceCalculator &calc, int floor_num, int x,
+    validateLoadOp(int num_of_algo, Port &curr_port, WeightBalanceCalculator &calc, int floor_num, int x,
                    int y, Container *cont);
 
     /**
      * Validates a unload instruction.
      */
     bool
-    validateUnloadOp(int num_of_algo, ShipPlan &ship, WeightBalanceCalculator &calc, int floor_num, int x,
+    validateUnloadOp(int num_of_algo, WeightBalanceCalculator &calc, int floor_num, int x,
                      int y, const string &cont_id);
 
     /**
      * Validates a move instruction.
      */
     bool
-    validateMoveOp(int num_of_algo, ShipPlan &ship, WeightBalanceCalculator &calc, int source_floor_num,
+    validateMoveOp(int num_of_algo, WeightBalanceCalculator &calc, int source_floor_num,
                    int source_x, int source_y, int dest_floor_num, int dest_x, int dest_y, const string &cont_id);
 
     /**
      * Validates a reject instruction.
      */
-    bool validateRejectOp(int num_of_algo, ShipPlan &ship, Route &travel,
+    bool validateRejectOp(int num_of_algo, Route &travel,
                           int floor_num, int x, int y, const string &cont_id, bool &has_potential_to_be_loaded);
 
     /**
@@ -120,7 +126,7 @@ private:
     void
     checkRemainingContainers(map<string, Container *> &unloaded_containers,
                              map<string, Container *> &rejected_containers,
-                             Port &curr_port, Route &travel, int num_of_algo, int num_free_spots);
+                             Port &curr_port, int num_of_algo, int num_free_spots);
 
     /**
      * Checks that there was no containers left on the ship destinated for the given port.
