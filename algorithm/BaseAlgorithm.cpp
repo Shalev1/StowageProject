@@ -77,10 +77,6 @@ int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_an
     // Get reload instructions for the reload containers
     getReloadInstructions(reloadContainers, instructionsFile);
 
-    if((int)waitingContainers.size() > ship.getNumOfFreeSpots()){
-        errors.emplace_back(18,"Ship is full, rejecting far containers");
-    }
-
     bool fullError = false;
     for (auto & cont : waitingContainers) {
         if(!cont.isValid()){
