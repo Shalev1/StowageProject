@@ -28,7 +28,6 @@ ostream &operator<<(ostream &out, const Container &c) {
 }
 
 bool Container::validateID(const string &id) {
-    regex form("([A-Z]{3})([JUZ]{1})([0-9]{7})");
-    return regex_match(id, form);
+    return ISO_6346::isValidId(id);
 
 }

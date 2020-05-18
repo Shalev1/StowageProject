@@ -1,8 +1,8 @@
 COMP = g++-8.3.0
 
 SHARED_OBJS = _206223976_a.so _206223976_b.so
-OBJS1 = ShipPlan.o Floor.o Spot.o Container.o Port.o Route.o Utils.o  WeightBalanceCalculator.o BaseAlgorithm.o _206223976_a.o
-OBJS2 = ShipPlan.o Floor.o Spot.o Container.o Port.o Route.o Utils.o  WeightBalanceCalculator.o BaseAlgorithm.o _206223976_b.o
+OBJS1 = ShipPlan.o Floor.o Spot.o Container.o Port.o Route.o Utils.o ISO_6346.o WeightBalanceCalculator.o BaseAlgorithm.o _206223976_a.o
+OBJS2 = ShipPlan.o Floor.o Spot.o Container.o Port.o Route.o Utils.o ISO_6346.o WeightBalanceCalculator.o BaseAlgorithm.o _206223976_b.o
 CPP_COMP_FLAG = -std=c++2a -Wall -Wextra -Werror -pedantic-errors -DNDEBUG -fPIC -fvisibility=hidden -fvisibility-inlines-hidden -I../common
 CPP_LINK_FLAG = -shared
 
@@ -19,11 +19,13 @@ Floor.o: ../common/Floor.cpp ../common/Floor.h ../common/Spot.h ../common/Contai
 	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
 Spot.o: ../common/Spot.cpp ../common/Spot.h ../common/Container.h
 	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
-Container.o: ../common/Container.cpp ../common/Container.h
+Container.o: ../common/Container.cpp ../common/Container.h ../common/ISO_6346.h
 	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
-Port.o: ../common/Port.cpp ../common/Port.h ../common/Container.h ../common/Utils.h ../common/ShipPlan.h
+ISO_6346.o: ../common/ISO_6346.cpp ../common/ISO_6346.h
 	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
-Route.o: ../common/Route.cpp ../common/Route.h ../common/Port.h ../common/Container.h ../common/Utils.h ../common/ShipPlan.h
+Port.o: ../common/Port.cpp ../common/Port.h ../common/Container.h ../common/Utils.h
+	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
+Route.o: ../common/Route.cpp ../common/Route.h ../common/Port.h ../common/Container.h ../common/Utils.h
 	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
 Utils.o: ../common/Utils.cpp ../common/Utils.h
 	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp

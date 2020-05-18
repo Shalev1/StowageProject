@@ -6,6 +6,7 @@
 #include <string>
 #include <set>
 #include <regex>
+#include "ISO_6346.h"
 
 #define NO_WEIGHT (-1)
 #define ILLEGAL_WEIGHT (-2)
