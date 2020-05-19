@@ -3,7 +3,7 @@ REGISTER_ALGORITHM(_206223976_b)
 
 bool _206223976_b::checkMoveContainer(Container *cont, Spot &spot, FileHandler &instructionsFile) {
     int floorNum;
-    Spot* emptySpot = getEmptySpot(floorNum);
+    Spot* emptySpot = getEmptySpot(floorNum, spot.getPlaceX(), spot.getPlaceY());
     if(emptySpot != nullptr){
         instructionsFile.writeInstruction("M", cont->getID(), spot.getFloorNum(), spot.getPlaceX(),
                 spot.getPlaceY(), floorNum, emptySpot->getPlaceX(), emptySpot->getPlaceY());
