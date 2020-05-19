@@ -126,7 +126,7 @@ bool Route::moveToNextPort(vector<pair<int,string>>& errVector, const ShipPlan& 
                     currentPortPath = dir + std::filesystem::path::preferred_separator + (*it);
                 } else {
                     currentPortPath = dir + std::filesystem::path::preferred_separator + (*it);
-                    ports[currentPortNum].initWaitingContainers(currentPortPath, errVector, ship);
+                    ports[currentPortNum].initWaitingContainers(currentPortPath, errVector, ship, getLeftPortsNames());
                 }
                 portsContainersPaths.erase(it);
                 return true;
@@ -177,3 +177,10 @@ ostream& operator<<(ostream& os, const Route& r){
     return os;
 }
 
+vector<string> Route::getLeftPortsNames() {
+    vector<string> names;
+    for(auto it = ports.begin() + currentPortNum; it != ports.end(); ++it){
+        names.emplace_back((*it).getName());
+    }
+    return names;
+}

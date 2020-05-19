@@ -97,6 +97,8 @@ public:
      */
     bool isInRoute(const string &portName) const;
 
+    vector<string> getLeftPortsNames();
+
     /**
      * Sort the given containers vector by their destination, from the closest one to the farthest one
      */

@@ -32,7 +32,15 @@ string Port::nameToUppercase(const string &name) {
     return upperName;
 }
 
-void Port::initWaitingContainers(const string &path, vector<pair<int,string>>& errVector, const ShipPlan& ship) {
+bool isInNextPorts(const string& port, const vector<string>& nextPorts){
+    for(auto& portName : nextPorts){
+        if(port == portName)
+            return true;
+    }
+    return false;
+}
+
+void Port::initWaitingContainers(const string &path, vector<pair<int,string>>& errVector, const ShipPlan& ship, const vector<string>& nextPorts) {
     FileHandler fh(path);
     string id = "";
     if (fh.isFailed()){
@@ -56,13 +64,26 @@ void Port::initWaitingContainers(const string &path, vector<pair<int,string>>& e
                     valid = false;
                 } else {
                     // Check that there isn't already container with the same ID in the port
-                    for (auto &cont: waitingContainers) {
-                        if (id == cont.getID()) {
+                    bool dup = false;
+                    for (auto it = waitingContainers.begin(); it != waitingContainers.end(); it++) {
+                        if (id == (*it).getID()) {
                             errVector.emplace_back(10, "Container with ID: " + id + " already exists in port: " + name);
-                            valid = false;
+                            if ((*it).isValid() && (*it).getDestPort() != name && isInNextPorts((*it).getDestPort(), nextPorts)) {
+                                // Valid container with same ID, mark this one as duplicate
+                                dup = true;
+                            } else {
+                                waitingContainers.erase(it); // remove existing invalid container
+                            }
+                            if (duplicateIdOnPort.find(id) != duplicateIdOnPort.end()) {
+                                duplicateIdOnPort[id]++; // add one more duplicate
+                            } else {
+                                duplicateIdOnPort[id] = 1; // first duplicate
+                            }
                             break;
                         }
                     }
+                    if(dup) // A duplicate container, already added to the duplicate map
+                        continue;
                 }
             }
         }

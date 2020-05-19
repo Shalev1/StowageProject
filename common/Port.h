@@ -52,7 +52,7 @@ public:
      * Read the file locate in @param path to initialize the waiting containers vector
      * @param errVector filled with errors that occurs
      */
-    void initWaitingContainers(const string &path, vector<pair<int,string>>& errVector, const ShipPlan& ship);
+    void initWaitingContainers(const string &path, vector<pair<int,string>>& errVector, const ShipPlan& ship, const vector<string>& nextPorts);
 
     /**
      * @param skipInvalid: true if the search is among valid containers only

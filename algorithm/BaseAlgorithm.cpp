@@ -62,7 +62,7 @@ int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_an
     if(!route.hasNextPort() &route.checkLastPortContainers(input_full_path_and_file_name, false)) { // This is the last port and it has waiting containers
         errors.emplace_back(17, "Last port shouldn't has waiting containers");
     } else {
-        route.getCurrentPort().initWaitingContainers(input_full_path_and_file_name, errors, ship);
+        route.getCurrentPort().initWaitingContainers(input_full_path_and_file_name, errors, ship, route.getLeftPortsNames());
     }
     vector<Container>& waitingContainers = route.getCurrentPort().getWaitingContainers();
     vector<Container*> reloadContainers;
@@ -93,6 +93,10 @@ int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_an
             // Destination is not in the route, reject
             instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1);
             continue;
+        }
+        // Reject duplicate containers
+        for(int i = 0; i < route.getCurrentPort().getNumOfDuplicates(cont.getID()); i++){
+            instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1);
         }
         bool notFull = findLoadingSpot(&cont, instructionsFile);
         if(!notFull && !fullError){
@@ -135,11 +139,13 @@ void BaseAlgorithm::getReloadInstructions(vector<Container*>& reload_containers,
     }
 }
 
-Spot *BaseAlgorithm::getEmptySpot(int &returnFloorNum) {
+Spot *BaseAlgorithm::getEmptySpot(int &returnFloorNum, int fromX, int fromY) {
     for (int floor_num = 0; floor_num < ship.getNumOfDecks(); ++floor_num) {
         //Iterate over the current floor's floor map
         for (int x = 0; x < ship.getShipRows(); ++x) {
             for (int y = 0; y < ship.getShipCols(); ++y) {
+                if(fromX == x && fromY == y) // Same column as original cont (if given), skip
+                    continue;
                 Spot *curSpot = &(ship.getSpotAt(floor_num, x, y));
                 // Check if the spot is clear base
                 if (curSpot->getAvailable() && curSpot->getContainer() == nullptr) {
