@@ -401,6 +401,11 @@ bool Simulator::validateMoveOp(int num_of_algo, WeightBalanceCalculator &calc,
                                       "- Move a container with ID: " + cont_id + "- using Out-Of-Range position.");
         return false;
     }
+    if ((source_x == dest_x) && (source_y == dest_x) && (source_floor_num != dest_floor_num)) {
+        errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                                      "- Move a container with ID: " + cont_id + "- to a spot with the same X,Y but at different floor.");
+        return false;
+    }
     source_pos = &(ship.getSpotAt(source_floor_num, source_x, source_y));
     dest_pos = &(ship.getSpotAt(dest_floor_num, dest_x, dest_y));
     if (!source_pos->getAvailable() || source_pos->getContainer() == nullptr ||
