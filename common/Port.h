@@ -65,7 +65,7 @@ public:
     /**
      * Return a set of IDs waiting at the port.
      */
-    set<string> getContainersIDFromPort();
+    vector<string> getContainersIDFromPort();
 
     /**
      * return @param name is uppercase format
