@@ -403,7 +403,8 @@ bool Simulator::validateMoveOp(int num_of_algo, WeightBalanceCalculator &calc,
     }
     if ((source_x == dest_x) && (source_y == dest_x) && (source_floor_num != dest_floor_num)) {
         errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Move a container with ID: " + cont_id + "- to a spot with the same X,Y but at different floor.");
+                                      "- Move a container with ID: " + cont_id +
+                                      "- to a spot with the same X,Y but at different floor.");
         return false;
     }
     source_pos = &(ship.getSpotAt(source_floor_num, source_x, source_y));
@@ -520,13 +521,13 @@ bool checkSortedContainers(vector<Container> &conts, Route &travel, const string
 // Validates all the containers that were left at the port at the end of travel.
 void Simulator::checkRemainingContainers(map<string, Container *> &unloaded_containers,
                                          map<string, Container *> &rejected_containers, Port &curr_port,
-                                         int num_of_algo, int num_free_spots) {
+                                         int num_of_algo) {
     for (const auto &entry : unloaded_containers) {
         if (curr_port.getWaitingContainerByID(entry.first) != nullptr) {
             // In case the container was from the port, note that the container.isValid() is true
             if (rejected_containers.find(entry.first) !=
                 rejected_containers.end()) { // check if the container was also rejected. if so, the container had a potential to be loaded on the ship.
-                if (num_free_spots != 0) {
+                if (!ship.isFull()) {
                     errors[num_of_algo].push_back(
                             "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
                             "- Rejected a container with ID: " + entry.second->getID() +
@@ -563,10 +564,11 @@ void Simulator::checkPortContainers(vector<string> &ignored_containers, int num_
     }
 }
 
-bool Simulator::validateCargoInstruction(vector<string> &instruction, int num_of_algo, vector<string> &ignoredContainers,
-                                         Container **cont_to_load, Port &current_port,
-                                         AbstractAlgorithm::Action &command,
-                                         const map<string, Container *> &unloaded_containers) {
+bool
+Simulator::validateCargoInstruction(vector<string> &instruction, int num_of_algo, vector<string> &ignoredContainers,
+                                    Container **cont_to_load, Port &current_port,
+                                    AbstractAlgorithm::Action &command,
+                                    const map<string, Container *> &unloaded_containers) {
     if (!validateInstruction(instruction)) {
         errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
                                       "- Invalid instruction detected.");
@@ -672,8 +674,8 @@ Simulator::iterateInstructions(WeightBalanceCalculator &calc, const string &inst
     vector<string> instruction;
     Container *cont_to_load = nullptr;
     Port &current_port = travel.getCurrentPort();
-    map<string, Container *> rejected_containers;
-    map<string, Container *> unloaded_containers;
+    map<string, Container *> rejected_containers; // Contains all containers that were rejected correctly.
+    map<string, Container *> unloaded_containers; // Contains all containers that were rejected correctly and had potential to be loaded, but ship was full + all containers that were unloaded.
     vector<string> ignoredContainers = current_port.getContainersIDFromPort();
     AbstractAlgorithm::Action command;
     while (file.getNextLineAsTokens(instruction)) {
@@ -685,8 +687,7 @@ Simulator::iterateInstructions(WeightBalanceCalculator &calc, const string &inst
                              string2int(instruction[FloorNum]), string2int(instruction[X]), string2int(instruction[Y]),
                              cont_to_load);
     }
-    checkRemainingContainers(unloaded_containers, rejected_containers, current_port, num_of_algo,
-                             ship.getNumOfFreeSpots());
+    checkRemainingContainers(unloaded_containers, rejected_containers, current_port, num_of_algo);
     checkPortContainers(ignoredContainers, num_of_algo);
 }
 

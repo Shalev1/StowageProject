@@ -126,7 +126,7 @@ private:
     void
     checkRemainingContainers(map<string, Container *> &unloaded_containers,
                              map<string, Container *> &rejected_containers,
-                             Port &curr_port, int num_of_algo, int num_free_spots);
+                             Port &curr_port, int num_of_algo);
 
     /**
      * Checks that there was no containers left on the ship destinated for the given port.
