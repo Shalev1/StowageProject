@@ -86,6 +86,10 @@ public:
 
     void decreaseDuplicateId(const string& id);
 
+    map<string, int> &getDuplicateIdOnPort(){
+        return duplicateIdOnPort;
+    }
+
     friend ostream &operator<<(ostream &os, const Port &p);
 };
 

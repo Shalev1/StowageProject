@@ -260,7 +260,7 @@ bool Simulator::validateInstruction(const vector<string> &instructions) { // Che
     return true;
 }
 
-void Simulator::reportInvalidContainer(Container *cont, int num_of_algo, Port &curr_port) {
+void Simulator::reportInvalidContainer(Container *cont, int num_of_algo) {
     // Containers ID is validated earlier.
     if (cont->getWeight() <= 0) {
         errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
@@ -270,9 +270,6 @@ void Simulator::reportInvalidContainer(Container *cont, int num_of_algo, Port &c
         errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
                                       "- Trying to load a container with illegal destination port: " +
                                       cont->getDestPort());
-    } else if (curr_port.isDuplicateOnPort(*cont)) {
-        errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Trying to load a container with a duplicated ID: " + cont->getID());
     } else if (ship.isContOnShip(cont->getID())) {
         errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
                                       "- Trying to load a container which it's ID already exists on the ship: " +
@@ -312,8 +309,15 @@ Simulator::validateLoadOp(int num_of_algo, Port &curr_port, WeightBalanceCalcula
         return false; // Given id_cont is not in the waiting list
     }
     if (!cont->isValid()) { // Check if the container is not valid
-        reportInvalidContainer(cont, num_of_algo, curr_port);
+        reportInvalidContainer(cont, num_of_algo);
         return false;
+    } else { // Container is valid, now check the duplication case
+        if (cont->getSpotInFloor() != nullptr && curr_port.getNumOfDuplicates(cont->getID()) > 0) {
+            errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                                          "- Trying to load a container with a duplicated ID: " + cont->getID());
+            curr_port.decreaseDuplicateId(cont->getID()); // Update that a duplicated ID container got treated
+            return false;
+        }
     }
     if (cont->getSpotInFloor() != nullptr) {
         errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
@@ -471,6 +475,11 @@ Simulator::validateRejectOp(int num_of_algo, Route &travel,
         errors[num_of_algo].push_back("@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
                                       "- Reject a container with ID: " + cont_id + "- that was already loaded.");
         return false;
+    }
+    if (travel.getCurrentPort().getNumOfDuplicates(cont_id) > 0) {
+        // ID is duplicated
+        travel.getCurrentPort().decreaseDuplicateId(cont_id); // one duplicated got detected.
+        return true;
     } else if (cont->isValid() && travel.isInRoute(cont->getDestPort()) && this->curr_port_name !=
                                                                            cont->getDestPort()) { // Check if the container's weight and destination are valid.
         if (ship.getNumOfFreeSpots() > 0) {
@@ -554,13 +563,22 @@ void Simulator::checkRemainingContainers(map<string, Container *> &unloaded_cont
     }
 }
 
-void Simulator::checkPortContainers(vector<string> &ignored_containers, int num_of_algo) {
+void Simulator::checkPortContainers(vector<string> &ignored_containers, int num_of_algo, Port &curr_port) {
     for (auto &container_id : ignored_containers) { // for each container that came from this port that was not treated.
         errors[num_of_algo].push_back(
                 "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
                 "- A container with ID: " + container_id +
                 "- was left at the port without getting an instruction.");
         this->err_in_travel = true;
+    }
+    for (auto &cont : curr_port.getDuplicateIdOnPort()) { // for each duplicated container that came from this port that was not treated.
+        if (cont.second > 0) {
+            errors[num_of_algo].push_back(
+                    "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                    "- A container with ID: " + cont.first +
+                    "- did not get rejected though it has duplicated ID.");
+            this->err_in_travel = true;
+        }
     }
 }
 
@@ -688,7 +706,7 @@ Simulator::iterateInstructions(WeightBalanceCalculator &calc, const string &inst
                              cont_to_load);
     }
     checkRemainingContainers(unloaded_containers, rejected_containers, current_port, num_of_algo);
-    checkPortContainers(ignoredContainers, num_of_algo);
+    checkPortContainers(ignoredContainers, num_of_algo, current_port);
 }
 
 void Simulator::checkMissedContainers(const string &port_name, int num_of_algo) {
