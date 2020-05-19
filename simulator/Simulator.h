@@ -152,7 +152,7 @@ private:
     /**
      * Check if all the port containers were loaded on the ship or got rejected.
      */
-    void checkPortContainers(vector<string> &ignored_containers, int num_of_algo);
+    void checkPortContainers(vector<string> &ignored_containers, int num_of_algo, Port &curr_port);
 
     /**
      * Creating a results file containing the number of operations performed in each travel for each algorithm.
@@ -187,7 +187,7 @@ private:
      /**
       * Add an error according to the invalid container's details.
       */
-     void reportInvalidContainer(Container *cont, int num_of_algo, Port &curr_port);
+     void reportInvalidContainer(Container *cont, int num_of_algo);
 
 public:
     //---Constructors and Destructors---//
