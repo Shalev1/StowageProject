@@ -27,33 +27,30 @@ void ShipPlan::updateSpot(int x, int y, int unavailable_floors) {
     }
 }
 
-int ShipPlan::getUnavailableFloorsNum(int x, int y){
+int ShipPlan::getUnavailableFloorsNum(int x, int y) {
     int counter = 0;
-    while(!decks[counter].getFloorMap()[x][y].getAvailable() && counter < num_of_decks){
+    while (!decks[counter].getFloorMap()[x][y].getAvailable() && counter < num_of_decks) {
         counter++;
     }
     return counter;
 }
 
-void ShipPlan::initShipPlanFromFile(const string &file_path, vector<pair<int,string>> &errs_msg, bool &success) {
+void ShipPlan::initShipPlanFromFile(const string &file_path, vector<pair<int, string>> &errs_msg, bool &success) {
     FileHandler file(file_path);
     vector<string> line;
     int x, y, unavailable_floors;
     string err;
-    bool eof_missing;
 
-    if(file.isFailed()){
+    if (file.isFailed()) {
         errs_msg.emplace_back(3, "Failed opening the ship plan file that was given.");
         success = false; // should skip to the next travel
         return;
     }
     // Initialize ship dimensions
-    while (!(eof_missing = file.getNextLineAsTokens(line)) || (line.begin()->empty() && (int)line.size() == 1)) {
-        if(!eof_missing) {
-            errs_msg.emplace_back(3, "Empty ship plan file was given.");
-            success = false; // should skip to the next travel
-            return;
-        }
+    if (!file.getNextLineAsTokens(line)) {
+        errs_msg.emplace_back(3, "Empty ship plan file was given.");
+        success = false; // should skip to the next travel
+        return;
     }
     if (!validateShipPlanLine(line, err)) {
         errs_msg.emplace_back(3, err);
@@ -82,20 +79,28 @@ void ShipPlan::initShipPlanFromFile(const string &file_path, vector<pair<int,str
         x = string2int(line[0]);
         y = string2int(line[1]);
         if (!spotInRange(x, y)) {
-            errs_msg.emplace_back(1, "A spot that exceeds the X/Y ship limits was detected while initializing the ship plan: x = " + line[0] + "; y = " + line[1] + ";");
+            errs_msg.emplace_back(1,
+                                  "A spot that exceeds the X/Y ship limits was detected while initializing the ship plan: x = " +
+                                  line[0] + "; y = " + line[1] + ";");
             continue;
         }
         unavailable_floors = this->num_of_decks - string2int(line[2]);
         if (unavailable_floors <= 0) {
-            errs_msg.emplace_back(0, "A spot which is available within the maximum number of floors or more was detected while initializing the ship plan: Available floors given is " + line[2]);
+            errs_msg.emplace_back(0,
+                                  "A spot which is available within the maximum number of floors or more was detected while initializing the ship plan: Available floors given is " +
+                                  line[2]);
             continue;
         } else { //unavailable_floors > 0
             if (!(this->decks[0].getFloorMap()[x][y].getAvailable())) { // In case the same spot was already initialized
-                if(getUnavailableFloorsNum(x, y) == unavailable_floors) {
-                    errs_msg.emplace_back(2, "A spot which was already initialized with the same number of available floors was detected while initializing the ship plan: Spot indexes are x = " + line[0] + "; y = " + line[1] + ";");
+                if (getUnavailableFloorsNum(x, y) == unavailable_floors) {
+                    errs_msg.emplace_back(2,
+                                          "A spot which was already initialized with the same number of available floors was detected while initializing the ship plan: Spot indexes are x = " +
+                                          line[0] + "; y = " + line[1] + ";");
                     continue;
                 } else {
-                    errs_msg.emplace_back(2, "A spot which was already initialized with a different number of available floors was detected while initializing the ship plan: Spot indexes are x = " + line[0] + "; y = " + line[1] + ";");
+                    errs_msg.emplace_back(2,
+                                          "A spot which was already initialized with a different number of available floors was detected while initializing the ship plan: Spot indexes are x = " +
+                                          line[0] + "; y = " + line[1] + ";");
                     success = false; // should skip to the next travel
                     return;
                 }
@@ -181,7 +186,7 @@ bool ShipPlan::isContOnShip(const string &id) const {
     return containers_ids.find(id) != containers_ids.end();
 }
 
-void ShipPlan::resetShipPlan(){
+void ShipPlan::resetShipPlan() {
     setNumOfDecks(0);
     setShipRows(0);
     setShipCols(0);

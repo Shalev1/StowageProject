@@ -138,7 +138,7 @@ FileHandler::FileHandler(const string &path, bool truncFlag) : fs(), path(path) 
 bool FileHandler::getNextLine(string &line) {
     while (getline(this->fs, line)) {
         line = trimWhitespaces(line);
-        if (line[0] == '#')
+        if (line[0] == '#' || line.empty())
             continue;
         return true;
     }
@@ -149,8 +149,6 @@ bool FileHandler::getNextLineAsTokens(vector<string> &tokens, const string &deli
     tokens.clear();
     string tmp;
     while (getNextLine(tmp)) {
-        if (tmp[0] == '#')
-            continue;
         getTokens(tmp, delimiter, tokens);
         return true;
     }
