@@ -607,10 +607,10 @@ Simulator::validateCargoInstruction(vector<string> &instruction, int num_of_algo
             this->err_in_travel = true;
             return false; // Bad id for container
         }
-        *cont_to_load = (unloaded_containers.find(instruction[ContainerID]) != unloaded_containers.end())
+        *cont_to_load = (unloaded_containers.find(instruction[ContainerID]) != unloaded_containers.end() && unloaded_containers.at(instruction[ContainerID])->getDestPort() != this->curr_port_name)
                         ? unloaded_containers.at(instruction[ContainerID]) : nullptr;
         if (*cont_to_load ==
-            nullptr) {// didn't find the container on the waiting containers list, search in the reload list
+            nullptr) {
             *cont_to_load = current_port.getWaitingContainerByID(instruction[ContainerID],
                                                                  false); //Get the container from the port
         }
