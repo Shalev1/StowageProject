@@ -9,6 +9,7 @@
 
 #include <vector>
 #include <string>
+#include <map>
 #include <cctype>
 #include "Container.h"
 #include "Utils.h"
@@ -16,6 +17,7 @@
 #include "ShipPlan.h"
 
 using std::pair;
+using std::map;
 
 //---Defines---//
 #define PORT_NAME_LEN 5
@@ -26,6 +28,8 @@ class Port {
 private:
     string name; // 5 letters represents the port code
     vector<Container> waitingContainers; // Containers waiting in this port to be loaded to the ship
+    map<string, int> duplicateIdOnPort; // map from id to the number of duplicates on the port
+                                        // (value of 1 means total of 2 containers with this id)
 
 public:
     //---Constructors and Destructors---//
@@ -77,6 +81,10 @@ public:
      * @param cont should be invalid, in case valid container is given return false (not duplicate)
      */
     bool isDuplicateOnPort(Container& cont);
+
+    int getNumOfDuplicates(const string& id);
+
+    void decreaseDuplicateId(const string& id);
 
     friend ostream &operator<<(ostream &os, const Port &p);
 };
