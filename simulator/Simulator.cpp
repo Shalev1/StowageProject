@@ -118,12 +118,8 @@ void Simulator::executeTravel(int num_of_algo, const string &algo_name, Abstract
         instruction_file =
                 instruction_file_path + std::filesystem::path::preferred_separator + curr_port_name + "_" +
                 to_string(travel.getNumOfVisitsInPort(curr_port_name)) + ".crane_instructions";
-        //cout << "before travel: " << curr_travel_name << "port: " << curr_port_name << endl;
         analyzeErrCode(algo.getInstructionsForCargo(travel.getCurrentPortPath(), instruction_file),
                        num_of_algo);
-        //cout << "after travel: " << curr_travel_name << "port: " << curr_port_name << endl;
-
-        (void) algo;
         iterateInstructions(calc, instruction_file, num_of_operations, num_of_algo);
         checkMissedContainers(travel.getCurrentPort().getName(), num_of_algo);
     }
@@ -552,7 +548,7 @@ void Simulator::checkRemainingContainers(map<string, Container *> &unloaded_cont
     }
 }
 
-void Simulator::checkPortContainers(set<string> &ignored_containers, int num_of_algo) {
+void Simulator::checkPortContainers(vector<string> &ignored_containers, int num_of_algo) {
     for (auto &container_id : ignored_containers) { // for each container that came from this port that was not treated.
         errors[num_of_algo].push_back(
                 "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
@@ -562,7 +558,7 @@ void Simulator::checkPortContainers(set<string> &ignored_containers, int num_of_
     }
 }
 
-bool Simulator::validateCargoInstruction(vector<string> &instruction, int num_of_algo, set<string> &ignoredContainers,
+bool Simulator::validateCargoInstruction(vector<string> &instruction, int num_of_algo, vector<string> &ignoredContainers,
                                          Container **cont_to_load, Port &current_port,
                                          AbstractAlgorithm::Action &command,
                                          const map<string, Container *> &unloaded_containers) {
@@ -572,10 +568,11 @@ bool Simulator::validateCargoInstruction(vector<string> &instruction, int num_of
         this->err_in_travel = true;
         return false;
     }
-    if (ignoredContainers.find(instruction[ContainerID]) !=
-        ignoredContainers.end()) { // Check if the container ID is from the port
-        ignoredContainers.erase(instruction[ContainerID]);
-    }
+    // Check if the container ID is from the port and delete it.
+    auto position = std::find(ignoredContainers.begin(), ignoredContainers.end(), instruction[ContainerID]);
+    if (position != ignoredContainers.end()) // if ID was found
+        ignoredContainers.erase(position);
+
     command = actionDic.at(instruction[Command]);
     if (command != AbstractAlgorithm::Action::REJECT) {
         if (!Container::validateID(instruction[ContainerID])) {
@@ -672,7 +669,7 @@ Simulator::iterateInstructions(WeightBalanceCalculator &calc, const string &inst
     Port &current_port = travel.getCurrentPort();
     map<string, Container *> rejected_containers;
     map<string, Container *> unloaded_containers;
-    set<string> ignoredContainers = current_port.getContainersIDFromPort();
+    vector<string> ignoredContainers = current_port.getContainersIDFromPort();
     AbstractAlgorithm::Action command;
     while (file.getNextLineAsTokens(instruction)) {
         if (!validateCargoInstruction(instruction, num_of_algo, ignoredContainers, &cont_to_load, current_port, command,

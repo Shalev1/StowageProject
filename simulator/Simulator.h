@@ -152,7 +152,7 @@ private:
     /**
      * Check if all the port containers were loaded on the ship or got rejected.
      */
-    void checkPortContainers(set<string> &ignored_containers, int num_of_algo);
+    void checkPortContainers(vector<string> &ignored_containers, int num_of_algo);
 
     /**
      * Creating a results file containing the number of operations performed in each travel for each algorithm.
@@ -182,7 +182,7 @@ private:
     /**
      * Validates the instruction format and initializes parameters for the verification of instruction.
      */
-     bool validateCargoInstruction(vector<string> &instruction, int num_of_algo, set<string> &ignoredContainers, Container **cont_to_load, Port &current_port, AbstractAlgorithm::Action &command, const map<string, Container *> &unloaded_containers);
+     bool validateCargoInstruction(vector<string> &instruction, int num_of_algo, vector<string> &ignoredContainers, Container **cont_to_load, Port &current_port, AbstractAlgorithm::Action &command, const map<string, Container *> &unloaded_containers);
 
      /**
       * Add an error according to the invalid container's details.
