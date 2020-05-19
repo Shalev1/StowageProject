@@ -136,3 +136,14 @@ bool Port::isDuplicateOnPort(Container &cont){
     }
     return false;
 }
+
+int Port::getNumOfDuplicates(const string &id) {
+    if (duplicateIdOnPort.find(id) != duplicateIdOnPort.end())
+        return duplicateIdOnPort.at(id);
+    return 0;
+}
+
+void Port::decreaseDuplicateId(const string &id) {
+    if (duplicateIdOnPort.find(id) != duplicateIdOnPort.end())
+        duplicateIdOnPort.at(id)--;
+}
