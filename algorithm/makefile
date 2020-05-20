@@ -1,4 +1,4 @@
-COMP = g++-8.3.0
+COMP = g++-9.3.0
 
 SHARED_OBJS = _206223976_a.so _206223976_b.so
 OBJS1 = ShipPlan.o Floor.o Spot.o Container.o Port.o Route.o Utils.o ISO_6346.o WeightBalanceCalculator.o BaseAlgorithm.o _206223976_a.o

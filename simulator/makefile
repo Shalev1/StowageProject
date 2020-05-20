@@ -1,4 +1,4 @@
-COMP = g++-8.3.0
+COMP = g++-9.3.0
 OBJS = main.o Simulator.o ShipPlan.o Floor.o Spot.o Container.o Port.o Route.o Utils.o  WeightBalanceCalculator.o AlgorithmRegistration.o ISO_6346.o
 EXEC = simulator
 CPP_COMP_FLAG = -std=c++2a -Wall -Wextra -Werror -pedantic-errors -DNDEBUG -I../common
