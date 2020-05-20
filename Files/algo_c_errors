@@ -1,0 +1,6 @@
+- trying to load container in last port
+- loading duplicate containers on port
+- reject first container in each port
+- "forget" to load first reloaded container
+- "forget" to unload containers in spot (0,0,0)
+- if ship left with one empty spot, (1) skip all containers without giving them instructions and (2) load the container with the furthest destination
