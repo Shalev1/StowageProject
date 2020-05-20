@@ -564,11 +564,21 @@ void Simulator::checkRemainingContainers(map<string, Container *> &unloaded_cont
 }
 
 void Simulator::checkPortContainers(vector<string> &ignored_containers, int num_of_algo, Port &curr_port) {
+    Container *ignored_cont = nullptr;
     for (auto &container_id : ignored_containers) { // for each container that came from this port that was not treated.
         errors[num_of_algo].push_back(
                 "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
                 "- A container with ID: " + container_id +
                 "- was left at the port without getting an instruction.");
+        //Check sorted containers
+        ignored_cont = curr_port.getWaitingContainerByID(container_id, true); // get valid container from the port
+        if (travel.isInRoute(ignored_cont->getDestPort()) && this->curr_port_name != ignored_cont->getDestPort() &&
+            !checkSortedContainers(curr_port.getWaitingContainers(), travel, container_id)) {
+            errors[num_of_algo].push_back(
+                    "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                    "- A container with ID: " + container_id +
+                    "- was left in port while another container was loaded and it's destination port is further.");
+        }
         this->err_in_travel = true;
     }
     for (auto &cont : curr_port.getDuplicateIdOnPort()) { // for each duplicated container that came from this port that was not treated.
@@ -608,7 +618,7 @@ Simulator::validateCargoInstruction(vector<string> &instruction, int num_of_algo
             return false; // Bad id for container
         }
         *cont_to_load = (unloaded_containers.find(instruction[ContainerID]) != unloaded_containers.end() &&
-                        unloaded_containers.at(instruction[ContainerID])->getDestPort() != this->curr_port_name)
+                         unloaded_containers.at(instruction[ContainerID])->getDestPort() != this->curr_port_name)
                         ? unloaded_containers.at(instruction[ContainerID]) : nullptr;
         if (*cont_to_load ==
             nullptr) {
@@ -695,10 +705,11 @@ Simulator::iterateInstructions(WeightBalanceCalculator &calc, const string &inst
     Port &current_port = travel.getCurrentPort();
     map<string, Container *> rejected_containers; // Contains all containers that were rejected correctly.
     map<string, Container *> unloaded_containers; // Contains all containers that were rejected correctly and had potential to be loaded, but ship was full + all containers that were unloaded.
-    vector<string> ignoredContainers = current_port.getContainersIDFromPort();
+    vector<string> ignored_containers = current_port.getContainersIDFromPort();
     AbstractAlgorithm::Action command;
     while (file.getNextLineAsTokens(instruction)) {
-        if (!validateCargoInstruction(instruction, num_of_algo, ignoredContainers, &cont_to_load, current_port, command,
+        if (!validateCargoInstruction(instruction, num_of_algo, ignored_containers, &cont_to_load, current_port,
+                                      command,
                                       unloaded_containers))
             continue;
         implementInstruction(instruction, command, num_of_operations, num_of_algo, current_port, calc,
@@ -707,7 +718,7 @@ Simulator::iterateInstructions(WeightBalanceCalculator &calc, const string &inst
                              cont_to_load);
     }
     checkRemainingContainers(unloaded_containers, rejected_containers, current_port, num_of_algo);
-    checkPortContainers(ignoredContainers, num_of_algo, current_port);
+    checkPortContainers(ignored_containers, num_of_algo, current_port);
 }
 
 void Simulator::checkMissedContainers(const string &port_name, int num_of_algo) {
