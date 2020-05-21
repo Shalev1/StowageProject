@@ -9,6 +9,12 @@ using std::pair;
 using std::vector;
 using std::set;
 
+/**
+ * Floor Class.
+ * Author: Shalev Drukman.
+ * The class represents a specific floor at the ship.
+ */
+
 //---Main class---//
 class Floor {
 private:

@@ -513,15 +513,30 @@ int getFarthestDestOfContainerIndex(vector<Container> &conts) {
     return max_ind;
 }
 
+/*
+ * Returns the maximal index of container in the vector, that it's destination is the given destination.
+ */
+int getContainerIndexByDestination(vector<Container> &containers, const string &port_name) {
+    int index = 0;
+    for (int i = 0; i < (int) containers.size(); ++i) {
+        if (containers[i].getDestPort() == port_name)
+            index = i;
+    }
+    return index;
+}
+
+/**
+ * Checks if the given container has destination that isn't closer than any container that was loaded on the ship from the current port.
+ */
 bool checkSortedContainers(vector<Container> &conts, Route &travel, const string &cont_id) {
     int farthest_port_num;
     vector<Container> temp_containers = conts;
     travel.sortContainersByDestination(temp_containers);
     farthest_port_num = getFarthestDestOfContainerIndex(
             temp_containers); // get the maximal index of a container that was load to the ship.
-    if (distance(temp_containers.begin(), find(temp_containers.begin(), temp_containers.end(),
-                                               *(Port::getContainerByIDFrom(temp_containers, cont_id)))) <
-        farthest_port_num) { // The left side of the statement is just to find cont_id's index in conts
+    if (getContainerIndexByDestination(temp_containers,
+                                       Port::getContainerByIDFrom(temp_containers, cont_id)->getDestPort()) <
+        farthest_port_num) {
         return false;
     }
     return true;

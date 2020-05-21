@@ -13,6 +13,10 @@ using std::fstream;
 using std::vector;
 using std::endl;
 
+/**
+ * The following function are auxiliary function that are used by
+ * the project modules.
+ */
 
 /**
  * Return the given string as tokens in @param tokens using @param delimiter as the delimiter
@@ -45,13 +49,20 @@ bool endsWith(const std::string& str, const std::string& suffix);
  */
 vector<string> getSOFilesNames(const string &dir_path);
 
-/*
+/**
  * The function returns a list of the indices of bits of the binary representation of num
  * that equals 1.
  */
 vector<unsigned int> getOneIndexes(int num);
 
 string createInstructionDir(const string &output_path, const string &algorithm_name, const string &travel_name);
+
+/**
+ * FileHandler Class.
+ * Author: Shalev Drukman.
+ * This class provide a simple, convenient file handler object
+ * in order to parse and edit files.
+ */
 
 // Class to deal with files
 class FileHandler {

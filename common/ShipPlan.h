@@ -11,6 +11,13 @@
 
 using std::set;
 
+/**
+ * ShipPlan Class.
+ * Author: Shalev Drukman.
+ * The class is responsible for initializing and reseting the ship plan. It also
+ * maintains the ship properties and provides functions to perform operations on the ship.
+ */
+
 //---Main class---//
 class ShipPlan {
 private:
