@@ -94,14 +94,14 @@ int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_an
             instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1);
             continue;
         }
-        // Reject duplicate containers
-        for(int i = 0; i < route.getCurrentPort().getNumOfDuplicates(cont.getID()); i++){
-            instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1);
-        }
         bool notFull = findLoadingSpot(&cont, instructionsFile);
         if(!notFull && !fullError){
             fullError = true;
             errors.emplace_back(18,"Ship is full, rejecting far containers");
+        }
+        // Reject duplicate containers
+        for(int i = 0; i < route.getCurrentPort().getNumOfDuplicates(cont.getID()); i++){
+            instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1);
         }
     }
 

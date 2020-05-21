@@ -461,6 +461,10 @@ Simulator::validateRejectOp(int num_of_algo, Route &travel,
                             int floor_num, int x, int y, const string &cont_id, bool &has_potential_to_be_loaded) {
     Container *cont;
     if (!Container::validateID(cont_id) || ship.isContOnShip(cont_id)) {
+        if (travel.getCurrentPort().getNumOfDuplicates(cont_id) > 0) {
+            // ID is duplicated
+            travel.getCurrentPort().decreaseDuplicateId(cont_id); // one duplicated got detected.
+        }
         return true; // Container got rejected cause of bad ID, which is legal!
     }
     cont = travel.getCurrentPort().getWaitingContainerByID(cont_id, false); // get a container from the port
@@ -587,6 +591,8 @@ void Simulator::checkPortContainers(vector<string> &ignored_containers, int num_
                 "- was left at the port without getting an instruction.");
         //Check sorted containers
         ignored_cont = curr_port.getWaitingContainerByID(container_id, true); // get valid container from the port
+        if(ignored_cont == nullptr) // didn't find valid container
+            continue;
         if (travel.isInRoute(ignored_cont->getDestPort()) && this->curr_port_name != ignored_cont->getDestPort() &&
             !checkSortedContainers(curr_port.getWaitingContainers(), travel, container_id)) {
             errors[num_of_algo].push_back(
