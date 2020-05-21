@@ -1,0 +1,29 @@
+*We have chosen to implement a simulator with an extraordinary errors handling. 
+Each algorithm error that was detected by the simulator has the following format:
+@ Travel: [name_of_travel_folder]- Port: [name_of_the_port]- [error_description]
+Note that if the error is issued with a specific container, it’s ID will be printed in the error_description.
+All of the errors that occured during the simulation run, are printed to a single error file
+that's called simulation.errors, located at the output folder.
+
+*We have chosen to accumulate errors. It means that one error may cause multiple errors 
+afterwards since the algorithm is not aware of his own bad operations.
+
+*There are many error scenarios that our simulator is able to catch, such as:
+- “Move a container with ID: [container_ID] – to a spot with the same X,Y but at different floor.”
+- “Reject a container with ID: [container_ID] – that wasn’t provided by the port.”
+-“Reject a container with ID: [container_ID] – although it can be loaded correctly.”
+-“There a some containers that weren’t unloaded at their destination port: [port_name].”
+-“Rejected a container with ID: [container_ID]- while another container was loaded and it's destination port is further."
+-“A container with ID: [container_ID] - was left in a port that's different from container's destination."
+-"A container with ID: [container_ID]- was left at the port without getting an instruction."
+
+* In order to watch this greatness, we have submitted a “bonus” folder. this bonus folder contains “input” directory 
+that has 5 travels folders. you can run our valid algorithm with that input and make sure everything runs 
+smoothly (don’t worry, you will witness many errors but all of them are reported by the algorithm that handles them perfectly). 
+In addition, the bonus folder also contains a bad_algorithm folder. You should run our simulation with this algorithm 
+and notice that the simulation reports some of the errors mentioned above and even more! 
+Before running the simulation, you have to compile the files in this directory, using ‘make’ command. 
+After that, the .so file will be created. Please run the simulation with the path to “bad_algorithm” folder as -algorithm_path 
+and “input” folder as -travel_path.
+
+*bad_algorithm main failures: TBD
