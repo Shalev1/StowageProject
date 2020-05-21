@@ -56,7 +56,7 @@ int main(int argc, char *argv[]) {
     string output_path = "";
     bool clean_run;
     if (argc > 7) {
-        cout << "@ FATAL ERROR: Too many agruments given." << endl;
+        cout << "@ FATAL ERROR: Too many arguments given." << endl;
         return EXIT_FAILURE;
     }
     if (!initializeParameters(travel_path, algorithm_path, output_path, argc, argv)) {
