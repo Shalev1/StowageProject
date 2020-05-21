@@ -6,6 +6,12 @@
 
 using std::pair;
 
+/**
+ * Spot Class.
+ * Author: Shalev Drukman.
+ * The class represents an (x,y) coordinates in a specific floor at the ship.
+ */
+
 //---Main class---//
 class Spot {
 private:

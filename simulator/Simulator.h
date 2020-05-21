@@ -16,12 +16,14 @@
 
 using std::to_string;
 
-//struct DLCloser{
-//    void operator()(void *dlhandle) const noexcept{
-//        //dlclose(dlhandle);
-//        (void) dlhandle;
-//    }
-//};
+/**
+ * Simulator Class.
+ *  Author: Shalev Drukman.
+ *  The simulator is responsible for executing the travels according to the algorithms instruction.
+ *  It make sure that each instruction is legal and if not, it will be reported in an organized file.
+ *  In addition, the simulator collects statistics regarding the algorithm decisions and prints everything to
+ *  a results file in the end.
+ */
 
 //---Main class---//
 class Simulator {

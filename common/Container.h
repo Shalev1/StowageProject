@@ -20,6 +20,13 @@ using std::regex;
 
 class Spot;
 
+/**
+ * Container Class.
+ * Author: Shalev Drukman.
+ * The container class maintain all of the container's properties. This object
+ * is used both by the simulator and algorithm, separately.
+ */
+
 //---Main class---//
 class Container {
 private:
