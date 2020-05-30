@@ -36,11 +36,6 @@ protected:
     virtual void getUnloadInstructions(const string &portName, vector<Container *> &reloadContainers, FileHandler &instructionsFile);
 
     /**
-     * Reload all the containers that was unload to allow access to lower containers
-     */
-    virtual void getReloadInstructions(vector<Container *> &reload_containers, FileHandler &instructionsFile);
-
-    /**
      * Search for an empty spot in the ship for container loading
      * @param returnFloorNum is the floor of the founded spot
      * @param fromX and fromY: find empty spot to container in (fromX, fromY), disable same column spot
@@ -65,6 +60,14 @@ protected:
      */
     virtual void markRemoveContainers(Container &cont, Spot &spot, vector<Container *> &reload_containers,
                                       FileHandler &instructionsFile);
+
+    /**
+     * fill @param loadingContainers with reference to all of the containers that will be
+     * loaded to the ship (including the reloaded containers)
+     * @param rejectContainers - containers that will be rejected because the ship is full
+     */
+    virtual void getLoadingContainers(const vector<Container*>& reloadContainers, FileHandler& instructionsFile,
+                                      vector<Container*>& loadingContainers, vector<Container*>& rejectContainers);
 
 public:
     BaseAlgorithm();

@@ -192,6 +192,17 @@ void Route::sortContainersByDestination(vector<Container>& containers){
     });
 }
 
+void Route::sortContainersByFurtherDestination(vector<Container*> &containers) {
+    sort(containers.begin(), containers.end(),[this](Container* c1, Container* c2){
+        string dest1 = c1->getDestPort();
+        string dest2 = c2->getDestPort();
+        if(dest1 == dest2) // same destination, dont care about order for this case
+            return false;
+        string closeDest = this->getCloserDestination(dest1, dest2);
+        return dest2 == closeDest;
+    });
+}
+
 ostream& operator<<(ostream& os, const Route& r){
     os << "The route include the following ports: " << endl;
     for(const Port& p : r.ports){
