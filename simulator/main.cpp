@@ -14,7 +14,7 @@ PathType getTypeOfPath(const string &input) {
 
 }
 
-bool initializeParameters(string &travel_path, string &algorithm_path, string &output_path, int &num_of_threads,
+bool initializeParameters(string &travel_path, string &algorithm_path, string &output_path, unsigned int &num_of_threads,
                           int num_of_params,
                           char *argv[]) {
     if (num_of_params < 2 || num_of_params % 2 == 0) {
@@ -40,11 +40,11 @@ bool initializeParameters(string &travel_path, string &algorithm_path, string &o
                 break;
             }
             case NumThreads: {
-                if (!isPositiveNumber(argv[i + 1])) {
+                if (!isPositiveNumber(argv[i + 1]) || string2int(argv[i + 1]) < 1) {
                     cout << "@ ERROR: Number of threads given is invalid, setting the number to 1." << endl;
                     num_of_threads = 1;
                 } else
-                    num_of_threads = string2int(argv[i + 1]);
+                    num_of_threads = (unsigned int)string2int(argv[i + 1]);
                 break;
             }
             case None: {
@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
     string travel_path = "";
     string algorithm_path = "";
     string output_path = "";
-    int num_of_threads = 1;
+    unsigned int num_of_threads = 1;
     bool clean_run;
     if (argc > 9) {
         cout << "@ FATAL ERROR: Too many arguments given." << endl;
@@ -75,8 +75,8 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
     cout << "Threads given:" << num_of_threads << endl;
-    Simulator sim(output_path);
-    clean_run = sim.runSimulation(algorithm_path, travel_path);
+    Simulator sim(output_path, num_of_threads);
+    clean_run = sim.start(algorithm_path, travel_path);
     sim.printSimulationErrors();
     if (clean_run) {
         sim.printSimulationResults();
