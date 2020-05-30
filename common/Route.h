@@ -104,6 +104,11 @@ public:
      */
     void sortContainersByDestination(vector<Container>& containers);
 
+    /**
+     * Sort the given containers vector by their destination, from the furthest one to the closest one
+     */
+    void sortContainersByFurtherDestination(vector<Container*>& containers);
+
     friend ostream &operator<<(ostream &os, const Route &r);
 };
 

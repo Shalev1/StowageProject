@@ -64,46 +64,25 @@ int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_an
     } else {
         route.getCurrentPort().initWaitingContainers(input_full_path_and_file_name, errors, ship, route.getLeftPortsNames());
     }
-    vector<Container>& waitingContainers = route.getCurrentPort().getWaitingContainers();
     vector<Container*> reloadContainers;
     FileHandler instructionsFile(output_full_path_and_file_name, true);
-
-    // Sort incoming containers by their destination
-    route.sortContainersByDestination(waitingContainers);
 
     // Get Unload instructions for containers with destination equals to this port
     getUnloadInstructions(route.getCurrentPort().getName(), reloadContainers, instructionsFile);
 
-    // Get reload instructions for the reload containers
-    getReloadInstructions(reloadContainers, instructionsFile);
+    vector<Container*> loadingContainers;
+    vector<Container*> rejectContainers;
+    getLoadingContainers(reloadContainers, instructionsFile, loadingContainers, rejectContainers);
 
-    bool fullError = false;
-    for (auto & cont : waitingContainers) {
-        if(!cont.isValid()){
-            // Illegal container, reject
-            instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1);
-            continue;
-        }
-        if (cont.getDestPort() == route.getCurrentPort().getName()) {
-            // Destination is the current port, reject
-            instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1);
-            continue;
-        }
-        if (!route.isInRoute(cont.getDestPort())) {
-            // Destination is not in the route, reject
-            instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1);
-            continue;
-        }
-        bool notFull = findLoadingSpot(&cont, instructionsFile);
-        if(!notFull && !fullError){
-            fullError = true;
-            errors.emplace_back(18,"Ship is full, rejecting far containers");
-        }
-        // Reject duplicate containers
-        for(int i = 0; i < route.getCurrentPort().getNumOfDuplicates(cont.getID()); i++){
-            instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1);
-        }
+    route.sortContainersByFurtherDestination(loadingContainers);
+    for(auto cont : loadingContainers) {
+        findLoadingSpot(cont, instructionsFile);
     }
+
+    if(!rejectContainers.empty())
+        errors.emplace_back(18,"Ship is full, rejecting far containers");
+    for(auto cont : rejectContainers)
+        instructionsFile.writeInstruction("R", cont->getID(), -1, -1, -1);
 
     //Check for errors
     int errorsFlags = 0;
@@ -133,9 +112,44 @@ void BaseAlgorithm::getUnloadInstructions(const string &portName, vector<Contain
     }
 }
 
-void BaseAlgorithm::getReloadInstructions(vector<Container*>& reload_containers, FileHandler& instructionsFile) {
-    for (auto & reload_container : reload_containers) {
-        findLoadingSpot(reload_container, instructionsFile);
+void BaseAlgorithm::getLoadingContainers(const vector<Container*> &reloadContainers, FileHandler& instructionsFile,
+                                         vector<Container*> &loadingContainers , vector<Container*>& rejectContainers) {
+    for(auto contP : reloadContainers){ // add All reloading containers to the loading vector
+        loadingContainers.push_back(contP);
+    }
+    vector<Container>& waitingContainers = route.getCurrentPort().getWaitingContainers();
+
+    // Sort incoming containers by their destination
+    route.sortContainersByDestination(waitingContainers);
+
+    int numOfEmptySpots = ship.getNumOfFreeSpots() - (int)loadingContainers.size();
+    for (auto & cont : waitingContainers) {
+        if(!cont.isValid()){
+            // Illegal container, reject
+            instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1);
+            continue;
+        }
+        if (cont.getDestPort() == route.getCurrentPort().getName()) {
+            // Destination is the current port, reject
+            instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1);
+            continue;
+        }
+        if (!route.isInRoute(cont.getDestPort())) {
+            // Destination is not in the route, reject
+            instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1);
+            continue;
+        }
+        if(numOfEmptySpots > 0){
+            loadingContainers.push_back(&cont);
+            numOfEmptySpots--;
+        } else {
+            // Ship is full, reject
+            rejectContainers.push_back(&cont);
+        }
+        // Reject duplicate containers
+        for(int i = 0; i < route.getCurrentPort().getNumOfDuplicates(cont.getID()); i++){
+            instructionsFile.writeInstruction("R", cont.getID(), -1, -1, -1);
+        }
     }
 }
 
