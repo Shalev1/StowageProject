@@ -36,6 +36,9 @@ private:
     string output_dir_path;
     int num_of_algo;
     int num_of_travel;
+    pair<string, std::function<std::unique_ptr<AbstractAlgorithm>()>> algo_name_and_ctor;
+    string plan_path;
+    string route_path;
 
 
     inline static map<string, AbstractAlgorithm::Action> actionDic = {{"L", AbstractAlgorithm::Action::LOAD},
@@ -46,7 +49,8 @@ private:
     /**
      * Executing the travel simulation, returns false if any error has occurred.
      */
-    bool executeTravel(const string &algo_name, AbstractAlgorithm &algo, WeightBalanceCalculator &calc, int &num_of_errors);
+    bool
+    executeTravel(const string &algo_name, AbstractAlgorithm &algo, WeightBalanceCalculator &calc, int &num_of_errors);
 
     /**
      * Iterate over the instructions file and implementing only it's legal instructions.
@@ -58,9 +62,12 @@ private:
     /**
      * Performs the instructions at the given instruction while validating the algorithm decisions.
      */
-    void implementInstruction(vector<string> &instruction, AbstractAlgorithm::Action command, int &num_of_operations, int num_of_algo, Port &current_port, WeightBalanceCalculator &calc,
-                              map<string, Container *> &rejected_containers, map<string, Container *> &unloaded_containers,
-                              int floor_num,int x, int y, Container *cont_to_load);
+    void implementInstruction(vector<string> &instruction, AbstractAlgorithm::Action command, int &num_of_operations,
+                              int num_of_algo, Port &current_port, WeightBalanceCalculator &calc,
+                              map<string, Container *> &rejected_containers,
+                              map<string, Container *> &unloaded_containers,
+                              int floor_num, int x, int y, Container *cont_to_load);
+
     /**
      * Validates the instruction format.
      */
@@ -119,7 +126,10 @@ private:
     /**
      * Validates the instruction format and initializes parameters for the verification of instruction.
      */
-    bool validateCargoInstruction(vector<string> &instruction, vector<string> &ignoredContainers, Container **cont_to_load, Port &current_port, AbstractAlgorithm::Action &command, const map<string, Container *> &unloaded_containers);
+    bool
+    validateCargoInstruction(vector<string> &instruction, vector<string> &ignoredContainers, Container **cont_to_load,
+                             Port &current_port, AbstractAlgorithm::Action &command,
+                             const map<string, Container *> &unloaded_containers);
 
     /**
      * Add an error according to the invalid container's details.
@@ -128,17 +138,23 @@ private:
 
 public:
     //---Constructors and Destructors---//
-    explicit Simulation(ShipPlan &plan, Route &route, WeightBalanceCalculator &wcalc, int num_of_algo, int num_of_travel, string &travel_name, const string &output_path);
+    explicit Simulation(ShipPlan &plan, Route &route, WeightBalanceCalculator &wcalc);
+
+    /**
+     * Initialize simulation members with the arguments given.
+     */
+    void initSimulation(int num_of_algo, int num_of_travel, string &travel_name,
+                        pair<string, std::function<std::unique_ptr<AbstractAlgorithm>()>> &algo_p,
+                        const string &output_path, const string &plan_path, const string &route_path);
 
     Simulation() = default;
 
     /**
      * Main function that runs the simulation.
      */
-    bool runSimulation(pair<string, std::function<std::unique_ptr<AbstractAlgorithm>()>> algo_p, string &plan_path, string &route_path);
+    bool runSimulation();
 
 };
-
 
 
 #endif //SHIPPROJECT_SIMULATION_H
