@@ -175,7 +175,7 @@ void Simulator::loadAlgorithms(string &algorithm_path) {
 
 void Simulator::markRemovedTravel(int num_of_travel) {
     // Editing errors matrix
-    for (int num_of_algo = 0; num_of_algo < (int) inst.algo_funcs.size(); ++num_of_algo) {
+    for (int num_of_algo = 0; num_of_algo < (int) statistics.size(); ++num_of_algo) {
         statistics[num_of_algo][num_of_travel].second = -1; // Will be ignored when creating results file. Note that the '-1' is not related to the num_of_operations!
     }
 }
@@ -214,7 +214,8 @@ bool Simulator::start(string algorithm_path, string travels_dir_path) {
         }
         for (int num_of_algo = 1; num_of_algo <= (int) inst.algo_funcs.size(); ++num_of_algo) {
             Simulation sim(ship, route, calc);
-            sim.initSimulation(num_of_algo, num_of_travel, curr_travel_name, inst.algo_funcs[num_of_algo - 1], output_dir_path, plan_path, route_path);
+            sim.initSimulation(num_of_algo, num_of_travel, curr_travel_name, inst.algo_funcs[num_of_algo - 1],
+                               output_dir_path, plan_path, route_path);
             if (!err_occurred)
                 err_occurred = sim.runSimulation();
             else sim.runSimulation();
@@ -223,7 +224,6 @@ bool Simulator::start(string algorithm_path, string travels_dir_path) {
 
     inst.algo_funcs.clear();
     for (auto &hndl:handlers) { dlclose(hndl); }
-    if (err_occurred) cout << "FILLING ERRORS" << endl;
     if (err_occurred) // Errors found, errors_file should be created
         fillSimErrors();
     createResultsFile();
@@ -236,7 +236,6 @@ void Simulator::extractGeneralErrors(vector<pair<int, string>> &err_strings) {
         err_occurred = true; //at least one error was found
     for (int i = 0; i < (int) err_strings.size(); ++i) {
         errors[0][0].push_back("@ Travel: " + curr_travel_name + "- " + err_strings[i].second);
-        //cout << "GEN ERR: @ Travel: " + curr_travel_name + "- " + err_strings[i].second << endl;
     }
     err_strings.clear(); // Clearing the errors list for future re-use.
 }
@@ -308,15 +307,19 @@ void Simulator::createResultsFile() {
 }
 
 bool noErrorsDetected(vector<vector<string>> &errors) {
-//    if((int)errors[0].size() == 1){
-//        return ((int)errors[0][1].size() == 1);
-//    }
     for (int i = 1; i < (int) errors.size(); ++i) { // Skip the first cell since it's the name of algorithm cell.
-        //cout << "AT TRAVEL: " << i << " num of errors: " << errors[i].size() << endl;
         if (!errors[i].empty())
             return false;
     }
     return true;
+}
+
+void printGeneralErrors(FileHandler &err_file, vector<string> &err_msgs) {
+    err_file.writeCell("________________" + err_msgs[0] + " Errors________________", true);
+    for (int i = 1; i < (int) err_msgs.size(); ++i) {
+        err_file.writeCell(err_msgs[i], true);
+    }
+
 }
 
 void Simulator::fillSimErrors() {
@@ -325,19 +328,17 @@ void Simulator::fillSimErrors() {
     if (err_file.isFailed()) {
         return;
     }
-    for (int num_of_algo = 0; num_of_algo < (int) errors.size(); ++num_of_algo) {
-        //cout << "DEBUG : @@@@@@@@ " << endl;
+    if (errors[0][0].size() > 1) // General Errors section
+        printGeneralErrors(err_file, errors[0][0]);
 
+    for (int num_of_algo = 1; num_of_algo < (int) errors.size(); ++num_of_algo) {// Algorithm Errors section
         if (noErrorsDetected(errors[num_of_algo])) {
             // No errors found for this algorithm, skip to the next one
-            //cout << "DEBUG : no errs found " << endl;
-
             continue;
         }
         err_file.writeCell("________________" + errors[num_of_algo][0][0] + " Errors________________", true);
         for (int num_of_travel = 1; num_of_travel < (int) errors[num_of_algo].size(); ++num_of_travel) {
             for (int num_of_err = 0; num_of_err < (int) errors[num_of_algo][num_of_travel].size(); ++num_of_err) {
-                //cout << "DEBUG : " << errors[num_of_algo][num_of_travel][num_of_err] << endl;
                 err_file.writeCell(errors[num_of_algo][num_of_travel][num_of_err], true);
             }
             err_file.writeCell("", true);
