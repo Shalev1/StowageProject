@@ -1,5 +1,5 @@
 COMP = g++-9.3.0
-OBJS = main.o Simulator.o ShipPlan.o Floor.o Spot.o Container.o Port.o Route.o Utils.o  WeightBalanceCalculator.o AlgorithmRegistration.o ISO_6346.o
+OBJS = main.o Simulator.o Simulation.o ShipPlan.o Floor.o Spot.o Container.o Port.o Route.o Utils.o  WeightBalanceCalculator.o AlgorithmRegistration.o ISO_6346.o
 EXEC = simulator
 CPP_COMP_FLAG = -std=c++2a -Wall -Wextra -Werror -pedantic-errors -DNDEBUG -I../common
 CPP_LINK_FLAG = -lstdc++fs -ldl -export-dynamic #(-rdynamic)
@@ -10,7 +10,9 @@ AlgorithmRegistration.o: AlgorithmRegistration.cpp ../interfaces/AlgorithmRegist
 	$(COMP) $(CPP_COMP_FLAG) -c $*.cpp
 main.o: main.cpp ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h
 	$(COMP) $(CPP_COMP_FLAG) -c $*.cpp
-Simulator.o: Simulator.cpp Simulator.h ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h ../common/Route.h ../common/Port.h ../common/Utils.h ../interfaces/WeightBalanceCalculator.h ../interfaces/AbstractAlgorithm.h
+Simulator.o: Simulator.cpp Simulator.h Simulation.h ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h ../common/Route.h ../common/Port.h ../common/Utils.h ../interfaces/WeightBalanceCalculator.h ../interfaces/AbstractAlgorithm.h
+	$(COMP) $(CPP_COMP_FLAG) -c $*.cpp
+Simulation.o: Simulation.cpp Simulation.h Simulator.h ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h
 	$(COMP) $(CPP_COMP_FLAG) -c $*.cpp
 ShipPlan.o: ../common/ShipPlan.cpp ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h
 	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
