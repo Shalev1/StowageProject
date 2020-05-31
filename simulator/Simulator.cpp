@@ -83,7 +83,6 @@ bool Simulator::scanTravelDir(ShipPlan &ship, Route &travel, string &plan_path, 
                 continue;
             }
             plan_path = entry.path();
-            //ship = ShipPlan(); // Reset the ship before initialization TODO: delete this line
             ship.initShipPlanFromFile(plan_path, errs_in_ctor, success_build);
             plan_found = true;
         } else if (endsWith(entry.path().filename(), ".route")) { // A route file was found
@@ -214,15 +213,17 @@ bool Simulator::start(string algorithm_path, string travels_dir_path) {
             continue; // Fatal error detected. Skip to the next travel.
         }
         for (int num_of_algo = 1; num_of_algo <= (int) inst.algo_funcs.size(); ++num_of_algo) {
-            Simulation sim(ship, route, calc, num_of_algo, num_of_travel, this->curr_travel_name, output_dir_path);
+            Simulation sim(ship, route, calc);
+            sim.initSimulation(num_of_algo, num_of_travel, curr_travel_name, inst.algo_funcs[num_of_algo - 1], output_dir_path, plan_path, route_path);
             if (!err_occurred)
-                err_occurred = sim.runSimulation(inst.algo_funcs[num_of_algo - 1], plan_path, route_path);
-            else sim.runSimulation(inst.algo_funcs[num_of_algo - 1], plan_path, route_path);
+                err_occurred = sim.runSimulation();
+            else sim.runSimulation();
         }
     }
 
     inst.algo_funcs.clear();
     for (auto &hndl:handlers) { dlclose(hndl); }
+    if (err_occurred) cout << "FILLING ERRORS" << endl;
     if (err_occurred) // Errors found, errors_file should be created
         fillSimErrors();
     createResultsFile();
@@ -235,6 +236,7 @@ void Simulator::extractGeneralErrors(vector<pair<int, string>> &err_strings) {
         err_occurred = true; //at least one error was found
     for (int i = 0; i < (int) err_strings.size(); ++i) {
         errors[0][0].push_back("@ Travel: " + curr_travel_name + "- " + err_strings[i].second);
+        //cout << "GEN ERR: @ Travel: " + curr_travel_name + "- " + err_strings[i].second << endl;
     }
     err_strings.clear(); // Clearing the errors list for future re-use.
 }
@@ -305,8 +307,12 @@ void Simulator::createResultsFile() {
     }
 }
 
-bool noErrorsDetected(vector<vector<string>> errors) {
+bool noErrorsDetected(vector<vector<string>> &errors) {
+//    if((int)errors[0].size() == 1){
+//        return ((int)errors[0][1].size() == 1);
+//    }
     for (int i = 1; i < (int) errors.size(); ++i) { // Skip the first cell since it's the name of algorithm cell.
+        //cout << "AT TRAVEL: " << i << " num of errors: " << errors[i].size() << endl;
         if (!errors[i].empty())
             return false;
     }
@@ -320,13 +326,18 @@ void Simulator::fillSimErrors() {
         return;
     }
     for (int num_of_algo = 0; num_of_algo < (int) errors.size(); ++num_of_algo) {
+        //cout << "DEBUG : @@@@@@@@ " << endl;
+
         if (noErrorsDetected(errors[num_of_algo])) {
             // No errors found for this algorithm, skip to the next one
+            //cout << "DEBUG : no errs found " << endl;
+
             continue;
         }
         err_file.writeCell("________________" + errors[num_of_algo][0][0] + " Errors________________", true);
         for (int num_of_travel = 1; num_of_travel < (int) errors[num_of_algo].size(); ++num_of_travel) {
             for (int num_of_err = 0; num_of_err < (int) errors[num_of_algo][num_of_travel].size(); ++num_of_err) {
+                //cout << "DEBUG : " << errors[num_of_algo][num_of_travel][num_of_err] << endl;
                 err_file.writeCell(errors[num_of_algo][num_of_travel][num_of_err], true);
             }
             err_file.writeCell("", true);

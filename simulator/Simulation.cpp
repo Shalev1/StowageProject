@@ -25,8 +25,22 @@ inline static map<int, string> errCodes = {{0,  "ship plan: a position has an eq
                                            {18, "containers at port: total containers amount exceeds ship capacity (rejecting far containers)"}};
 
 
-Simulation::Simulation(ShipPlan &plan, Route &route, WeightBalanceCalculator &wcalc, int num_of_algo, int num_of_travel, string &travel_name, const string &output_path)
-        : ship(plan), travel(route), calc(wcalc), err_in_travel(false), curr_travel_name(travel_name), output_dir_path(output_path), num_of_algo(num_of_algo), num_of_travel(num_of_travel) {
+Simulation::Simulation(ShipPlan &plan, Route &route, WeightBalanceCalculator &wcalc)
+        : ship(plan), travel(route), calc(wcalc), err_in_travel(false) {
+}
+
+void Simulation::initSimulation(int num_of_algo, int num_of_travel, string &travel_name,
+                                pair<string, std::function<std::unique_ptr<AbstractAlgorithm>()>> &algo_p,
+                                const string &output_path, const string &plan_path,
+                                const string &route_path) {
+    this->curr_travel_name = travel_name;
+    this->output_dir_path = output_path;
+    this->num_of_algo = num_of_algo;
+    this->num_of_travel = num_of_travel;
+    this->algo_name_and_ctor = algo_p;
+    this->plan_path = plan_path;
+    this->route_path = route_path;
+
 }
 
 bool Simulation::executeTravel(const string &algo_name, AbstractAlgorithm &algo,
@@ -54,22 +68,21 @@ bool Simulation::executeTravel(const string &algo_name, AbstractAlgorithm &algo,
     // Check if there was an error by the algorithm. if there was, number of operation is '-1'.
     if (this->err_in_travel) {
         num_of_errors++;
-        Simulator::insertResult(num_of_algo, num_of_travel,"-1", true);
+        Simulator::insertResult(num_of_algo, num_of_travel, "-1", true);
         return false;
     }
-    Simulator::insertResult(num_of_algo, num_of_travel,to_string(num_of_operations), false);
+    Simulator::insertResult(num_of_algo, num_of_travel, to_string(num_of_operations), false);
     return true;
 }
 
 
 bool
-Simulation::runSimulation(pair<string, std::function<std::unique_ptr<AbstractAlgorithm>()>> algo_p, string &plan_path,
-                          string &route_path) {
+Simulation::runSimulation() {
     vector<string> travel_files;
     int num_of_errors = 0;
     bool no_errors_detected;
     vector<pair<int, string>> errs_in_ctor;
-    std::unique_ptr<AbstractAlgorithm> algo = algo_p.second();
+    std::unique_ptr<AbstractAlgorithm> algo = algo_name_and_ctor.second();
 
     cout << "\nExecuting Travel " << curr_travel_name << "..." << endl;
     //SIMULATION
@@ -77,7 +90,7 @@ Simulation::runSimulation(pair<string, std::function<std::unique_ptr<AbstractAlg
     analyzeErrCode(algo->readShipRoute(route_path));
     analyzeErrCode(algo->setWeightBalanceCalculator(calc));
 
-    no_errors_detected = executeTravel(algo_p.first, *algo, calc, num_of_errors);
+    no_errors_detected = executeTravel(algo_name_and_ctor.first, *algo, calc, num_of_errors);
 
     return no_errors_detected; // true if no errors were detected.
 }
@@ -106,21 +119,25 @@ bool Simulation::validateInstruction(const vector<string> &instructions) { // Ch
 void Simulation::reportInvalidContainer(Container *cont) {
     // Containers ID is validated earlier.
     if (cont->getWeight() <= 0) {
-        Simulator::insertError(num_of_algo, num_of_travel, "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Trying to load a container with illegal weight: " +
-                                      to_string(cont->getWeight()));
+        Simulator::insertError(num_of_algo, num_of_travel,
+                               "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                               "- Trying to load a container with illegal weight: " +
+                               to_string(cont->getWeight()));
     } else if (!Port::validateName(cont->getDestPort())) {
-        Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Trying to load a container with illegal destination port: " +
-                                      cont->getDestPort());
+        Simulator::insertError(num_of_algo, num_of_travel,
+                               "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                               "- Trying to load a container with illegal destination port: " +
+                               cont->getDestPort());
     } else if (ship.isContOnShip(cont->getID())) {
-        Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Trying to load a container which it's ID already exists on the ship: " +
-                                      cont->getID());
+        Simulator::insertError(num_of_algo, num_of_travel,
+                               "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                               "- Trying to load a container which it's ID already exists on the ship: " +
+                               cont->getID());
     }
     // DEBUG:Should never reach here.
-    Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                  "- Trying to load an invalid container.");
+    Simulator::insertError(num_of_algo, num_of_travel,
+                           "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                           "- Trying to load an invalid container.");
 }
 
 bool
@@ -130,25 +147,29 @@ Simulation::validateLoadOp(Port &curr_port, WeightBalanceCalculator &calc,
     Spot *pos, *pos_below;
     // Spot validation
     if (!ship.spotInRange(x, y) || floor_num < 0 || floor_num >= ship.getNumOfDecks()) {
-        Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Load a container in Out-Of-Range position.");
+        Simulator::insertError(num_of_algo, num_of_travel,
+                               "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                               "- Load a container in Out-Of-Range position.");
         return false;
     }
     if (ship.isFull()) {
-        Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Load a container in a full ship.");
+        Simulator::insertError(num_of_algo, num_of_travel,
+                               "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                               "- Load a container in a full ship.");
         return false; // Ship is full!
     }
     pos = &(ship.getSpotAt(floor_num, x, y));
     if (!pos->getAvailable() || pos->getContainer() != nullptr) {
-        Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Load a container in an unavailable spot.");
+        Simulator::insertError(num_of_algo, num_of_travel,
+                               "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                               "- Load a container in an unavailable spot.");
         return false;
     }
     //Container validation
     if (cont == nullptr) {
-        Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Trying to load an unavailable container.");
+        Simulator::insertError(num_of_algo, num_of_travel,
+                               "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                               "- Trying to load an unavailable container.");
         return false; // Given id_cont is not in the waiting list
     }
     if (!cont->isValid()) { // Check if the container is not valid
@@ -156,39 +177,45 @@ Simulation::validateLoadOp(Port &curr_port, WeightBalanceCalculator &calc,
         return false;
     } else { // Container is valid, now check the duplication case
         if (cont->getSpotInFloor() != nullptr && curr_port.getNumOfDuplicates(cont->getID()) > 0) {
-            Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                          "- Trying to load a container with a duplicated ID: " + cont->getID());
+            Simulator::insertError(num_of_algo, num_of_travel,
+                                   "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                                   "- Trying to load a container with a duplicated ID: " + cont->getID());
             curr_port.decreaseDuplicateId(cont->getID()); // Update that a duplicated ID container got treated
             return false;
         }
     }
     if (cont->getSpotInFloor() != nullptr) {
-        Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Trying to load a container that is already on the ship.");
+        Simulator::insertError(num_of_algo, num_of_travel,
+                               "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                               "- Trying to load a container that is already on the ship.");
         return false;
     }
     if (cont->getDestPort() == this->curr_port_name) {
-        Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Load a container that its destination is the current port.");
+        Simulator::insertError(num_of_algo, num_of_travel,
+                               "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                               "- Load a container that its destination is the current port.");
         return false;
     }
     if (!travel.isInRoute(cont->getDestPort())) {
-        Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Load a container that its destination is not within the remaining route.");
+        Simulator::insertError(num_of_algo, num_of_travel,
+                               "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                               "- Load a container that its destination is not within the remaining route.");
         return false;
     }
     // Balance validation
     if (calc.tryOperation('L', cont->getWeight(), x, y) != WeightBalanceCalculator::APPROVED) {
-        Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Load a container that un-balances the ship.");
+        Simulator::insertError(num_of_algo, num_of_travel,
+                               "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                               "- Load a container that un-balances the ship.");
         return false;
     }
     if (floor_num != 0) {
         pos_below = &(ship.getSpotAt(floor_num - 1, x, y));
         if (pos_below->getAvailable() &&
             pos_below->getContainer() == nullptr) { // check if there is no container at the floor below
-            Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                          "- Load a container in a spot that's above an empty spot.");
+            Simulator::insertError(num_of_algo, num_of_travel,
+                                   "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                                   "- Load a container in a spot that's above an empty spot.");
             return false;
         }
     }
@@ -201,36 +228,41 @@ Simulation::validateUnloadOp(WeightBalanceCalculator &calc, int floor_num,
     Spot *pos, *pos_above;
     // Spot validation
     if (!ship.spotInRange(x, y) || floor_num < 0 || floor_num >= ship.getNumOfDecks()) {
-        Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Unload a container with ID: " + cont_id + "- from Out-Of-Range position.");
+        Simulator::insertError(num_of_algo, num_of_travel,
+                               "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                               "- Unload a container with ID: " + cont_id + "- from Out-Of-Range position.");
         return false;
     }
     pos = &(ship.getSpotAt(floor_num, x, y));
     if (!pos->getAvailable() || pos->getContainer() == nullptr) {
-        Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Unload a container with ID: " + cont_id +
-                                      "- from an unavailable or empty spot.");
+        Simulator::insertError(num_of_algo, num_of_travel,
+                               "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                               "- Unload a container with ID: " + cont_id +
+                               "- from an unavailable or empty spot.");
         return false;
     }
     Container *cont = pos->getContainer();
     //Container validation
     if (cont_id != cont->getID()) {
-        Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Unload a container with ID: " + cont_id + "- that isn't in the given spot.");
+        Simulator::insertError(num_of_algo, num_of_travel,
+                               "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                               "- Unload a container with ID: " + cont_id + "- that isn't in the given spot.");
         return false;
     }
     // Balance validation
     if (calc.tryOperation('U', cont->getWeight(), x, y) != WeightBalanceCalculator::APPROVED) {
-        Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Unload a container with ID: " + cont_id +
-                                      "- from from the ship unbalance it.");
+        Simulator::insertError(num_of_algo, num_of_travel,
+                               "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                               "- Unload a container with ID: " + cont_id +
+                               "- from from the ship unbalance it.");
         return false;
     } else if (floor_num != ship.getNumOfDecks() - 1) {
         pos_above = &(ship.getSpotAt(floor_num + 1, x, y));
         if (pos_above->getContainer() != nullptr) { // check if there is a container at the floor above
-            Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                          "- Unload a container with ID: " + cont_id +
-                                          "- while there's a container above it.");
+            Simulator::insertError(num_of_algo, num_of_travel,
+                                   "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                                   "- Unload a container with ID: " + cont_id +
+                                   "- while there's a container above it.");
             return false;
         }
     }
@@ -244,44 +276,50 @@ bool Simulation::validateMoveOp(WeightBalanceCalculator &calc,
     // Spots validation
     if (!ship.spotInRange(source_x, source_y) || source_floor_num < 0 || source_floor_num >= ship.getNumOfDecks() ||
         !ship.spotInRange(dest_x, dest_y) || dest_floor_num < 0 || dest_floor_num >= ship.getNumOfDecks()) {
-        Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Move a container with ID: " + cont_id + "- using Out-Of-Range position.");
+        Simulator::insertError(num_of_algo, num_of_travel,
+                               "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                               "- Move a container with ID: " + cont_id + "- using Out-Of-Range position.");
         return false;
     }
     if ((source_x == dest_x) && (source_y == dest_y) && (source_floor_num != dest_floor_num)) {
-        Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Move a container with ID: " + cont_id +
-                                      "- to a spot with the same X,Y but at different floor.");
+        Simulator::insertError(num_of_algo, num_of_travel,
+                               "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                               "- Move a container with ID: " + cont_id +
+                               "- to a spot with the same X,Y but at different floor.");
         return false;
     }
     source_pos = &(ship.getSpotAt(source_floor_num, source_x, source_y));
     dest_pos = &(ship.getSpotAt(dest_floor_num, dest_x, dest_y));
     if (!source_pos->getAvailable() || source_pos->getContainer() == nullptr ||
         !dest_pos->getAvailable() || dest_pos->getContainer() != nullptr) {
-        Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Move a container with ID: " + cont_id + "- using unavailable spot.");
+        Simulator::insertError(num_of_algo, num_of_travel,
+                               "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                               "- Move a container with ID: " + cont_id + "- using unavailable spot.");
         return false;
     }
     Container *cont = source_pos->getContainer();
     //Container validation
     if (cont_id != cont->getID()) {
-        Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Move a container with ID: " + cont_id + "- that isn't in the given spot.");
+        Simulator::insertError(num_of_algo, num_of_travel,
+                               "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                               "- Move a container with ID: " + cont_id + "- that isn't in the given spot.");
         return false;
     }
     // Balance validation
     if (calc.tryOperation('U', cont->getWeight(), source_x, source_y) != WeightBalanceCalculator::APPROVED
         || calc.tryOperation('L', cont->getWeight(), dest_x, dest_y) != WeightBalanceCalculator::APPROVED) {
-        Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Move a container with ID: " + cont_id + "- cause the ship to unbalance.");
+        Simulator::insertError(num_of_algo, num_of_travel,
+                               "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                               "- Move a container with ID: " + cont_id + "- cause the ship to unbalance.");
         return false;
     } else {
         if (source_floor_num != ship.getNumOfDecks() - 1) {
             pos_above = &(ship.getSpotAt(source_floor_num + 1, source_x, source_y));
             if (pos_above->getContainer() != nullptr) { // check if there is a container at the floor above
                 Simulator::insertError(num_of_algo, num_of_travel,
-                        "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                        "- Move a container with ID: " + cont_id + "- while there's a container above it.");
+                                       "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                                       "- Move a container with ID: " + cont_id +
+                                       "- while there's a container above it.");
                 return false;
             }
             if (dest_floor_num != 0) {
@@ -289,8 +327,9 @@ bool Simulation::validateMoveOp(WeightBalanceCalculator &calc,
                 if (pos_below->getAvailable() &&
                     pos_below->getContainer() == nullptr) { // check if there is no container at the floor below
                     Simulator::insertError(num_of_algo, num_of_travel,
-                            "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                            "- Move a container with ID: " + cont_id + "- to a spot that's above an empty spot.");
+                                           "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                                           "- Move a container with ID: " + cont_id +
+                                           "- to a spot that's above an empty spot.");
                     return false;
                 }
             }
@@ -313,14 +352,16 @@ Simulation::validateRejectOp(Route &travel,
     cont = travel.getCurrentPort().getWaitingContainerByID(cont_id, false); // get a container from the port
     //Container validation
     if (cont == nullptr && !ship.isContOnShip(cont_id)) {
-        Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Reject a container with ID: " + cont_id +
-                                      "- that wasn't provided by the port.");
+        Simulator::insertError(num_of_algo, num_of_travel,
+                               "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                               "- Reject a container with ID: " + cont_id +
+                               "- that wasn't provided by the port.");
         return false; // Given id_cont is not in the waiting list
     }
     if (cont->getSpotInFloor() != nullptr) { // The container was loaded though reported rejected.
-        Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Reject a container with ID: " + cont_id + "- that was already loaded.");
+        Simulator::insertError(num_of_algo, num_of_travel,
+                               "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                               "- Reject a container with ID: " + cont_id + "- that was already loaded.");
         return false;
     }
     if (travel.getCurrentPort().getNumOfDuplicates(cont_id) > 0) {
@@ -330,9 +371,10 @@ Simulation::validateRejectOp(Route &travel,
     } else if (cont->isValid() && travel.isInRoute(cont->getDestPort()) && this->curr_port_name !=
                                                                            cont->getDestPort()) { // Check if the container's weight and destination are valid.
         if (ship.getNumOfFreeSpots() > 0) {
-            Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                          "- Reject a container with ID: " + cont_id +
-                                          "- although it can be loaded correctly.");
+            Simulator::insertError(num_of_algo, num_of_travel,
+                                   "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                                   "- Reject a container with ID: " + cont_id +
+                                   "- although it can be loaded correctly.");
             return false;
         }
         has_potential_to_be_loaded = true;
@@ -399,25 +441,25 @@ void Simulation::checkRemainingContainers(map<string, Container *> &unloaded_con
                 rejected_containers.end()) { // check if the container was also rejected. if so, the container had a potential to be loaded on the ship.
                 if (!ship.isFull()) {
                     Simulator::insertError(num_of_algo, num_of_travel,
-                            "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                            "- Rejected a container with ID: " + entry.second->getID() +
-                            "- although it can be loaded correctly.");
+                                           "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                                           "- Rejected a container with ID: " + entry.second->getID() +
+                                           "- although it can be loaded correctly.");
                     this->err_in_travel = true;
                 } else if (!checkSortedContainers(curr_port.getWaitingContainers(), travel,
                                                   entry.first)) { // check if the container was rejected mistakenly
                     Simulator::insertError(num_of_algo, num_of_travel,
-                            "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                            "- Rejected a container with ID: " + entry.second->getID() +
-                            "- while another container was loaded and it's destination port is further.");
+                                           "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                                           "- Rejected a container with ID: " + entry.second->getID() +
+                                           "- while another container was loaded and it's destination port is further.");
                     this->err_in_travel = true;
                 }
             } // <<< it is not possible to reach the else statement of that if
         } else { // In case the container was from the ship
             if (entry.second->getDestPort() != curr_port.getName()) { // The wrong container got unloaded!
                 Simulator::insertError(num_of_algo, num_of_travel,
-                        "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                        "- A container with ID: " + entry.second->getID() +
-                        "- was left in a port that's different from container's destination.");
+                                       "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                                       "- A container with ID: " + entry.second->getID() +
+                                       "- was left in a port that's different from container's destination.");
                 this->err_in_travel = true;
             }
         }
@@ -428,9 +470,9 @@ void Simulation::checkPortContainers(vector<string> &ignored_containers, Port &c
     Container *ignored_cont = nullptr;
     for (auto &container_id : ignored_containers) { // for each container that came from this port that was not treated.
         Simulator::insertError(num_of_algo, num_of_travel,
-                "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                "- A container with ID: " + container_id +
-                "- was left at the port without getting an instruction.");
+                               "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                               "- A container with ID: " + container_id +
+                               "- was left at the port without getting an instruction.");
         //Check sorted containers
         ignored_cont = curr_port.getWaitingContainerByID(container_id, true); // get valid container from the port
         if (ignored_cont == nullptr) // didn't find valid container
@@ -438,18 +480,18 @@ void Simulation::checkPortContainers(vector<string> &ignored_containers, Port &c
         if (travel.isInRoute(ignored_cont->getDestPort()) && this->curr_port_name != ignored_cont->getDestPort() &&
             !checkSortedContainers(curr_port.getWaitingContainers(), travel, container_id)) {
             Simulator::insertError(num_of_algo, num_of_travel,
-                    "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                    "- A container with ID: " + container_id +
-                    "- was left in port while another container was loaded and it's destination port is further.");
+                                   "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                                   "- A container with ID: " + container_id +
+                                   "- was left in port while another container was loaded and it's destination port is further.");
         }
         this->err_in_travel = true;
     }
     for (auto &cont : curr_port.getDuplicateIdOnPort()) { // for each duplicated container that came from this port that was not treated.
         if (cont.second > 0) {
             Simulator::insertError(num_of_algo, num_of_travel,
-                    "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                    "- A container with ID: " + cont.first +
-                    "- did not get rejected though it has duplicated ID.");
+                                   "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                                   "- A container with ID: " + cont.first +
+                                   "- did not get rejected though it has duplicated ID.");
             this->err_in_travel = true;
         }
     }
@@ -461,8 +503,9 @@ Simulation::validateCargoInstruction(vector<string> &instruction, vector<string>
                                      AbstractAlgorithm::Action &command,
                                      const map<string, Container *> &unloaded_containers) {
     if (!validateInstruction(instruction)) {
-        Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                                      "- Invalid instruction detected.");
+        Simulator::insertError(num_of_algo, num_of_travel,
+                               "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                               "- Invalid instruction detected.");
         this->err_in_travel = true;
         return false;
     }
@@ -475,8 +518,8 @@ Simulation::validateCargoInstruction(vector<string> &instruction, vector<string>
     if (command != AbstractAlgorithm::Action::REJECT) {
         if (!Container::validateID(instruction[ContainerID])) {
             Simulator::insertError(num_of_algo, num_of_travel,
-                    "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                    "- Instruction with invalid container ID detected.");
+                                   "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                                   "- Instruction with invalid container ID detected.");
             this->err_in_travel = true;
             return false; // Bad id for container
         }
@@ -552,8 +595,8 @@ Simulation::implementInstruction(vector<string> &instruction, AbstractAlgorithm:
         }
         default: {
             Simulator::insertError(num_of_algo, num_of_travel,
-                    "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                    "- Invalid instruction detected.");
+                                   "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
+                                   "- Invalid instruction detected.");
             this->err_in_travel = true;
         }
     }
@@ -586,9 +629,9 @@ Simulation::iterateInstructions(WeightBalanceCalculator &calc, const string &ins
 
 void Simulation::checkMissedContainers(const string &port_name) {
     if ((int) ship.getContainersForDest(port_name).size() > 0) {
-        Simulator::insertError(num_of_algo, num_of_travel,"@ Travel: " + this->curr_travel_name +
-                                      "- There are some containers that were not unloaded at their destination port: " +
-                                      port_name);
+        Simulator::insertError(num_of_algo, num_of_travel, "@ Travel: " + this->curr_travel_name +
+                                                           "- There are some containers that were not unloaded at their destination port: " +
+                                                           port_name);
         this->err_in_travel = true;
     }
 }
@@ -597,6 +640,7 @@ void Simulation::analyzeErrCode(int err_code) {
     vector<unsigned int> one_indexes = getOneIndexes(err_code);
     for (const unsigned int index : one_indexes) {
         if (index > 18) return; // No error code is defined for indexes above 18.
-        Simulator::insertError(num_of_algo, num_of_travel,"@ Algorithm reported in travel " + curr_travel_name + ": " + errCodes.at(index));
+        Simulator::insertError(num_of_algo, num_of_travel,
+                               "@ Algorithm reported in travel " + curr_travel_name + ": " + errCodes.at(index));
     }
 }
