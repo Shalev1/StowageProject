@@ -1,8 +1,8 @@
 COMP = g++-9.3.0
-OBJS = main.o Simulator.o Simulation.o ShipPlan.o Floor.o Spot.o Container.o Port.o Route.o Utils.o  WeightBalanceCalculator.o AlgorithmRegistration.o ISO_6346.o
+OBJS = main.o Simulator.o Simulation.o ShipPlan.o Floor.o Spot.o Container.o Port.o Route.o Utils.o  WeightBalanceCalculator.o AlgorithmRegistration.o ISO_6346.o ThreadPool.o
 EXEC = simulator
 CPP_COMP_FLAG = -std=c++2a -Wall -Wextra -Werror -pedantic-errors -DNDEBUG -I../common
-CPP_LINK_FLAG = -lstdc++fs -ldl -export-dynamic #(-rdynamic)
+CPP_LINK_FLAG = -lstdc++fs -ldl -lpthread -export-dynamic #(-rdynamic)
 
 $(EXEC): $(OBJS)
 	$(COMP) $(OBJS) $(CPP_LINK_FLAG) -o $@
@@ -10,7 +10,7 @@ AlgorithmRegistration.o: AlgorithmRegistration.cpp ../interfaces/AlgorithmRegist
 	$(COMP) $(CPP_COMP_FLAG) -c $*.cpp
 main.o: main.cpp ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h
 	$(COMP) $(CPP_COMP_FLAG) -c $*.cpp
-Simulator.o: Simulator.cpp Simulator.h Simulation.h ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h ../common/Route.h ../common/Port.h ../common/Utils.h ../interfaces/WeightBalanceCalculator.h ../interfaces/AbstractAlgorithm.h
+Simulator.o: Simulator.cpp Simulator.h Simulation.h ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h ../common/Route.h ../common/Port.h ../common/Utils.h ../interfaces/WeightBalanceCalculator.h ../interfaces/AbstractAlgorithm.h ThreadPool.h
 	$(COMP) $(CPP_COMP_FLAG) -c $*.cpp
 Simulation.o: Simulation.cpp Simulation.h Simulator.h ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h
 	$(COMP) $(CPP_COMP_FLAG) -c $*.cpp
@@ -32,5 +32,8 @@ Utils.o: ../common/Utils.cpp ../common/Utils.h
 	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
 WeightBalanceCalculator.o: ../common/WeightBalanceCalculator.cpp ../interfaces/WeightBalanceCalculator.h ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h
 	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
+ThreadPool.o: ThreadPool.cpp ThreadPool.h Simulation.h
+	$(COMP) $(CPP_COMP_FLAG) -c $*.cpp
+
 clean:
 	rm -f $(OBJS) $(EXEC)

@@ -1,4 +1,5 @@
-Route:
-    clear current port before moving to the next one
+Check algo registration without macro
 
-Print "In ship plan file" before "WARNING: A spot that exceeds the X/Y ship limits was detected"
+duplicate id on port
+
+in initWaitingContainers in port check const Route
