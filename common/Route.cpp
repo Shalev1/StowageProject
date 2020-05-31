@@ -151,11 +151,16 @@ bool Route::checkLastPortContainers(const string& lastPortPath, bool addDir) {
     return lastPortFile.getNextLineAsTokens(tokens);
 }
 
-bool Route::moveToNextPort() {
+bool Route::moveToNextPort(const ShipPlan& ship) {
     if(!hasNextPort())
         return false;
     currentPortNum++;
     portVisits[getCurrentPort().getName()]++;
+    for(auto& cont : getCurrentPort().getWaitingContainers()){
+        if(ship.isContOnShip(cont.getID())){
+            cont.invalidateContainer();
+        }
+    }
     return true;
 }
 

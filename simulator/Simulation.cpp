@@ -56,7 +56,7 @@ bool Simulation::executeTravel(const string &algo_name, AbstractAlgorithm &algo,
                 << endl;
         instruction_file_path = output_dir_path;
     }
-    while (travel.moveToNextPort()) { // For each port in travel
+    while (travel.moveToNextPort(ship)) { // For each port in travel
         curr_port_name = travel.getCurrentPort().getName();
         instruction_file =
                 instruction_file_path + std::filesystem::path::preferred_separator + curr_port_name + "_" +

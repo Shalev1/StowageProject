@@ -75,6 +75,9 @@ public:
      */
     static bool validateID(const string &id);
 
+    void invalidateContainer(){
+        valid = false;
+    }
 };
 
 #endif //STOWAGEPROJECT_CONTAINER_H

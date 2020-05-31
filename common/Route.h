@@ -73,7 +73,7 @@ public:
     /**
      * Return the true if there is at least one more port in the route
      */
-    bool moveToNextPort();
+    bool moveToNextPort(const ShipPlan& ship);
 
     /**
      * Return the true if there is at least one more port in the route
