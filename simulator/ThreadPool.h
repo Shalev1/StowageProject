@@ -11,33 +11,30 @@
 #include <atomic>
 #include <mutex>
 #include <vector>
-//TODO: include simulation after merge
+#include <queue>
+#include "Simulation.h"
 
 using std::thread;
 using std::vector;
+using std::queue;
 using std::atomic_int;
 using std::mutex;
-
-class Simulation{ // TODO: replace with real simulation
-public:
-    void runSimulation(){}
-};
 
 class ThreadPool {
 private:
     int numOfThreads;
     vector<thread> workers;
-    vector<Simulation> tasks;
+    queue<Simulation> tasks;
     mutex tasksMutex;
     bool finished = false;
 
 public:
-    ThreadPool(int numOfThreads);
+    explicit ThreadPool(int numOfThreads);
 
     /**
      * Get new task (Simulation object)
      */
-    void getTask(Simulation sim);
+    void getTask(Simulation& sim);
 
     /**
      * Start the threadPool, create all of the threads

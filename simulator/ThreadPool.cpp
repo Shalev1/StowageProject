@@ -4,8 +4,8 @@ ThreadPool::ThreadPool(int numOfThreads) : numOfThreads(numOfThreads) {
     workers.reserve(numOfThreads);
 }
 
-void ThreadPool::getTask(Simulation sim) {
-    tasks.emplace_back(std::move(sim));
+void ThreadPool::getTask(Simulation& sim) {
+    tasks.emplace(std::move(sim));
 }
 
 void ThreadPool::start() {
@@ -20,9 +20,14 @@ void ThreadPool::workerFunc() {
             std::this_thread::yield(); // No task right now, yield and check once get cpu again
             continue;
         }
-        {
-            std::lock_guard guard(tasks);
-
+        tasksMutex.lock();
+        if(!tasks.empty()) {
+            Simulation sim = tasks.front();
+            tasks.pop();
+            tasksMutex.unlock();
+            sim.runSimulation();
+        } else {
+            tasksMutex.unlock();
         }
     }
 }
