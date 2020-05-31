@@ -15,14 +15,14 @@ void ThreadPool::start() {
 }
 
 void ThreadPool::workerFunc() {
-    while(!finished || nextTaskIndex.load() != (int)tasks.size()){
-        int currTaskIndex = nextTaskIndex.load();
-        if(currTaskIndex >= (int)tasks.size()){
-            std::this_thread::yield(); // No task right now, yield and check again once get cpu again
+    while(!finished || !tasks.empty()){
+        if(tasks.empty()){
+            std::this_thread::yield(); // No task right now, yield and check once get cpu again
             continue;
         }
-        if(nextTaskIndex.compare_exchange_strong(currTaskIndex, currTaskIndex + 1)) {
-            tasks[currTaskIndex].runSimulation();
+        {
+            std::lock_guard guard(tasks);
+
         }
     }
 }

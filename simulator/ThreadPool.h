@@ -9,14 +9,16 @@
 
 #include <thread>
 #include <atomic>
+#include <mutex>
 #include <vector>
 //TODO: include simulation after merge
 
 using std::thread;
 using std::vector;
 using std::atomic_int;
+using std::mutex;
 
-class Simulation{
+class Simulation{ // TODO: replace with real simulation
 public:
     void runSimulation(){}
 };
@@ -26,7 +28,7 @@ private:
     int numOfThreads;
     vector<thread> workers;
     vector<Simulation> tasks;
-    atomic_int nextTaskIndex = 0;
+    mutex tasksMutex;
     bool finished = false;
 
 public:
