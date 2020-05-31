@@ -51,6 +51,48 @@ bool portPathsCompare(const string& s1, const string& s2) {
     }
 }
 
+void Route::initPorts(const string &dir, vector<string> &paths, vector<pair<int, string> > &errVector, const ShipPlan& ship) {
+    initPortsContainersFiles(dir, paths, errVector);
+    map<string, int> portToFileNum;
+    int portNumInRoute = -1;
+    for(auto& port : ports){
+        portNumInRoute++;
+        if(portToFileNum.count(port.getName()))
+            portToFileNum[port.getName()]++;
+        else
+            portToFileNum[port.getName()] = 1;
+        // Search for the containers file for the current port and current visit number
+        for (auto it = portsContainersPaths.begin(); it != portsContainersPaths.end(); ++it) {
+            string portCode = (*it).substr(0, indexOfFirst_InPath);
+            if(portCode == port.getName()) {
+                string portNumS = (*it).substr(indexOfFirst_InPath + 1, (*it).find('.') - (indexOfFirst_InPath + 1));
+                int portNum = stoi(portNumS);
+                if (portNum == portToFileNum[port.getName()]) {
+                    if (portNumInRoute == (int) ports.size() - 1) { // last port
+                        if(checkLastPortContainers(*it, true)){
+                            errVector.emplace_back(17,"Last port shouldn't has waiting containers");
+                        }
+                        portsContainersPathsSorted.push_back(dir + std::filesystem::path::preferred_separator + (*it));
+                    } else {
+                        string currentPortPath = dir + std::filesystem::path::preferred_separator + (*it);
+                        portsContainersPathsSorted.push_back(currentPortPath);
+                        ports[portNumInRoute].initWaitingContainers(currentPortPath, errVector, ship, getLeftPortsNames(portNumInRoute));
+                    }
+                    portsContainersPaths.erase(it);
+                    break;
+                }
+            }
+        }
+        if(ports[portNumInRoute].getWaitingContainers().empty()) {
+            portsContainersPathsSorted.push_back(empty_file);
+            if(portNumInRoute != (int)ports.size() - 1){
+                errVector.emplace_back(-1,"No waiting containers in Port " + port.getName() +
+                                          " for visit number: " + to_string(portToFileNum[port.getName()]));
+            }
+        }
+    }
+}
+
 void Route::initPortsContainersFiles(const string& dir, vector<string>& paths, vector<pair<int,string>>& errVector){
     map<string, int> portAppearances; // Map to count how many times each port will be visited
     for(const Port& p : ports){
@@ -107,37 +149,11 @@ bool Route::checkLastPortContainers(const string& lastPortPath, bool addDir) {
     return lastPortFile.getNextLineAsTokens(tokens);
 }
 
-bool Route::moveToNextPort(vector<pair<int,string>>& errVector, const ShipPlan& ship) {
+bool Route::moveToNextPort() {
     if(!hasNextPort())
         return false;
     currentPortNum++;
     portVisits[getCurrentPort().getName()]++;
-    // Search for the containers file for the current port and current visit number
-    for (auto it = portsContainersPaths.begin(); it != portsContainersPaths.end(); ++it) {
-        string portCode = (*it).substr(0, indexOfFirst_InPath);
-        if(portCode == ports[currentPortNum].getName()) {
-            string portNumS = (*it).substr(indexOfFirst_InPath + 1, (*it).find('.') - (indexOfFirst_InPath + 1));
-            int portNum = stoi(portNumS);
-            if (portNum == portVisits[getCurrentPort().getName()]) {
-                if (currentPortNum == (int) ports.size() - 1) { // last port
-                    if(checkLastPortContainers(*it, true)){
-                        errVector.emplace_back(17,"Last port shouldn't has waiting containers");
-                    }
-                    currentPortPath = dir + std::filesystem::path::preferred_separator + (*it);
-                } else {
-                    currentPortPath = dir + std::filesystem::path::preferred_separator + (*it);
-                    ports[currentPortNum].initWaitingContainers(currentPortPath, errVector, ship, getLeftPortsNames());
-                }
-                portsContainersPaths.erase(it);
-                return true;
-            }
-        }
-    }
-    if(currentPortNum != (int)ports.size() - 1){ // this isn't the last port
-        errVector.emplace_back(-1,"No waiting containers in Port " + getCurrentPort().getName() +
-            " for visit number: " + to_string(portVisits[getCurrentPort().getName()]));
-    }
-    currentPortPath = empty_file;
     return true;
 }
 
@@ -177,9 +193,11 @@ ostream& operator<<(ostream& os, const Route& r){
     return os;
 }
 
-vector<string> Route::getLeftPortsNames() {
+vector<string> Route::getLeftPortsNames(int fromPortNum) {
     vector<string> names;
-    for(auto it = ports.begin() + currentPortNum; it != ports.end(); ++it){
+    if(fromPortNum == -1)
+        fromPortNum = currentPortNum;
+    for(auto it = ports.begin() + fromPortNum; it != ports.end(); ++it){
         names.emplace_back((*it).getName());
     }
     return names;

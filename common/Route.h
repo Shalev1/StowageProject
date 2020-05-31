@@ -28,7 +28,7 @@ private:
     vector<Port> ports; // The destination in the current route
     string dir; // The directory of the files
     vector<string> portsContainersPaths; // Contain relative paths to the containers files, that have not used yet
-    string currentPortPath;
+    vector<string> portsContainersPathsSorted; // sorted vector of the containers files, base on the route (plus empty files where needed)
     map<string, int> portVisits; // How many times ports were visited
     string empty_file; // Path to an empty file for ports without containers
 
@@ -42,6 +42,8 @@ public:
      * Init the route from the given path file
      */
     void initRouteFromFile(const string &path, vector<pair<int,string>>& errVector, bool& fatalError);
+
+    void initPorts(const string &dir, vector<string> &paths, vector<pair<int,string>>& errVector, const ShipPlan& ship);
 
     /**
      * Sort the given paths for containers files base on the asked sorting formula
@@ -65,9 +67,8 @@ public:
 
     /**
      * Return the true if there is at least one more port in the route
-     * Also load the waiting containers in this port
      */
-    bool moveToNextPort(vector<pair<int,string>>& errVector, const ShipPlan& ship);
+    bool moveToNextPort();
 
     /**
      * Return the true if there is at least one more port in the route
@@ -80,7 +81,7 @@ public:
     }
 
     string& getCurrentPortPath(){
-        return currentPortPath;
+        return portsContainersPathsSorted[currentPortNum];
     }
 
     int getNumOfVisitsInPort(string& portName){
@@ -97,7 +98,11 @@ public:
      */
     bool isInRoute(const string &portName) const;
 
-    vector<string> getLeftPortsNames();
+    /**
+     * Get the ports in the route from the port with number @param fromPortNum
+     * Default value is -1, means get left ports from the current one
+     */
+    vector<string> getLeftPortsNames(int fromPortNum = -1);
 
     /**
      * Sort the given containers vector by their destination, from the closest one to the farthest one
