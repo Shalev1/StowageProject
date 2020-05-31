@@ -30,8 +30,7 @@ Simulation::Simulation(ShipPlan &plan, Route &route, WeightBalanceCalculator &wc
 }
 
 bool Simulation::executeTravel(const string &algo_name, AbstractAlgorithm &algo,
-                               WeightBalanceCalculator &calc,
-                               vector<pair<int, string>> &errs_in_ctor, int &num_of_errors) {
+                               WeightBalanceCalculator &calc, int &num_of_errors) {
     string instruction_file_path;
     string instruction_file;
     int num_of_operations = 0;
@@ -43,7 +42,7 @@ bool Simulation::executeTravel(const string &algo_name, AbstractAlgorithm &algo,
                 << endl;
         instruction_file_path = output_dir_path;
     }
-    while (travel.moveToNextPort(errs_in_ctor, ship)) { // For each port in travel
+    while (travel.moveToNextPort()) { // For each port in travel
         curr_port_name = travel.getCurrentPort().getName();
         instruction_file =
                 instruction_file_path + std::filesystem::path::preferred_separator + curr_port_name + "_" +
@@ -78,7 +77,7 @@ Simulation::runSimulation(pair<string, std::function<std::unique_ptr<AbstractAlg
     analyzeErrCode(algo->readShipRoute(route_path));
     analyzeErrCode(algo->setWeightBalanceCalculator(calc));
 
-    no_errors_detected = executeTravel(algo_p.first, *algo, calc, errs_in_ctor, num_of_errors);
+    no_errors_detected = executeTravel(algo_p.first, *algo, calc, num_of_errors);
 
     return no_errors_detected; // true if no errors were detected.
 }

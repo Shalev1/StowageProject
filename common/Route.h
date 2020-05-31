@@ -32,6 +32,12 @@ private:
     map<string, int> portVisits; // How many times ports were visited
     string empty_file; // Path to an empty file for ports without containers
 
+    /**
+     * Sort the given paths for containers files base on the asked sorting formula
+     * dir is the base directory and paths are relative path in this directory
+     */
+    void initPortsContainersFiles(const string &dir, vector<string> &paths, vector<pair<int,string>>& errVector);
+
 public:
     // Constructors
     Route() = default;
@@ -43,13 +49,12 @@ public:
      */
     void initRouteFromFile(const string &path, vector<pair<int,string>>& errVector, bool& fatalError);
 
-    void initPorts(const string &dir, vector<string> &paths, vector<pair<int,string>>& errVector, const ShipPlan& ship);
-
     /**
-     * Sort the given paths for containers files base on the asked sorting formula
-     * dir is the base directory and paths are relative path in this directory
-     */
-    void initPortsContainersFiles(const string &dir, vector<string> &paths, vector<pair<int,string>>& errVector);
+      * Sort the given paths for containers files base on the asked sorting formula
+      * Also load the containers in each port
+      * dir is the base directory and paths are relative path in this directory
+      */
+    void initPorts(const string &dir, vector<string> &paths, vector<pair<int,string>>& errVector, const ShipPlan& ship);
 
     /**
      * Return if there is at least one more port in the route

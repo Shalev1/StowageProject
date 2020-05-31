@@ -117,7 +117,7 @@ bool Simulator::scanTravelDir(ShipPlan &ship, Route &travel, string &plan_path, 
         err_occurred = true;
         return false; //One of the files of the travel is invalid, continue to the next travel.
     }
-    travel.initPortsContainersFiles(travel_dir, travel_files, errs_in_ctor);
+    travel.initPorts(travel_dir, travel_files, errs_in_ctor, ship);
     extractGeneralErrors(errs_in_ctor);
     travel_files.clear();
     return true;

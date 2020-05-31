@@ -46,8 +46,7 @@ private:
     /**
      * Executing the travel simulation, returns false if any error has occurred.
      */
-    bool executeTravel(const string &algo_name, AbstractAlgorithm &algo, WeightBalanceCalculator &calc,
-                       vector<pair<int, string>> &errs_in_ctor, int &num_of_errors);
+    bool executeTravel(const string &algo_name, AbstractAlgorithm &algo, WeightBalanceCalculator &calc, int &num_of_errors);
 
     /**
      * Iterate over the instructions file and implementing only it's legal instructions.
