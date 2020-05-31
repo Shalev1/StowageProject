@@ -61,6 +61,7 @@ void Route::initPorts(const string &dir, vector<string> &paths, vector<pair<int,
             portToFileNum[port.getName()]++;
         else
             portToFileNum[port.getName()] = 1;
+        bool findFile = false;
         // Search for the containers file for the current port and current visit number
         for (auto it = portsContainersPaths.begin(); it != portsContainersPaths.end(); ++it) {
             string portCode = (*it).substr(0, indexOfFirst_InPath);
@@ -79,16 +80,17 @@ void Route::initPorts(const string &dir, vector<string> &paths, vector<pair<int,
                         ports[portNumInRoute].initWaitingContainers(currentPortPath, errVector, ship, getLeftPortsNames(portNumInRoute));
                     }
                     portsContainersPaths.erase(it);
+                    findFile = true;
                     break;
                 }
             }
         }
-        if(ports[portNumInRoute].getWaitingContainers().empty()) {
-            portsContainersPathsSorted.push_back(empty_file);
-            if(portNumInRoute != (int)ports.size() - 1){
-                errVector.emplace_back(-1,"No waiting containers in Port " + port.getName() +
-                                          " for visit number: " + to_string(portToFileNum[port.getName()]));
-            }
+        if(findFile)
+            continue;
+        portsContainersPathsSorted.push_back(empty_file);
+        if(portNumInRoute != (int)ports.size() - 1){
+            errVector.emplace_back(-1,"No waiting containers in Port " + port.getName() +
+                                      " for visit number: " + to_string(portToFileNum[port.getName()]));
         }
     }
 }
@@ -133,7 +135,7 @@ void Route::initPortsContainersFiles(const string& dir, vector<string>& paths, v
     this->portsContainersPaths = paths;
 }
 
-bool Route::moveToNextPortWithoutContInit() {
+bool Route::moveToNextPortWithoutContInit() { // TODO: delete this function
     if(!hasNextPort())
         return false;
     currentPortNum++;
