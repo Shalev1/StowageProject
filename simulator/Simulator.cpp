@@ -6,7 +6,7 @@ vector<vector<vector<string>>> Simulator::errors;
 
 Simulator::Simulator(const string &output_path, unsigned int num_threads) : output_dir_path(output_path),
                                                                             number_of_threads(num_threads),
-                                                                            err_occurred(false) {
+                                                                            err_occurred(false){
     vector<vector<string>> first_err_row;
     vector<string> temp_err_row;
 
@@ -16,6 +16,8 @@ Simulator::Simulator(const string &output_path, unsigned int num_threads) : outp
 
     // Create empty file, will be used for port without containers
     FileHandler emptyFile(string(".") + std::filesystem::path::preferred_separator + string("empty_file"), true);
+
+
 }
 
 void Simulator::initializeResAndErrs() {
@@ -202,6 +204,8 @@ bool Simulator::start(string algorithm_path, string travels_dir_path) {
     WeightBalanceCalculator calc;
 
     // Launch simulation!
+    ThreadPool thread_pool((int)number_of_threads - 1);
+    thread_pool.start();
     for (int num_of_travel = 1; num_of_travel <= (int) travel_directories.size(); ++num_of_travel) {
         string plan_path, route_path;
         this->curr_travel_name = travel_directories[num_of_travel - 1].filename();
@@ -216,14 +220,26 @@ bool Simulator::start(string algorithm_path, string travels_dir_path) {
             Simulation sim(ship, route, calc);
             sim.initSimulation(num_of_algo, num_of_travel, curr_travel_name, inst.algo_funcs[num_of_algo - 1],
                                output_dir_path, plan_path, route_path);
-            if (!err_occurred)
-                err_occurred = sim.runSimulation();
-            else sim.runSimulation();
+//            sim.runSimulation();
+            thread_pool.getTask(sim);
         }
     }
+    thread_pool.finish();
 
     inst.algo_funcs.clear();
     for (auto &hndl:handlers) { dlclose(hndl); }
+    for(int i = 0; i < (int)errors.size(); i++){
+        bool broke = false;
+        for(int j = 0; j < (int)errors[0].size(); j++){
+            if((int)errors[i][j].size() > 1){
+                err_occurred = true;
+                broke = true;
+                break;
+            }
+        }
+        if(broke)
+            break;
+    }
     if (err_occurred) // Errors found, errors_file should be created
         fillSimErrors();
     createResultsFile();

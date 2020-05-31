@@ -1,8 +1,8 @@
 #ifndef STOWAGEPROJECT_SIMULATOR_H
 #define STOWAGEPROJECT_SIMULATOR_H
 
-
 #include <dlfcn.h>
+#include "ThreadPool.h"
 #include "Simulation.h"
 
 

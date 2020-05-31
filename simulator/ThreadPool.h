@@ -7,6 +7,8 @@
 #ifndef SHIPPROJECT_THREADPOOL_H
 #define SHIPPROJECT_THREADPOOL_H
 
+class Simulation;
+
 #include <thread>
 #include <atomic>
 #include <mutex>
