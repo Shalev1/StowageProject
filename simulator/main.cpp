@@ -41,8 +41,8 @@ bool initializeParameters(string &travel_path, string &algorithm_path, string &o
             }
             case NumThreads: {
                 if (!isPositiveNumber(argv[i + 1]) || string2int(argv[i + 1]) < 1) {
-                    cout << "@ ERROR: Number of threads given is invalid, setting the number to 1." << endl;
-                    num_of_threads = 1;
+                    cout << "@ FATAL ERROR: Number of threads given is invalid." << endl;
+                    return false;
                 } else
                     num_of_threads = (unsigned int)string2int(argv[i + 1]);
                 break;
@@ -74,7 +74,6 @@ int main(int argc, char *argv[]) {
         // README: if any flag is declared and the path given is empty, an error will be printed and the simulation will not start.
         return EXIT_FAILURE;
     }
-    cout << "Threads given:" << num_of_threads << endl;
     Simulator sim(output_path, num_of_threads);
     clean_run = sim.start(algorithm_path, travel_path);
     sim.printSimulationErrors();

@@ -550,7 +550,7 @@ Simulation::implementInstruction(vector<string> &instruction, AbstractAlgorithm:
             // Load container on the ship
             ship.insertContainer(floor_num, x, y, *cont_to_load);
             removeUnloadedContainer(unloaded_containers, *cont_to_load);
-            num_of_operations++;
+            num_of_operations += 5;
             break;
         }
         case AbstractAlgorithm::Action::UNLOAD: {
@@ -563,7 +563,7 @@ Simulation::implementInstruction(vector<string> &instruction, AbstractAlgorithm:
                                                        y); // save pointer since removeContainer deletes it
             ship.removeContainer(floor_num, x, y);
             unloaded_containers.insert({temp_cont->getID(), temp_cont});
-            num_of_operations++;
+            num_of_operations += 5;
             break;
         }
         case AbstractAlgorithm::Action::MOVE: {
@@ -576,7 +576,7 @@ Simulation::implementInstruction(vector<string> &instruction, AbstractAlgorithm:
             // Move container on the ship
             ship.moveContainer(floor_num, x, y, string2int(instruction[DestFloorNum]), string2int(instruction[DestX]),
                                string2int(instruction[DestY]));
-            num_of_operations++;
+            num_of_operations += 3;
             break;
         }
         case AbstractAlgorithm::Action::REJECT: {

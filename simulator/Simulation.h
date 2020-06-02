@@ -18,10 +18,10 @@ using std::to_string;
 /**
  * Simulation Class.
  *  Author: Shalev Drukman.
- *  The simulator is responsible for executing the travels according to the algorithms instruction.
- *  It make sure that each instruction is legal and if not, it will be reported in an organized file.
- *  In addition, the simulator collects statistics regarding the algorithm decisions and prints everything to
- *  a results file in the end.
+ *  The simulation is responsible for executing a travel according to the given algorithm's instruction.
+ *  It makes sure that each instruction is legal and if not, it will be reported the simulator class.
+ *  In addition, the simulation collects statistics regarding the algorithm decisions and reports it
+ *  to the simulator as well.
  */
 
 //---Main class---//

@@ -11,10 +11,10 @@ using std::to_string;
 /**
  * Simulator Class.
  *  Author: Shalev Drukman.
- *  The simulator is responsible for executing the travels according to the algorithms instruction.
- *  It make sure that each instruction is legal and if not, it will be reported in an organized file.
- *  In addition, the simulator collects statistics regarding the algorithm decisions and prints everything to
- *  a results file in the end.
+ *  The simulator is responsible for executing the travels and the algorithms matched together,
+ *  using a multi-threading model that creates a thread for each travel-algorithm pair.
+ *  Each thread is running a simulation instance that will report errors and statistics to the simulator.
+ *  As a result, the simulator is responsible for reporting it to an organized file.
  */
 
 //---Main class---//
@@ -102,6 +102,11 @@ private:
      * Mark an invalid travel in the results matrix (will be ignored later).
      */
     void markRemovedTravel(int num_of_travel);
+
+    /**
+     * Detects if any error occurred during the simulation.
+     */
+    void checkErrorsDuringSimulations();
 
 public:
     //---Constructors and Destructors---//
