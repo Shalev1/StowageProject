@@ -1,7 +1,12 @@
 #include "ThreadPool.h"
 
 ThreadPool::ThreadPool(int numOfThreads) : numOfThreads(numOfThreads) {
-    workers.reserve(numOfThreads);
+    if (numOfThreads == 1) {
+        // num of threads in the program is 1, so only the main thread work, no threads in the ThreadPool
+        this->numOfThreads = 0;
+    } else {
+        workers.reserve(numOfThreads);
+    }
 }
 
 void ThreadPool::getTask(Simulation& sim) {

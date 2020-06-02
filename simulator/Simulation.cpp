@@ -84,7 +84,7 @@ Simulation::runSimulation() {
     vector<pair<int, string>> errs_in_ctor;
     std::unique_ptr<AbstractAlgorithm> algo = algo_name_and_ctor.second();
 
-    cout << "\nExecuting Travel " << curr_travel_name << "..." << endl;
+    cout << "\nExecuting Travel " << curr_travel_name << " with algorithm " << algo_name_and_ctor.first << "..." << endl;
     //SIMULATION
     analyzeErrCode(algo->readShipPlan(plan_path));
     analyzeErrCode(algo->readShipRoute(route_path));
