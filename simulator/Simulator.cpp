@@ -182,19 +182,16 @@ void Simulator::markRemovedTravel(int num_of_travel) {
     }
 }
 
-void Simulator::checkErrorsDuringSimulations() {
-    for (int i = 0; i < (int) errors.size(); i++) {
-        bool broke = false;
-        for (int j = 0; j < (int) errors[0].size(); j++) {
-            if ((int) errors[i][j].size() > 1) {
-                err_occurred = true;
-                broke = true;
-                break;
+bool Simulator::checkErrorsDuringSimulations() {
+    if(err_occurred) return true;
+    for (int i = 1; i < (int) errors.size(); i++) {
+        for (int j = 1; j < (int) errors[i].size(); j++) {
+            if (!errors[i][j].empty()) {
+                return true;
             }
         }
-        if (broke)
-            break;
     }
+    return false;
 }
 
 bool Simulator::start(string algorithm_path, string travels_dir_path) {
@@ -243,7 +240,7 @@ bool Simulator::start(string algorithm_path, string travels_dir_path) {
 
     inst.algo_funcs.clear();
     for (auto &hndl:handlers) { dlclose(hndl); }
-    checkErrorsDuringSimulations();
+    err_occurred = checkErrorsDuringSimulations();
     if (err_occurred) // Errors found, errors_file should be created
         fillSimErrors();
     createResultsFile();

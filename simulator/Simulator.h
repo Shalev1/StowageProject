@@ -106,7 +106,7 @@ private:
     /**
      * Detects if any error occurred during the simulation.
      */
-    void checkErrorsDuringSimulations();
+    bool checkErrorsDuringSimulations();
 
 public:
     //---Constructors and Destructors---//
