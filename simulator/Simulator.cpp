@@ -220,7 +220,7 @@ bool Simulator::start(string algorithm_path, string travels_dir_path) {
 
     // Launch simulation!
     ThreadPool thread_pool((int) number_of_threads);
-    thread_pool.start();
+    thread_pool.start(); // In case number of threads is 1, the thread pool is empty and this function does nothing
     for (int num_of_travel = 1; num_of_travel <= (int) travel_directories.size(); ++num_of_travel) {
         string plan_path, route_path;
         this->curr_travel_name = travel_directories[num_of_travel - 1].filename();
@@ -235,8 +235,10 @@ bool Simulator::start(string algorithm_path, string travels_dir_path) {
             Simulation sim(ship, route, calc);
             sim.initSimulation(num_of_algo, num_of_travel, curr_travel_name, inst.algo_funcs[num_of_algo - 1],
                                output_dir_path, plan_path, route_path);
-            // Launch a thread.
-            thread_pool.getTask(sim);
+            if(number_of_threads > 1) // Launch a thread.
+                thread_pool.getTask(sim);
+            else // This thread is the only one, it is also the worker
+                sim.runSimulation();
         }
     }
     thread_pool.finish();
