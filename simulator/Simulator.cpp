@@ -6,7 +6,7 @@ vector<vector<vector<string>>> Simulator::errors;
 
 Simulator::Simulator(const string &output_path, unsigned int num_threads) : output_dir_path(output_path),
                                                                             number_of_threads(num_threads),
-                                                                            err_occurred(false){
+                                                                            err_occurred(false) {
     vector<vector<string>> first_err_row;
     vector<string> temp_err_row;
 
@@ -182,6 +182,21 @@ void Simulator::markRemovedTravel(int num_of_travel) {
     }
 }
 
+void Simulator::checkErrorsDuringSimulations() {
+    for (int i = 0; i < (int) errors.size(); i++) {
+        bool broke = false;
+        for (int j = 0; j < (int) errors[0].size(); j++) {
+            if ((int) errors[i][j].size() > 1) {
+                err_occurred = true;
+                broke = true;
+                break;
+            }
+        }
+        if (broke)
+            break;
+    }
+}
+
 bool Simulator::start(string algorithm_path, string travels_dir_path) {
     if (!updateInput(algorithm_path)) {
         fillSimErrors();
@@ -204,14 +219,14 @@ bool Simulator::start(string algorithm_path, string travels_dir_path) {
     WeightBalanceCalculator calc;
 
     // Launch simulation!
-    ThreadPool thread_pool((int)number_of_threads - 1);
+    ThreadPool thread_pool((int) number_of_threads);
     thread_pool.start();
     for (int num_of_travel = 1; num_of_travel <= (int) travel_directories.size(); ++num_of_travel) {
         string plan_path, route_path;
         this->curr_travel_name = travel_directories[num_of_travel - 1].filename();
         ShipPlan ship;
         Route route;
-        //Iterate over the directory
+        //Iterate over the directory and initializing the travel (once!)
         if (!scanTravelDir(ship, route, plan_path, route_path, travel_directories[num_of_travel - 1])) {
             markRemovedTravel(num_of_travel);
             continue; // Fatal error detected. Skip to the next travel.
@@ -220,7 +235,7 @@ bool Simulator::start(string algorithm_path, string travels_dir_path) {
             Simulation sim(ship, route, calc);
             sim.initSimulation(num_of_algo, num_of_travel, curr_travel_name, inst.algo_funcs[num_of_algo - 1],
                                output_dir_path, plan_path, route_path);
-//            sim.runSimulation();
+            // Launch a thread.
             thread_pool.getTask(sim);
         }
     }
@@ -228,18 +243,7 @@ bool Simulator::start(string algorithm_path, string travels_dir_path) {
 
     inst.algo_funcs.clear();
     for (auto &hndl:handlers) { dlclose(hndl); }
-    for(int i = 0; i < (int)errors.size(); i++){
-        bool broke = false;
-        for(int j = 0; j < (int)errors[0].size(); j++){
-            if((int)errors[i][j].size() > 1){
-                err_occurred = true;
-                broke = true;
-                break;
-            }
-        }
-        if(broke)
-            break;
-    }
+    checkErrorsDuringSimulations();
     if (err_occurred) // Errors found, errors_file should be created
         fillSimErrors();
     createResultsFile();
