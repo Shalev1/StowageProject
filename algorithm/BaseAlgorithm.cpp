@@ -153,7 +153,21 @@ void BaseAlgorithm::getLoadingContainers(const vector<Container*> &reloadContain
     }
 }
 
-Spot *BaseAlgorithm::getEmptySpot(int &returnFloorNum, int fromX, int fromY) {
+Spot *BaseAlgorithm::getEmptySpot(int &returnFloorNum, Container* cont, int fromX, int fromY) {
+    set<Container*>* containersToDest = ship.getContainersSetForPort(cont->getDestPort());
+    // First, look if there is spot that all of the containers in it (all floors) is for the same destination like cont
+    if(containersToDest != nullptr){
+        set<Container*>& containersToDestRef = *containersToDest;
+        for(auto& c : containersToDestRef){
+            Spot* cSpot = c->getSpotInFloor();
+            if(ship.isUniqueDestInSpot(cSpot)){
+                Spot* emptySpot = ship.getFirstFreeSpotIn(cSpot->getPlaceX(), cSpot->getPlaceY());
+                if(emptySpot != nullptr){
+                    return emptySpot;
+                }
+            }
+        }
+    }
     for (int floor_num = 0; floor_num < ship.getNumOfDecks(); ++floor_num) {
         //Iterate over the current floor's floor map
         for (int x = 0; x < ship.getShipRows(); ++x) {
@@ -174,7 +188,7 @@ Spot *BaseAlgorithm::getEmptySpot(int &returnFloorNum, int fromX, int fromY) {
 
 bool BaseAlgorithm::findLoadingSpot(Container *cont, FileHandler &instructionsFile) {
     int floorNum;
-    Spot *empty_spot = getEmptySpot(floorNum);
+    Spot *empty_spot = getEmptySpot(floorNum, cont);
     if (empty_spot == nullptr) {
         //Ship is full, reject
         instructionsFile.writeInstruction("R", cont->getID(), -1, -1, -1);
@@ -186,7 +200,7 @@ bool BaseAlgorithm::findLoadingSpot(Container *cont, FileHandler &instructionsFi
                                   empty_spot->getPlaceY()) != WeightBalanceCalculator::APPROVED) {
         empty_spot->setAvailable(false);
         failedSpots.push_back(empty_spot);
-        empty_spot = getEmptySpot(floorNum);
+        empty_spot = getEmptySpot(floorNum, cont);
         if (empty_spot == nullptr) {
             cout << "WARNING: No available spot for container: " << cont->getID() << endl;
             instructionsFile.writeInstruction("R", cont->getID(), -1, -1, -1);

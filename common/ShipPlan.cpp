@@ -137,6 +137,10 @@ void ShipPlan::insertContainer(Spot *pos, Container &cont) {
     containers_ids.insert(cont.getID());
     pos->setContainer(&cont);
     cont.setPlace(pos);
+    if (containers_to_dest.find(cont.getDestPort()) != containers_to_dest.end())
+        containers_to_dest[cont.getDestPort()] = {&cont};
+    else
+        containers_to_dest[cont.getDestPort()].insert(&cont);
     this->free_spots_num--;
 }
 
@@ -146,6 +150,7 @@ void ShipPlan::insertContainer(int floor_num, int x, int y, Container &cont) {
 
 void ShipPlan::removeContainer(Spot *pos) {
     containers_ids.erase(pos->getContainer()->getID());
+    containers_to_dest[pos->getContainer()->getDestPort()].erase(pos->getContainer());
     pos->getContainer()->setPlace(nullptr);
     pos->setContainer(nullptr); // clearing spot with null.
     this->free_spots_num++;
@@ -193,4 +198,32 @@ void ShipPlan::resetShipPlan() {
     free_spots_num = 0;
     getShipDecks().clear();
     containers_ids.clear();
+}
+
+set<Container*>* ShipPlan::getContainersSetForPort(const string &dest) {
+    if (containers_to_dest.find(dest) != containers_to_dest.end())
+        return &containers_to_dest[dest];
+    return nullptr;
+}
+
+bool ShipPlan::isUniqueDestInSpot(Spot *spot) {
+    if(spot == nullptr || spot->getContainer() == nullptr)
+        return false;
+    string dest = spot->getContainer()->getDestPort();
+    for(int i = 0; i < num_of_decks; i++) {
+        if (getContainerAt(i, spot->getPlaceX(), spot->getPlaceY()) == nullptr)
+            continue;
+        if (getContainerAt(i, spot->getPlaceX(), spot->getPlaceY())->getDestPort() != dest)
+            return false;
+    }
+    return true;
+}
+
+Spot* ShipPlan::getFirstFreeSpotIn(int x, int y) {
+    for(int i = 0; i < num_of_decks; i++) {
+        Spot& spot = getSpotAt(i, x, y);
+        if(spot.getAvailable() && spot.getContainer() == nullptr)
+            return &spot;
+    }
+    return nullptr;
 }
