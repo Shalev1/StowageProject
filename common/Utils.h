@@ -8,6 +8,7 @@
 
 
 using std::cout;
+using std::cerr;
 using std::string;
 using std::fstream;
 using std::vector;

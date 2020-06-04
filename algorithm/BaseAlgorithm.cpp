@@ -94,18 +94,42 @@ int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_an
 
 void BaseAlgorithm::getUnloadInstructions(const string &portName, vector<Container *> &reloadContainers,
                                          FileHandler &instructionsFile) {
-    Container *container_to_unload;
-    // Iterate ship from top to the bottom
+    // First, get all of the containers that need to be unloaded in this port
+    set<Container*>* containersToDest = ship.getContainersSetForPort(portName);
+    if(containersToDest == nullptr || containersToDest->empty())
+        return; // No containers to unload in this port
+    firstUnloading(portName, instructionsFile);
+    Container *containerToUnload;
+    // Iterate ship from top to bottom
     for (int floor_num = ship.getNumOfDecks() - 1; floor_num >= 0; --floor_num) {
         for (int x = 0; x < ship.getShipRows(); ++x) {
             for (int y = 0; y < ship.getShipCols(); ++y) {
-                if ((container_to_unload = ship.getContainerAt(floor_num, x, y)) == nullptr) {
+                if ((containerToUnload = ship.getContainerAt(floor_num, x, y)) == nullptr) {
                     continue; // empty spot, continue to the next one.
                 }
                 // Check if the container's port ID match the current port ID
-                if (portName == container_to_unload->getDestPort()) {
-                    markRemoveContainers(*container_to_unload, *(container_to_unload->getSpotInFloor()),
+                if (portName == containerToUnload->getDestPort()) {
+                    markRemoveContainers(*containerToUnload, *(containerToUnload->getSpotInFloor()),
                                          reloadContainers, instructionsFile);
+                }
+            }
+        }
+    }
+}
+
+void BaseAlgorithm::firstUnloading(const string &portName, FileHandler &instructionsFile) {
+    vector<Container*> containersToDest = ship.getContainersForDest(portName);
+    for(auto& cont : containersToDest){
+        Spot* contSpot = cont->getSpotInFloor();
+        if(contSpot != nullptr){ // Container still on the ship
+            if(ship.isUniqueDestAboveSpot(contSpot)){
+                for(int floorNum = ship.getNumOfDecks() - 1; floorNum >= contSpot->getFloorNum(); floorNum--){
+                    Container* contAbove = ship.getContainerAt(floorNum, contSpot->getPlaceX(), contSpot->getPlaceY());
+                    if(contAbove == nullptr)
+                        continue;
+                    instructionsFile.writeInstruction("U", contAbove->getID(), contAbove->getSpotInFloor()->getFloorNum(),
+                            contSpot->getPlaceX(), contSpot->getPlaceY());
+                    ship.removeContainer(contAbove->getSpotInFloor());
                 }
             }
         }
@@ -168,6 +192,7 @@ Spot *BaseAlgorithm::getEmptySpot(Container* cont, int fromX, int fromY) {
             }
         }
     }
+    // Now scan the ship from bottom to top
     for (int floor_num = 0; floor_num < ship.getNumOfDecks(); ++floor_num) {
         //Iterate over the current floor's floor map
         for (int x = 0; x < ship.getShipRows(); ++x) {
@@ -192,6 +217,7 @@ bool BaseAlgorithm::findLoadingSpot(Container *cont, FileHandler &instructionsFi
         instructionsFile.writeInstruction("R", cont->getID(), -1, -1, -1);
         return false;
     }
+    // TODO: remove this part (no WBC)
     vector<Spot *> failedSpots; // All spots that returned form getEmptySpot but put the container will make the ship unbalance
     // validate that ship will be balance. If not, find another spot.
     while (weightCal.tryOperation('L', cont->getWeight(), emptySpot->getPlaceX(),

@@ -36,6 +36,11 @@ protected:
     virtual void getUnloadInstructions(const string &portName, vector<Container *> &reloadContainers, FileHandler &instructionsFile);
 
     /**
+     * Unload all the containers that there is no container on them with different destination
+     */
+    virtual void firstUnloading(const string &portName, FileHandler &instructionsFile);
+
+    /**
      * Search for an empty spot in the ship for container loading
      * @param fromX and fromY: find empty spot to container in (fromX, fromY), disable same column spot
      */

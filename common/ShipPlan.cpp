@@ -206,17 +206,21 @@ set<Container*>* ShipPlan::getContainersSetForPort(const string &dest) {
     return nullptr;
 }
 
-bool ShipPlan::isUniqueDestInSpot(Spot *spot) {
+bool ShipPlan::isUniqueDestInSpot(Spot *spot, int start_floor) {
     if(spot == nullptr || spot->getContainer() == nullptr)
         return false;
     string dest = spot->getContainer()->getDestPort();
-    for(int i = 0; i < num_of_decks; i++) {
+    for(int i = start_floor; i < num_of_decks; i++) {
         if (getContainerAt(i, spot->getPlaceX(), spot->getPlaceY()) == nullptr)
             continue;
         if (getContainerAt(i, spot->getPlaceX(), spot->getPlaceY())->getDestPort() != dest)
             return false;
     }
     return true;
+}
+
+bool ShipPlan::isUniqueDestAboveSpot(Spot *spot) {
+    return isUniqueDestInSpot(spot, spot->getFloorNum());
 }
 
 Spot* ShipPlan::getFirstFreeSpotIn(int x, int y) {

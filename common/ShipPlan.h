@@ -146,8 +146,15 @@ public:
      /**
       * return true if all of the containers in all floors with the given spot has the same destination
       * return false for spot without containers or if there are containers for more than 1 destination
+      * @param start_floor search from the given floor and above
       */
-     bool isUniqueDestInSpot(Spot* spot);
+     bool isUniqueDestInSpot(Spot* spot, int start_floor = 0);
+
+    /**
+     * return true if all of the containers in all floors from the given spot and above it have the same destination
+     * return false for spot without containers or if there are containers above for other than 1 destination
+     */
+    bool isUniqueDestAboveSpot(Spot* spot);
 
      /**
       * get The first free spot with (row,column) = (x,y)
