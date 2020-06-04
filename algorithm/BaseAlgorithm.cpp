@@ -162,7 +162,8 @@ Spot *BaseAlgorithm::getEmptySpot(int &returnFloorNum, Container* cont, int from
             Spot* cSpot = c->getSpotInFloor();
             if(ship.isUniqueDestInSpot(cSpot)){
                 Spot* emptySpot = ship.getFirstFreeSpotIn(cSpot->getPlaceX(), cSpot->getPlaceY());
-                if(emptySpot != nullptr){
+                if (emptySpot != nullptr) {
+                    returnFloorNum = emptySpot->getFloorNum();
                     return emptySpot;
                 }
             }
@@ -188,20 +189,20 @@ Spot *BaseAlgorithm::getEmptySpot(int &returnFloorNum, Container* cont, int from
 
 bool BaseAlgorithm::findLoadingSpot(Container *cont, FileHandler &instructionsFile) {
     int floorNum;
-    Spot *empty_spot = getEmptySpot(floorNum, cont);
-    if (empty_spot == nullptr) {
+    Spot *emptySpot = getEmptySpot(floorNum, cont);
+    if (emptySpot == nullptr) {
         //Ship is full, reject
         instructionsFile.writeInstruction("R", cont->getID(), -1, -1, -1);
         return false;
     }
     vector<Spot *> failedSpots; // All spots that returned form getEmptySpot but put the container will make the ship unbalance
     // validate that ship will be balance. If not, find another spot.
-    while (weightCal.tryOperation('L', cont->getWeight(), empty_spot->getPlaceX(),
-                                  empty_spot->getPlaceY()) != WeightBalanceCalculator::APPROVED) {
-        empty_spot->setAvailable(false);
-        failedSpots.push_back(empty_spot);
-        empty_spot = getEmptySpot(floorNum, cont);
-        if (empty_spot == nullptr) {
+    while (weightCal.tryOperation('L', cont->getWeight(), emptySpot->getPlaceX(),
+                                  emptySpot->getPlaceY()) != WeightBalanceCalculator::APPROVED) {
+        emptySpot->setAvailable(false);
+        failedSpots.push_back(emptySpot);
+        emptySpot = getEmptySpot(floorNum, cont);
+        if (emptySpot == nullptr) {
             cout << "WARNING: No available spot for container: " << cont->getID() << endl;
             instructionsFile.writeInstruction("R", cont->getID(), -1, -1, -1);
             for (auto &spot : failedSpots)
@@ -213,8 +214,8 @@ bool BaseAlgorithm::findLoadingSpot(Container *cont, FileHandler &instructionsFi
     for (auto &spot : failedSpots)
         spot->setAvailable(true);
     // Write loading instruction
-    instructionsFile.writeInstruction("L", cont->getID(), floorNum, empty_spot->getPlaceX(), empty_spot->getPlaceY());
-    ship.insertContainer(empty_spot, *cont);
+    instructionsFile.writeInstruction("L", cont->getID(), floorNum, emptySpot->getPlaceX(), emptySpot->getPlaceY());
+    ship.insertContainer(emptySpot, *cont);
     return true;
 }
 
