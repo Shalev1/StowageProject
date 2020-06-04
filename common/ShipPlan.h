@@ -8,8 +8,10 @@
 #include <vector>
 #include <sstream>
 #include <set>
+#include <map>
 
 using std::set;
+using std::map;
 
 /**
  * ShipPlan Class.
@@ -27,6 +29,7 @@ private:
     int cols;
     vector<Floor> decks;
     set<string> containers_ids; // Set of all the containe's IDS that on the ship
+    map<string, set<Container*>> containers_to_dest;
 
 public:
     //---Constructors and Destructors---//
@@ -133,6 +136,24 @@ public:
      * Clearing the ship members
      */
      void resetShipPlan();
+
+     /**
+      * Return set of the containers that their destination is @param dest
+      * if there is no such set return nullptr
+      */
+     set<Container*>* getContainersSetForPort(const string& dest);
+
+     /**
+      * return true if all of the containers in all floors with the given spot has the same destination
+      * return false for spot without containers or if there are containers for more than 1 destination
+      */
+     bool isUniqueDestInSpot(Spot* spot);
+
+     /**
+      * get The first free spot with (row,column) = (x,y)
+      * return nullptr if there isn't one like that
+      */
+     Spot* getFirstFreeSpotIn(int x, int y);
 };
 
 #endif //STOWAGEPROJECT_SHIPPLAN_H

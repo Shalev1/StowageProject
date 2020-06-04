@@ -40,7 +40,7 @@ protected:
      * @param returnFloorNum is the floor of the founded spot
      * @param fromX and fromY: find empty spot to container in (fromX, fromY), disable same column spot
      */
-    virtual Spot *getEmptySpot(int &returnFloorNum, int fromX = -1, int fromY = -1);
+    virtual Spot *getEmptySpot(int &returnFloorNum, Container* cont, int fromX = -1, int fromY = -1);
 
     /**
      * Load container to the ship, return false if ship is full
