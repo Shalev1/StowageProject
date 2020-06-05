@@ -47,6 +47,11 @@ protected:
     virtual Spot *getEmptySpot(Container* cont, int fromX = -1, int fromY = -1);
 
     /**
+     * Search for an empty spot in the first floor that available (scan all rows and columns)
+     */
+    virtual Spot *getEmptySpotInFirstFloor();
+
+    /**
      * Load container to the ship, return false if ship is full
      */
     virtual bool findLoadingSpot(Container *cont, FileHandler &instructionsFile);

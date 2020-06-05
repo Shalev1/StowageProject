@@ -224,10 +224,36 @@ bool ShipPlan::isUniqueDestAboveSpot(Spot *spot) {
 }
 
 Spot* ShipPlan::getFirstFreeSpotIn(int x, int y) {
-    for(int i = 0; i < num_of_decks; i++) {
-        Spot& spot = getSpotAt(i, x, y);
+    for(int floor_num = 0; floor_num < num_of_decks; floor_num++) {
+        Spot& spot = getSpotAt(floor_num, x, y);
         if(spot.getAvailable() && spot.getContainer() == nullptr)
             return &spot;
     }
     return nullptr;
+}
+
+Spot* ShipPlan::getFirstAvailableSpotIn(int x, int y) {
+    for(int floor_num = 0; floor_num < num_of_decks; floor_num++) {
+        Spot& spot = getSpotAt(floor_num, x, y);
+        if(spot.getAvailable())
+            return &spot;
+    }
+    return nullptr;
+}
+
+string ShipPlan::getClosestDestInSpot(int x, int y, const Route &route) {
+    string closest_dest;
+    int closet_dist = route.getNumOfPorts() + 1;
+    for(int floor_num = 0; floor_num < num_of_decks; floor_num++) {
+        Spot& spot = getSpotAt(floor_num, x, y);
+        if(spot.getAvailable() && spot.getContainer() != nullptr){
+            int dist = route.stopsUntilPort(spot.getContainer()->getDestPort());
+            if(dist < closet_dist){
+                closest_dest = spot.getContainer()->getDestPort();
+                closet_dist = dist;
+            }
+        }
+    }
+
+    return closest_dest;
 }

@@ -1,8 +1,11 @@
 #ifndef STOWAGEPROJECT_SHIPPLAN_H
 #define STOWAGEPROJECT_SHIPPLAN_H
 
+class Route;
+
 #include "Floor.h"
 #include "Utils.h"
+#include "Route.h"
 #include <cstdlib>
 #include <iostream>
 #include <vector>
@@ -161,6 +164,17 @@ public:
       * return nullptr if there isn't one like that
       */
      Spot* getFirstFreeSpotIn(int x, int y);
+
+    /**
+     * get The first available spot with (row,column) = (x,y)
+     * return nullptr if there isn't one like that
+     */
+    Spot* getFirstAvailableSpotIn(int x, int y);
+
+    /**
+     * return the name of the closest port that is the destination of container in spot (x,y)
+     */
+     string getClosestDestInSpot(int x, int y, const Route& route);
 };
 
 #endif //STOWAGEPROJECT_SHIPPLAN_H

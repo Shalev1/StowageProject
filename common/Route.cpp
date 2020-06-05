@@ -220,3 +220,14 @@ vector<string> Route::getLeftPortsNames(int fromPortNum) {
     }
     return names;
 }
+
+int Route::stopsUntilPort(const string &dest) const{
+    int stops = 0;
+    for (auto it = ports.begin() + currentPortNum; it != ports.end(); ++it) {
+        if(dest == (*it).getName()){
+            return stops;
+        }
+        stops++;
+    }
+    return -1;
+}

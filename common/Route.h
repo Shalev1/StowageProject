@@ -7,6 +7,8 @@
 #ifndef SHIPPROJECT_ROUTE_H
 #define SHIPPROJECT_ROUTE_H
 
+class ShipPlan;
+
 #include <vector>
 #include <fstream>
 #include <algorithm>
@@ -85,6 +87,10 @@ public:
         return ports[currentPortNum];
     }
 
+    const string& getCurrentPortName() const{
+        return ports[currentPortNum].getName();
+    }
+
     string& getCurrentPortPath(){
         return portsContainersPathsSorted[currentPortNum];
     }
@@ -118,6 +124,22 @@ public:
      * Sort the given containers vector by their destination, from the furthest one to the closest one
      */
     void sortContainersByFurtherDestination(vector<Container*>& containers);
+
+    /**
+     * Return the name of the last port
+     */
+    const string& getLastPortName() const{
+        return ports[(int)ports.size() - 1].getName();
+    }
+
+    /**
+     * Return the number of stops until @param dest (-1 if dest is not in the route)
+     */
+    int stopsUntilPort(const string& dest) const;
+
+    int getNumOfPorts() const{
+        return (int)ports.size();
+    }
 
     friend ostream &operator<<(ostream &os, const Route &r);
 };

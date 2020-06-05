@@ -162,7 +162,7 @@ Simulation::validateLoadOp(Port &curr_port, WeightBalanceCalculator &calc,
     if (!pos->getAvailable() || pos->getContainer() != nullptr) {
         Simulator::insertError(num_of_algo, num_of_travel,
                                "@ Travel: " + this->curr_travel_name + "- Port: " + this->curr_port_name +
-                               "- Load a container in an unavailable spot.");
+                               "- Load container with ID: " + cont->getID() + " in an unavailable spot.");
         return false;
     }
     //Container validation
