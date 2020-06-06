@@ -7,7 +7,7 @@
 #ifndef SHIPPROJECT_ROUTE_H
 #define SHIPPROJECT_ROUTE_H
 
-class ShipPlan;
+class Port;
 
 #include <vector>
 #include <fstream>
@@ -83,13 +83,9 @@ public:
      */
     bool moveToNextPortWithoutContInit();
 
-    Port &getCurrentPort() {
-        return ports[currentPortNum];
-    }
+    Port &getCurrentPort();
 
-    const string& getCurrentPortName() const{
-        return ports[currentPortNum].getName();
-    }
+    const string& getCurrentPortName() const;
 
     string& getCurrentPortPath(){
         return portsContainersPathsSorted[currentPortNum];
@@ -128,18 +124,14 @@ public:
     /**
      * Return the name of the last port
      */
-    const string& getLastPortName() const{
-        return ports[(int)ports.size() - 1].getName();
-    }
+    const string& getLastPortName() const;
 
     /**
      * Return the number of stops until @param dest (-1 if dest is not in the route)
      */
     int stopsUntilPort(const string& dest) const;
 
-    int getNumOfPorts() const{
-        return (int)ports.size();
-    }
+    int getNumOfPorts() const;
 
     friend ostream &operator<<(ostream &os, const Route &r);
 };

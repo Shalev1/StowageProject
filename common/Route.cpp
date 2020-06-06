@@ -231,3 +231,19 @@ int Route::stopsUntilPort(const string &dest) const{
     }
     return -1;
 }
+
+Port& Route::getCurrentPort() {
+    return ports[currentPortNum];
+}
+
+const string & Route::getCurrentPortName() const {
+    return ports[currentPortNum].getName();
+}
+
+const string & Route::getLastPortName() const {
+    return ports[(int)ports.size() - 1].getName();
+}
+
+int Route::getNumOfPorts() const {
+    return (int)ports.size();
+}

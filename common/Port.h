@@ -7,14 +7,16 @@
 #ifndef SHIPPROJECT_PORT_H
 #define SHIPPROJECT_PORT_H
 
+class ShipPlan;
+
 #include <vector>
 #include <string>
 #include <map>
 #include <cctype>
 #include "Container.h"
 #include "Utils.h"
-#include "algorithm"
 #include "ShipPlan.h"
+#include "algorithm"
 
 using std::pair;
 using std::map;
