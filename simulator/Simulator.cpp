@@ -151,7 +151,7 @@ bool Simulator::validateAlgoLoad(void *handler, string &algo_name, int prev_size
     if (prev_size + 1 != (int) inst.algo_funcs.size()) {
         errors[0][0].push_back("@ ERROR: Algorithm: " + algo_name + " did not register successfully.");
         err_occurred = true;
-        //TODO: Close handlers that their algorithms forgot to register
+        dlclose(handler);
         return false; //The algorithm did not register successfully.
     }
     return true;
