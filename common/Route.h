@@ -133,6 +133,8 @@ public:
 
     int getNumOfPorts() const;
 
+    int stopsLeft() const;
+
     friend ostream &operator<<(ostream &os, const Route &r);
 };
 

@@ -49,7 +49,19 @@ protected:
     /**
      * Search for an empty spot in the first floor that available (scan all rows and columns)
      */
-    virtual Spot *getEmptySpotInFirstFloor();
+    virtual Spot *searchFirstFloor();
+
+    /**
+     * Search for an empty spot on container with the same destination
+     */
+    virtual Spot *searchSameDest(Container* cont);
+
+    /**
+     *  Scan the ship twice, in the first scan search for spot where all of the containers below
+     *  have further destination then @param cont's destination.
+     *  The second scan will be done if the first one fails, search for an empty spot without any conditions
+     */
+    virtual Spot *scanShip(Container* cont, int fromX, int fromY);
 
     /**
      * Load container to the ship, return false if ship is full

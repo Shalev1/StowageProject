@@ -178,18 +178,42 @@ void BaseAlgorithm::getLoadingContainers(const vector<Container*> &reloadContain
 }
 
 Spot *BaseAlgorithm::getEmptySpot(Container* cont, int fromX, int fromY) {
-    if(cont->getDestPort() == route.getLastPortName()) { // The destination is the last port
-        Spot* emptySpot = getEmptySpotInFirstFloor();
+    Spot* emptySpot = nullptr;
+    if(route.stopsUntilPort(cont->getDestPort()) > 0.75 * route.stopsLeft()) { // The destination is far away
+        emptySpot = searchFirstFloor();
         if(emptySpot != nullptr){
             return emptySpot;
         }
     }
+    // Try To load the container on container with same destination (for good spot)
+    emptySpot = searchSameDest(cont);
+    if(emptySpot != nullptr){
+        return emptySpot;
+    }
+    // Now scan the ship from bottom to top
+    emptySpot = scanShip(cont, fromX, fromY);
+    return emptySpot;
+}
+
+Spot* BaseAlgorithm::searchFirstFloor() {
+    for(int x = 0; x < ship.getShipRows(); x++){
+        for(int y = 0; y < ship.getShipCols(); y++){
+            Spot* firstSpot = ship.getFirstAvailableSpotIn(x, y);
+            if(firstSpot != nullptr && firstSpot->getContainer() == nullptr){ // no containers in all decks with indexes (x,y)
+                return firstSpot;
+            }
+        }
+    }
+    return nullptr;
+}
+
+Spot* BaseAlgorithm::searchSameDest(Container* cont) {
     set<Container*>* containersToDest = ship.getContainersSetForPort(cont->getDestPort());
     // First, look if there is spot that all of the containers in it (all decks) is for the same destination like cont
     if(containersToDest != nullptr) {
         set<Container *> &containersToDestRef = *containersToDest;
         Spot *sameDestSpot = nullptr; // backup spot, if find (x, y) where the top container has same destination
-        // and below containers to further destination only, use it if uniqueDestInSpot failed
+                                      // and below containers to further destination only, use it if uniqueDestInSpot failed
         for (auto &c : containersToDestRef) {
             Spot *cSpot = c->getSpotInFloor();
             if (ship.isUniqueDestInSpot(cSpot)) {
@@ -203,8 +227,8 @@ Spot *BaseAlgorithm::getEmptySpot(Container* cont, int fromX, int fromY) {
                     if (closestDest == cont->getDestPort()) {
                         Spot *emptySpot = ship.getFirstFreeSpotIn(cSpot->getPlaceX(), cSpot->getPlaceY());
                         if (emptySpot != nullptr &&
-                                ship.getContainerAt(emptySpot->getFloorNum() - 1, cSpot->getPlaceX(), cSpot->getPlaceY())->getDestPort() == cont->getDestPort()) {
-                                sameDestSpot = emptySpot;
+                            ship.getContainerAt(emptySpot->getFloorNum() - 1, cSpot->getPlaceX(), cSpot->getPlaceY())->getDestPort() == cont->getDestPort()) {
+                            sameDestSpot = emptySpot;
                         }
                     }
                 }
@@ -214,30 +238,29 @@ Spot *BaseAlgorithm::getEmptySpot(Container* cont, int fromX, int fromY) {
             return sameDestSpot;
         }
     }
-    // Now scan the ship from bottom to top
-    for (int floor_num = 0; floor_num < ship.getNumOfDecks(); ++floor_num) {
-        //Iterate over the current floor's floor map
-        for (int x = 0; x < ship.getShipRows(); ++x) {
-            for (int y = 0; y < ship.getShipCols(); ++y) {
-                if(fromX == x && fromY == y) // Same column as original cont (if given), skip
-                    continue;
-                Spot *curSpot = &(ship.getSpotAt(floor_num, x, y));
-                // Check if the spot is clear base
-                if (curSpot->getAvailable() && curSpot->getContainer() == nullptr) {
-                    return curSpot; //Found an available and empty spot
-                }
-            }
-        }
-    }
     return nullptr;
 }
 
-Spot* BaseAlgorithm::getEmptySpotInFirstFloor() {
-    for(int x = 0; x < ship.getShipRows(); x++){
-        for(int y = 0; y < ship.getShipCols(); y++){
-            Spot* firstSpot = ship.getFirstAvailableSpotIn(x, y);
-            if(firstSpot != nullptr && firstSpot->getContainer() == nullptr){ // no containers in all decks with indexes (x,y)
-                return firstSpot;
+Spot* BaseAlgorithm::scanShip(Container* cont, int fromX, int fromY) {
+    for(int i = 0; i < 2; i++) {
+        bool destControl = (i == 0);
+        for (int floor_num = 0; floor_num < ship.getNumOfDecks(); ++floor_num) {
+            //Iterate over the current floor's floor map
+            for (int x = 0; x < ship.getShipRows(); ++x) {
+                for (int y = 0; y < ship.getShipCols(); ++y) {
+                    if (fromX == x && fromY == y) // Same column as original cont (if given), skip
+                        continue;
+                    Spot *curSpot = &(ship.getSpotAt(floor_num, x, y));
+                    // Check if the spot is clear
+                    if (curSpot->getAvailable() && curSpot->getContainer() == nullptr) {
+                        if(!destControl)
+                            return curSpot; //Found an available and empty spot
+                        string closestDest = ship.getClosestDestInSpot(curSpot->getPlaceX(), curSpot->getPlaceY(), route);
+                        if(closestDest.empty() || cont->getDestPort() == route.getCloserDestination(cont->getDestPort(), closestDest)){
+                            return curSpot;
+                        }
+                    }
+                }
             }
         }
     }

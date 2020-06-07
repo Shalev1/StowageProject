@@ -247,3 +247,7 @@ const string & Route::getLastPortName() const {
 int Route::getNumOfPorts() const {
     return (int)ports.size();
 }
+
+int Route::stopsLeft() const {
+    return (int)ports.size() - currentPortNum;
+}
