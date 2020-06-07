@@ -135,14 +135,6 @@ void Route::initPortsContainersFiles(const string& dir, vector<string>& paths, v
     this->portsContainersPaths = paths;
 }
 
-bool Route::moveToNextPortWithoutContInit() { // TODO: delete this function
-    if(!hasNextPort())
-        return false;
-    currentPortNum++;
-    portVisits[getCurrentPort().getName()]++;
-    return true;
-}
-
 bool Route::checkLastPortContainers(const string& lastPortPath, bool addDir) {
     string path = addDir ? dir + std::filesystem::path::preferred_separator : "";
     path.append(lastPortPath);
@@ -234,10 +226,6 @@ int Route::stopsUntilPort(const string &dest) const{
 
 Port& Route::getCurrentPort() {
     return ports[currentPortNum];
-}
-
-const string & Route::getCurrentPortName() const {
-    return ports[currentPortNum].getName();
 }
 
 const string & Route::getLastPortName() const {

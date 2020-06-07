@@ -58,7 +58,7 @@ int BaseAlgorithm::getInstructionsForCargo(const std::string &input_full_path_an
         return routeErrorCode;
     }
     vector<pair<int,string>> errors;
-    route.moveToNextPortWithoutContInit();
+    route.moveToNextPort(ship);
     if(!route.hasNextPort() &route.checkLastPortContainers(input_full_path_and_file_name, false)) { // This is the last port and it has waiting containers
         errors.emplace_back(17, "Last port shouldn't has waiting containers");
     } else {
@@ -274,25 +274,7 @@ bool BaseAlgorithm::findLoadingSpot(Container *cont, FileHandler &instructionsFi
         instructionsFile.writeInstruction("R", cont->getID(), -1, -1, -1);
         return false;
     }
-    // TODO: remove this part (no WBC)
-    vector<Spot *> failedSpots; // All spots that returned form getEmptySpot but put the container will make the ship unbalance
-    // validate that ship will be balance. If not, find another spot.
-    while (weightCal.tryOperation('L', cont->getWeight(), emptySpot->getPlaceX(),
-                                  emptySpot->getPlaceY()) != WeightBalanceCalculator::APPROVED) {
-        emptySpot->setAvailable(false);
-        failedSpots.push_back(emptySpot);
-        emptySpot = getEmptySpot(cont);
-        if (emptySpot == nullptr) {
-            cout << "WARNING: No available spot for container: " << cont->getID() << endl;
-            instructionsFile.writeInstruction("R", cont->getID(), -1, -1, -1);
-            for (auto &spot : failedSpots)
-                spot->setAvailable(true);
-            return true;
-        }
-    }
-    // Spot found, return all failed spots to be available
-    for (auto &spot : failedSpots)
-        spot->setAvailable(true);
+
     // Write loading instruction
     instructionsFile.writeInstruction("L", cont->getID(), emptySpot->getFloorNum(), emptySpot->getPlaceX(), emptySpot->getPlaceY());
     ship.insertContainer(emptySpot, *cont);
@@ -321,7 +303,7 @@ void BaseAlgorithm::markRemoveContainers(Container &cont, Spot &spot, vector<Con
         }
         if (weightCal.tryOperation('U', cont.getWeight(), curr_spot->getPlaceX(),
                                    curr_spot->getPlaceY()) != WeightBalanceCalculator::APPROVED) { // Check if removing this container will turn the ship out of balance.
-            // TODO ex3: Handle error
+            // Always APPROVED, never reach here
         }
         if(!checkMoveContainer(curr_spot->getContainer(), *curr_spot, instructionsFile)) {
             reload_containers.push_back(curr_spot->getContainer());
@@ -334,7 +316,7 @@ void BaseAlgorithm::markRemoveContainers(Container &cont, Spot &spot, vector<Con
     }
     if (weightCal.tryOperation('U', cont.getWeight(), spot.getPlaceX(),
                                spot.getPlaceY()) != WeightBalanceCalculator::APPROVED) { // Check if removing this container will turn the ship out of balance.
-        // TODO ex3: Handle error
+        // Always APPROVED, never reach here
     }
     // We have reached the container that has the same port ID destination. write unload instruction
     instructionsFile.writeInstruction("U", spot.getContainer()->getID(), curr_floor_num, spot.getPlaceX(),
