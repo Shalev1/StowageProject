@@ -73,7 +73,7 @@ public:
     bool checkLastPortContainers(const string& lastPortPath, bool addDir);
 
     /**
-     * Increase port number by one and invalidate containers withv same ID as containers on the ship
+     * Increase port number by one and invalidate containers with the same ID as containers on the ship
      * Return the true if there is at least one more port in the route
      */
     bool moveToNextPort(const ShipPlan& ship);
