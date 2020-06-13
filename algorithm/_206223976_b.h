@@ -1,6 +1,8 @@
 /**
  * Created by Tomer Yoeli
- * class of Algorithm that use all of the default function except it can use move instructions
+ * class of Algorithm, loading system is firstly try to put the furthest containers at the bottom
+ * After it try to put the furthest containers at the bottom
+ * If failed, scan the ship twice, first time for smart location and second time for empty spot
  */
 
 #ifndef SHIPPROJECT__206223976_B_H

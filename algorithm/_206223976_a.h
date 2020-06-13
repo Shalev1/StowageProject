@@ -1,6 +1,8 @@
 /**
  * Created by Tomer Yoeli
- * class of Algorithm that use all aff the default implementation, without override any of them
+ * class of Algorithm, loading system is firstly try to make smart piles (by destination)
+ * After it try to put the furthest containers at the bottom
+ * If failed, scan the ship twice, first time for smart location and second time for empty spot
  */
 
 #ifndef SHIPPROJECT__206223976_A_H
