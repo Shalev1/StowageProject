@@ -44,7 +44,7 @@ protected:
      * Search for an empty spot in the ship for container loading
      * @param fromX and fromY: find empty spot to container in (fromX, fromY), disable same column spot
      */
-    virtual Spot *getEmptySpot(Container* cont, int fromX = -1, int fromY = -1);
+    virtual Spot *getEmptySpot(Container* cont,  int fromX = -1, int fromY = -1);
 
     /**
      * Search for an empty spot in the first floor that available (scan all rows and columns)
@@ -53,8 +53,9 @@ protected:
 
     /**
      * Search for an empty spot on container with the same destination
+     * @param backup is out param, will be true if the spot belong to uniqueDestSpot
      */
-    virtual Spot *searchSameDest(Container* cont);
+    virtual Spot *searchSameDest(Container* cont, int fromX, int fromY, bool& unique);
 
     /**
      *  Scan the ship twice, in the first scan search for spot where all of the containers below
@@ -69,7 +70,7 @@ protected:
     virtual bool findLoadingSpot(Container *cont, FileHandler &instructionsFile);
 
     /**
-     * Check it's possible to use move instruction for @param cont from the ship (places in @param spot)
+     * Check if it's possible to use move instruction for @param cont from the ship (places in @param spot)
      * If it's possible, write move instruction in the instructions file
      * Return true if succeed and false if fails
      */

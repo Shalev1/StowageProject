@@ -124,8 +124,19 @@ public:
      */
     int stopsUntilPort(const string& dest) const;
 
+    /**
+     * Return the number of ports in the route
+     */
     int getNumOfPorts() const;
 
+    /**
+     * Return the number of different ports in the route (if port AAAAA appear twice it counted once)
+     */
+    int getNumOfDifferentPorts() const;
+
+    /**
+     * Return how many ports left in the route (not visited yet)
+     */
     int stopsLeft() const;
 
     friend ostream &operator<<(ostream &os, const Route &r);

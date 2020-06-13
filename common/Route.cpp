@@ -236,6 +236,13 @@ int Route::getNumOfPorts() const {
     return (int)ports.size();
 }
 
+int Route::getNumOfDifferentPorts() const {
+    set<string> portNames;
+    for(auto& p : ports)
+        portNames.insert(p.getName()); // Set prevent doubles, count unique port names
+    return (int)portNames.size();
+}
+
 int Route::stopsLeft() const {
     return (int)ports.size() - currentPortNum;
 }

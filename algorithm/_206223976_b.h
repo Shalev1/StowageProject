@@ -10,8 +10,6 @@
 
 class _206223976_b : public BaseAlgorithm {
 
-protected:
-    bool checkMoveContainer(Container *cont, Spot &spot, FileHandler &instructionsFile) override;
 };
 
 #endif //SHIPPROJECT__206223976_B_H

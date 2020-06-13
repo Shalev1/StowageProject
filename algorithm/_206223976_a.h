@@ -8,7 +8,12 @@
 
 #include "../algorithm/BaseAlgorithm.h"
 
+
 // Algorithm that use all of the default functions
-class _206223976_a : public BaseAlgorithm{};
+class _206223976_a : public BaseAlgorithm{
+
+private:
+    Spot *getEmptySpot(Container* cont, int fromX = -1, int fromY = -1) override;
+};
 
 #endif //SHIPPROJECT__206223976_A_H

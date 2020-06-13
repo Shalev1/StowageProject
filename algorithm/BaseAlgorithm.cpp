@@ -179,14 +179,15 @@ void BaseAlgorithm::getLoadingContainers(const vector<Container*> &reloadContain
 
 Spot *BaseAlgorithm::getEmptySpot(Container* cont, int fromX, int fromY) {
     Spot* emptySpot = nullptr;
-    if(route.stopsUntilPort(cont->getDestPort()) > 0.75 * route.stopsLeft()) { // The destination is far away
+    if(route.stopsUntilPort(cont->getDestPort()) >= 0.8 * route.stopsLeft()) { // The destination is far away
         emptySpot = searchFirstFloor();
         if(emptySpot != nullptr){
             return emptySpot;
         }
     }
     // Try To load the container on container with same destination (for good spot)
-    emptySpot = searchSameDest(cont);
+    bool uniqueSpot;
+    emptySpot = searchSameDest(cont, fromX, fromY, uniqueSpot);
     if(emptySpot != nullptr){
         return emptySpot;
     }
@@ -207,7 +208,8 @@ Spot* BaseAlgorithm::searchFirstFloor() {
     return nullptr;
 }
 
-Spot* BaseAlgorithm::searchSameDest(Container* cont) {
+Spot* BaseAlgorithm::searchSameDest(Container* cont, int fromX, int fromY, bool& unique) {
+    unique = false; // Will be true only for unique destination spot
     set<Container*>* containersToDest = ship.getContainersSetForPort(cont->getDestPort());
     // First, look if there is spot that all of the containers in it (all decks) is for the same destination like cont
     if(containersToDest != nullptr) {
@@ -216,9 +218,13 @@ Spot* BaseAlgorithm::searchSameDest(Container* cont) {
                                       // and below containers to further destination only, use it if uniqueDestInSpot failed
         for (auto &c : containersToDestRef) {
             Spot *cSpot = c->getSpotInFloor();
+            if(cSpot->getPlaceX() == fromX && cSpot->getPlaceY() == fromY){
+                continue; // Moving operation, cannot move to the same pile
+            }
             if (ship.isUniqueDestInSpot(cSpot)) {
                 Spot *emptySpot = ship.getFirstFreeSpotIn(cSpot->getPlaceX(), cSpot->getPlaceY());
                 if (emptySpot != nullptr) {
+                    unique = true;
                     return emptySpot;
                 }
             } else {
@@ -282,11 +288,15 @@ bool BaseAlgorithm::findLoadingSpot(Container *cont, FileHandler &instructionsFi
 }
 
 bool BaseAlgorithm::checkMoveContainer(Container* cont, Spot& spot, FileHandler& instructionsFile) {
-    // Prevent warnings
-    (void)cont;
-    (void)spot;
-    (void)instructionsFile;
-    return false; // Naive implementation no move allowed
+    Spot* emptySpot = getEmptySpot(cont, spot.getPlaceX(), spot.getPlaceY());
+    if(emptySpot != nullptr){
+        instructionsFile.writeInstruction("M", cont->getID(), spot.getFloorNum(), spot.getPlaceX(),
+                                          spot.getPlaceY(), emptySpot->getFloorNum(), emptySpot->getPlaceX(), emptySpot->getPlaceY());
+        ship.moveContainer(spot.getFloorNum(), spot.getPlaceX(),
+                           spot.getPlaceY(), emptySpot->getFloorNum(), emptySpot->getPlaceX(), emptySpot->getPlaceY());
+        return true;
+    }
+    return false;
 }
 
 void BaseAlgorithm::markRemoveContainers(Container &cont, Spot &spot, vector<Container *> &reload_containers,
