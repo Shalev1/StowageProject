@@ -10,6 +10,8 @@
 
 class _206223976_b : public BaseAlgorithm {
 
+private:
+    Spot *getEmptySpot(Container* cont, int fromX = -1, int fromY = -1) override;
 };
 
 #endif //SHIPPROJECT__206223976_B_H

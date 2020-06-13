@@ -43,8 +43,9 @@ protected:
     /**
      * Search for an empty spot in the ship for container loading
      * @param fromX and fromY: find empty spot to container in (fromX, fromY), disable same column spot
+     * virtual function, each algorithm implement it different
      */
-    virtual Spot *getEmptySpot(Container* cont,  int fromX = -1, int fromY = -1);
+    virtual Spot *getEmptySpot(Container* cont,  int fromX = -1, int fromY = -1) = 0;
 
     /**
      * Search for an empty spot in the first floor that available (scan all rows and columns)

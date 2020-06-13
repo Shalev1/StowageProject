@@ -177,25 +177,6 @@ void BaseAlgorithm::getLoadingContainers(const vector<Container*> &reloadContain
     }
 }
 
-Spot *BaseAlgorithm::getEmptySpot(Container* cont, int fromX, int fromY) {
-    Spot* emptySpot = nullptr;
-    if(route.stopsUntilPort(cont->getDestPort()) >= 0.8 * route.stopsLeft()) { // The destination is far away
-        emptySpot = searchFirstFloor();
-        if(emptySpot != nullptr){
-            return emptySpot;
-        }
-    }
-    // Try To load the container on container with same destination (for good spot)
-    bool uniqueSpot;
-    emptySpot = searchSameDest(cont, fromX, fromY, uniqueSpot);
-    if(emptySpot != nullptr){
-        return emptySpot;
-    }
-    // Now scan the ship from bottom to top
-    emptySpot = scanShip(cont, fromX, fromY);
-    return emptySpot;
-}
-
 Spot* BaseAlgorithm::searchFirstFloor() {
     for(int x = 0; x < ship.getShipRows(); x++){
         for(int y = 0; y < ship.getShipCols(); y++){
