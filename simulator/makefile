@@ -30,8 +30,8 @@ Route.o: ../common/Route.cpp ../common/Route.h ../common/Port.h ../common/Contai
 	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
 Utils.o: ../common/Utils.cpp ../common/Utils.h
 	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
-WeightBalanceCalculator.o: ../common/WeightBalanceCalculator.cpp ../interfaces/WeightBalanceCalculator.h ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h
-	$(COMP) $(CPP_COMP_FLAG) -c ../common/$*.cpp
+WeightBalanceCalculator.o: WeightBalanceCalculator.cpp ../interfaces/WeightBalanceCalculator.h ../common/ShipPlan.h ../common/Floor.h ../common/Spot.h ../common/Container.h
+	$(COMP) $(CPP_COMP_FLAG) -c $*.cpp
 ThreadPool.o: ThreadPool.cpp ThreadPool.h Simulation.h
 	$(COMP) $(CPP_COMP_FLAG) -c $*.cpp
 
